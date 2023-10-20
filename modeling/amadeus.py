@@ -81,6 +81,18 @@ class amadeus:
             for j in range(7):
                 self.pe_array[i][j].perform_conv()
 
+    # Perform 1-d accumulate convolution calculation
+    def accum_conv(self):
+        for i in range(6):
+            for j in range(7):
+                self.pe_array[i][j].accum_conv()
+
+    # Clear all psum
+    def clear_psum(self):
+        for i in range(6):
+            for j in range(7):
+                self.pe_array[i][j].clear_psum()
+
     psum_size = 55
     # Perform vertical psum
     # mode 1: first phase for 11x11 filter stride 4
@@ -100,7 +112,6 @@ class amadeus:
                 for j in range(self.psum_size):
                     psum[j] = psum[j] + self.pe_array[i][column].psum[j]
             return psum
-        # fix me
         elif(mode == 3):
             psum = [0]*self.psum_size
             for i in range(5):
@@ -170,5 +181,17 @@ class amadeus:
         #print(self.ofmap[0])
         self.load_ifmap_to_pe(4, 0)
         self.perform_conv()
+        for j in range(13):
+            self.ofmap[j] = self.vertical_sum(4, j)
+
+    # Perform 3x3 filter convolution
+    # Accumulate current psum
+    def third_layer_accum_conv(self):
+        self.psum_size = 13
+        self.ofmap = [[0] * 13 for _ in range(13)]
+        self.load_filter_to_pe(4)
+        #print(self.ofmap[0])
+        self.load_ifmap_to_pe(4, 0)
+        self.accum_conv()
         for j in range(13):
             self.ofmap[j] = self.vertical_sum(4, j)
