@@ -8,7 +8,7 @@ class pe:
         self.stride = 1
         self.ifmap = []
         self.ifmap_size = 0
-        self.psum = []
+        self.psum = [[0] * 55 for _ in range(8)]
         self.psum_size = 0
         self.psum_is_cleared = 1
 
@@ -30,29 +30,29 @@ class pe:
 
 
     # clear psum and calculate psum
-    def perform_conv(self):
+    def perform_conv(self, psum_stack):
         #print(self.x_axis, self.y_axis)
         #if(self.y_axis == 0 & self.x_axis == 0):
         #    print(self.ifmap)
         # self.psum_size = int((self.ifmap_size-self.filter_size)/self.stride) + 1
-        self.psum = [0] * self.psum_size
+        self.psum[psum_stack] = [0] * self.psum_size
         self.psum_is_cleared = 0
         for i in range(self.psum_size):
             for j in range(self.filter_size):
-                self.psum[i] = self.psum[i] + self.filter[j] * self.ifmap[i*self.stride + j]
+                self.psum[psum_stack][i] = self.psum[psum_stack][i] + self.filter[j] * self.ifmap[i*self.stride + j]
                 #print(self.filter[j])
 
     # calculate psum by accumulate it without clearing
-    def accum_conv(self):
-        if(self.psum_is_cleared == 1):
-            self.psum = [0] * self.psum_size
+    def accum_conv(self, psum_stack):
+        #if(self.psum_is_cleared == 1):
+            #self.psum[psum_stack] = [0] * self.psum_size
         for i in range(self.psum_size):
             for j in range(self.filter_size):
-                self.psum[i] = self.psum[i] + self.filter[j] * self.ifmap[i*self.stride + j]
+                self.psum[psum_stack][i] = self.psum[psum_stack][i] + self.filter[j] * self.ifmap[i*self.stride + j]
                 #print(self.filter[j])
         self.psum_is_cleared = 0
 
     # clear psum
     def clear_psum(self):
-        self.psum = [0] * self.psum_size
+        self.psum = [[0] * 55 for _ in range(8)]
         self.psum_is_cleared = 1

@@ -5,6 +5,7 @@ import random
 dut = amadeus()
 correct_result = [[0] * 13 for _ in range(13)]
 dut.clear_psum()
+# Third layer has 192 channel
 for channel in range(192):
     ifmap = [[random.randint(0, 30) for j in range(15)] for i in range(15)]
     # filter is 3x3

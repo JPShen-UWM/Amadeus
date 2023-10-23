@@ -32,6 +32,8 @@ class amadeus:
             for i in range(5):
                 for j in range(7):
                     self.pe_array[i][j].load_filter(self.filter[i+6], 11, 4)
+            for j in range(7):
+                    self.pe_array[5][j].load_filter([0]*11, 11, 4)
         elif(mode == 3):
             for i in range(5):
                 for j in range(7):
@@ -76,16 +78,16 @@ class amadeus:
             print("fuck you no this mode")
 
     # Perform 1-d convolution calculation
-    def perform_conv(self):
+    def perform_conv(self, psum_stack):
         for i in range(6):
             for j in range(7):
-                self.pe_array[i][j].perform_conv()
+                self.pe_array[i][j].perform_conv(psum_stack)
 
     # Perform 1-d accumulate convolution calculation
-    def accum_conv(self):
+    def accum_conv(self, psum_stack):
         for i in range(6):
             for j in range(7):
-                self.pe_array[i][j].accum_conv()
+                self.pe_array[i][j].accum_conv(psum_stack)
 
     # Clear all psum
     def clear_psum(self):
@@ -99,36 +101,36 @@ class amadeus:
     # mode 2: second phase for 11x11 filter stride 4
     # mode 3: 5x5 filter
     # mode 4: 3x3 filter
-    def vertical_sum(self, mode, column):
+    def vertical_sum(self, mode, column, psum_stack):
         if(mode == 1):
             psum = [0]*self.psum_size
             for i in range(6):
                 for j in range(self.psum_size):
-                    psum[j] = psum[j] + self.pe_array[i][column].psum[j]
+                    psum[j] = psum[j] + self.pe_array[i][column].psum[psum_stack][j]
             return psum
         elif(mode == 2):
             psum = [0]*self.psum_size
             for i in range(5):
                 for j in range(self.psum_size):
-                    psum[j] = psum[j] + self.pe_array[i][column].psum[j]
+                    psum[j] = psum[j] + self.pe_array[i][column].psum[psum_stack][j]
             return psum
         elif(mode == 3):
             psum = [0]*self.psum_size
             for i in range(5):
                 for j in range(self.psum_size):
-                    psum[j] = psum[j] + self.pe_array[i][column].psum[j]
+                    psum[j] = psum[j] + self.pe_array[i][column].psum[psum_stack][j]
             return psum
         elif(mode == 4):
             psum = [0]*self.psum_size
             if(column < 7):
                 for i in range(3):
                     for j in range(self.psum_size):
-                        psum[j] = psum[j] + self.pe_array[i][column].psum[j]
+                        psum[j] = psum[j] + self.pe_array[i][column].psum[psum_stack][j]
                 return psum
             else:
                 for i in range(3):
                     for j in range(self.psum_size):
-                        psum[j] = psum[j] + self.pe_array[i+3][column-7].psum[j]
+                        psum[j] = psum[j] + self.pe_array[i+3][column-7].psum[psum_stack][j]
                 return psum
         else:
             print("fuck you no this mode")
@@ -144,20 +146,21 @@ class amadeus:
         for i in range(8):
             #print(self.ofmap[0])
             self.load_ifmap_to_pe(1, i*7*4)
-            self.perform_conv()
-            for j in range(7):
-                if(i*7 + j < 55):
-                    self.ofmap[i*7 + j] = self.vertical_sum(1, j)
+            self.perform_conv(i)
+            #for j in range(7):
+            #    if(i*7 + j < 55):
+            #        self.ofmap[i*7 + j] = self.vertical_sum(1, j, 0)
         # perform second part conv
         self.load_filter_to_pe(2)
         for i in range(8):
             self.load_ifmap_to_pe(2, i*7*4)
             #print(self.pe_array[0][0].ifmap)
-            self.perform_conv()
+            self.accum_conv(i)
             for j in range(7):
                 if(i*7 + j < 55):
                     for k in range(55):
-                        self.ofmap[i*7 + j][k] = self.ofmap[i*7 + j][k] + self.vertical_sum(2, j)[k]
+                        #self.ofmap[i*7 + j][k] = self.ofmap[i*7 + j][k] + self.vertical_sum(2, j, 0)[k]
+                        self.ofmap[i*7 + j][k] = self.vertical_sum(1, j, i)[k]
 
     # Perform second layer convolution
     # 5x5 filter
@@ -168,10 +171,10 @@ class amadeus:
         for i in range(4):
             #print(self.ofmap[0])
             self.load_ifmap_to_pe(3, i*7)
-            self.perform_conv()
+            self.accum_conv(i)
             for j in range(7):
                 if(i*7 + j < 27):
-                    self.ofmap[i*7 + j] = self.vertical_sum(3, j)
+                    self.ofmap[i*7 + j] = self.vertical_sum(3, j, i)
 
     # Perform 3x3 filter convolution
     def third_layer_conv(self):
@@ -180,9 +183,9 @@ class amadeus:
         self.load_filter_to_pe(4)
         #print(self.ofmap[0])
         self.load_ifmap_to_pe(4, 0)
-        self.perform_conv()
+        self.perform_conv(0)
         for j in range(13):
-            self.ofmap[j] = self.vertical_sum(4, j)
+            self.ofmap[j] = self.vertical_sum(4, j, 0)
 
     # Perform 3x3 filter convolution
     # Accumulate current psum
@@ -192,6 +195,6 @@ class amadeus:
         self.load_filter_to_pe(4)
         #print(self.ofmap[0])
         self.load_ifmap_to_pe(4, 0)
-        self.accum_conv()
+        self.accum_conv(0)
         for j in range(13):
-            self.ofmap[j] = self.vertical_sum(4, j)
+            self.ofmap[j] = self.vertical_sum(4, j, 0)
