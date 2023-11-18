@@ -1,5 +1,7 @@
 // Processing element
-module pe(
+module pe
+    #(parameter ROW_IDX = 0,
+    parameter COL_IDX = 0)(
     input                       clk,
     input                       rst,
     input OP_MODE               mode,           // mode selection
@@ -13,6 +15,7 @@ module pe(
     output logic                psum_ack_out,   // The psum in is acknoledged
     output logic                error           // Error raise when scrach pad is full and a new packet coming in
 );
+//synopsys template
 
 parameter ROW_IDX = 0;
 parameter COL_IDX = 0;
@@ -75,7 +78,7 @@ end
 logic filter_ptr_inc = filter_ptr == 2'b11 & !stall; // Increment filter pointer when each filter has been iterated
 
 logic [WDATA_SIZE-1:0] weight_next; // next weight that going into multiplier
-assign weight_next = filter_ram[filter_ptr][filter_ptr];
+assign weight_next = filter_ram[filter_ptr][conv_cnt];
 
 ////////////////////////////////////////////////////////////////
 //                   ifmap scratch pad                        //
@@ -86,8 +89,8 @@ assign weight_next = filter_ram[filter_ptr][filter_ptr];
 // |    section 0  |    section 1  |    section 2    |
 // |    valid      |       valid   |     invalid     |   valid_bit track the valid status of each section
 // |_0_|_1_|_2_|_3_|_4_|_5_|_6_|_7_|_8_|_9_|_10_|_11_|
-//           ^           ^
-//      start_ptr      read_ptr
+//           ^       ^       ^
+//      start_ptr read_ptr next_start_ptr
 // start_ptr point to the start element of current sliding window
 // While start_ptr move to a new section, the previous section will be free
 // read_ptr travel between start_ptr to the each of valid section
@@ -109,17 +112,22 @@ logic [2:0] section_valid, section_valid_comb; // valid bit tracking which secti
 logic [2:0] section_write; // Determine which section to write
 logic [2:0] section_to_free; // Determine which section to free
 
-// Free a section when the start pointer has just left it
+// Free a section when the next_start_ptr point to a new section and read_ptr reach it in a new filter round
 always_comb begin
     section_to_free = 3'b0;
-    if(start_ptr == 4 && start_ptr_ff != 4)      section_to_free == 3'b001;
-    else if(start_ptr == 8 && start_ptr_ff != 8) section_to_free == 3'b010;
-    else if(start_ptr == 0 && start_ptr_ff != 0) section_to_free == 3'b100;
+    if(filter_ptr == 0) begin
+        if(next_start_ptr == 4 && read_ptr == 4)      section_to_free == 3'b001;
+        else if(next_start_ptr == 8 && read_ptr == 8) section_to_free == 3'b010;
+        else if(next_start_ptr == 0 && read_ptr == 0) section_to_free == 3'b100;
+    end
 end
+
 always_ff @(posedge clk) begin
     if(rst) section_valid <= 3'b0;
     else section_valid <= section_valid_comb;
 end
+
+// Combination logic to determine which section to allocate when new packet in
 always_comb begin
     section_valid_comb = section_valid;
     section_write = 3'b0;
@@ -172,27 +180,33 @@ always_ff @(posedge clk) begin
 end
 
 // Start pointer and read pointer
+logic [3:0] next_start_ptr; // Next start ptr use to update start ptr and determine when a section can be free
+always_comb begin
+    next_start_ptr = start_ptr;
+    if(cur_mode == MODE1 | cur_mode == MODE2) begin
+        if(start_ptr + 4 > 11) next_start_ptr = start_ptr + 4 - 11;
+        else start_ptr + 4;
+    end
+    // Increment by 1 in other case
+    else begin
+        if(start_ptr + 1 > 11) next_start_ptr = start_ptr + 1 - 11;
+        else start_ptr + 1;
+    end
+end
 always_ff @(posedge clk) begin
     if(rst) start_ptr <= '0;
     else if(conv_cnt == max_filter_ptr) begin
-        // Move by 4 in MODE1 MODE2
-        if(cur_mode == MODE1 | cur_mode == MODE2) begin
-            if(start_ptr + 4 > 11) start_ptr <= start_ptr + 4 - 11;
-            else start_ptr + 4;
-        end
-        // Increment by 1 in other case
-        else begin
-            if(start_ptr + 1 > 11) start_ptr <= start_ptr + 1 - 11;
-            else start_ptr + 1;
-        end
+        start_ptr <= next_start_ptr;
     end
 end
 
+/*
 // Start_ptr_ff use to trackstart_ptr change
 always_ff @(posedge clk) begin
     if(rst) start_ptr_ff <= '0;
     else start_ptr_ff <= start_ptr;
 end
+*/
 
 // Read pointer is start pointer plus conv count, check handle overflow correctly
 assign read_ptr = (start_ptr + conv_cnt >= 12)?(start_ptr + conv_cnt - 12):start_ptr + conv_cnt;

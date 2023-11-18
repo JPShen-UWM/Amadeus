@@ -36,7 +36,7 @@
 `define L1_OFMAP_SIZE       55  // Layer 1 output feature map (227-11)/4+1 = 55
 `define L2_OFMAP_SIZE       27  // Layer 2 output feature map (31-5)/1+1 = 27
 `define L3_OFMAP_SIZE       13  // Layer 3 output feature map (15-3)/1+1 = 13
-`define MULT_OUT_SIZE       8   // PE multiplier data size signed fixed point (8,6)
+`define MULT_OUT_SIZE       8   // PE multiplier data size signed fixed point (8,5)
 `define PSUM_DATA_SIZE      12  // PE multiplier data size signed fixed point (12,6)
 `define MULTIFILTER         4   // Maximum support calculate 4 filter at same time
 
