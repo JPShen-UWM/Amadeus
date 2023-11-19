@@ -24,7 +24,7 @@
 
 // Data size
 `define IFDATA_SIZE         8   // Input feature map data size   unsigned fixed point (8,7)
-`define OFDATA_SIZE         8   // Output feature map data size  unsigned fixed point (8,3)
+`define OFDATA_SIZE         8   // Output feature map data size  unsigned fixed point (8,4)
 `define WDATA_SIZE          8   // Weight data size              signed fixed point (8,6)
 `define L1_FILTER_SIZE      11  // First layer filter size
 `define L2_FILTER_SIZE      5   // Second layer filter size
@@ -37,7 +37,7 @@
 `define L2_OFMAP_SIZE       27  // Layer 2 output feature map (31-5)/1+1 = 27
 `define L3_OFMAP_SIZE       13  // Layer 3 output feature map (15-3)/1+1 = 13
 `define MULT_OUT_SIZE       8   // PE multiplier data size signed fixed point (8,5)
-`define PSUM_DATA_SIZE      12  // PE multiplier data size signed fixed point (12,6)
+`define PSUM_DATA_SIZE      12  // PE multiplier data size signed fixed point (12,5)
 `define MULTIFILTER         4   // Maximum support calculate 4 filter at same time
 
 // struct
@@ -48,7 +48,7 @@ typedef struct packed {
 
 typedef struct packed {
     logic valid,                        // psum is valid for next pe accumulation
-    logic [7:0] psum_idx,               // psum index in the row
+    //logic [5:0] psum_idx,               // psum index in the row
     logic [1:0] filter_idx,             // filter index
     logic [PSUM_DATA_SIZE-1:0] psum
 } PSUM_PACKET;
