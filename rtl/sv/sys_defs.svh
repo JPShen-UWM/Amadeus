@@ -67,5 +67,11 @@ typedef enum logic [1:0] {
     CONV            = 2'b10
 } OP_STAGE;
 
+typedef enum logic [1:0] {
+    LAYER1,
+    LAYER2,
+    LAYER3
+} LAYER_TYPE;
+
 
 `endif // __SYS_DEFS_VH__
