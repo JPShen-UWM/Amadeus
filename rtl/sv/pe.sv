@@ -1,19 +1,20 @@
 // Yi Tuo BULL SHIT
 // Processing element
+//`include "../amadeus/rtl/sv/sys_defs.sv"
 module pe
     #(parameter ROW_IDX = 0,
     parameter COL_IDX = 0)(
     input                       clk,
     input                       rst,
-    input OP_MODE               mode,           // mode selection
+    input OP_MODE               mode_in,           // mode selection
     input                       change_mode,
     input PE_IN_PACKET          pe_packet,      // PE packet broadcasted from buffer
-    input OP_STAGE              op_stage,
-    input PSUM_DATA_SIZE        psum_in,
+    input OP_STAGE              op_stage_in,
+    input PSUM_PACKET           psum_in,
     input                       psum_ack_in,    // The psum out has been taken by next stage
     input                       conv_continue,  // reload ifmap, continue next round convolution
 
-    output PSUM_DATA_SIZE       psum_out,
+    output PSUM_PACKET          psum_out,
     output logic                psum_ack_out,   // The psum in is acknoledged
     output logic                conv_done,      // All the convolution is done, wait for continue to restart
     output logic                error,          // Error raise when scrach pad is full and a new packet coming in
@@ -21,8 +22,6 @@ module pe
 );
 //synopsys template
 
-parameter ROW_IDX = 0;
-parameter COL_IDX = 0;
 // Index for receiving input feature map packet
 localparam MODE1_IDX = ROW_IDX + COL_IDX * 4;
 localparam MODE2_IDX = ROW_IDX + COL_IDX * 4;
@@ -33,7 +32,7 @@ localparam MODE4_FILTER_IDX = (ROW_IDX < 3)? ROW_IDX: ROW_IDX-3;
 // Internal signals
 logic stall; // Multiplication is stall because of empty ifmap fifo
 logic accum_stall; // Stall for doing psum accumulation @TODO!!!
-logic OP_MODE cur_mode;
+OP_MODE cur_mode;
 logic [3:0][L1_FILTER_SIZE-1:0][WDATA_SIZE-1:0] filter_ram;
 logic [3:0] conv_cnt;
 logic [4:0] max_conv_cnt;
@@ -97,9 +96,9 @@ end
 // weight ptr go through the weight ram circularly
 // max_conv_cnt have the filter size
 assign max_conv_cnt = (cur_mode == MODE1)? L1_FILTER_SIZE - 1:
-                      (cur_mode == MODE2)? L2_FILTER_SIZE - 1:
-                      (cur_mode == MODE3)? L3_FILTER_SIZE - 1:
-                                           L4_FILTER_SIZE - 1;
+                      (cur_mode == MODE2)? L1_FILTER_SIZE - 1:
+                      (cur_mode == MODE3)? L2_FILTER_SIZE - 1:
+                                           L3_FILTER_SIZE - 1;
 
 assign conv_cnt_inc = filter_ptr == 2'b11 & !stall; // Increment filter pointer when each filter has been iterated
 
@@ -107,7 +106,7 @@ assign conv_cnt_inc = filter_ptr == 2'b11 & !stall; // Increment filter pointer 
 always_ff @(posedge clk) begin
     if(rst) conv_cnt <= '0;
     if(change_mode) conv_cnt <= '0;
-    else if(op_stage == CONV & filter_ptr_inc) begin
+    else if(op_stage == CONV & conv_cnt_inc) begin
         if(conv_cnt == conv_cnt_inc) conv_cnt <= '0;
         else conv_cnt <= conv_cnt + 1;
     end
@@ -154,9 +153,9 @@ assign packet_in_valid = !pe_packet.valid? 1'b0:
 always_comb begin
     section_to_free = 3'b0;
     if(filter_ptr == 0) begin
-        if(next_start_ptr == 4 && read_ptr == 4)      section_to_free == 3'b001;
-        else if(next_start_ptr == 8 && read_ptr == 8) section_to_free == 3'b010;
-        else if(next_start_ptr == 0 && read_ptr == 0) section_to_free == 3'b100;
+        if(next_start_ptr == 4 && read_ptr == 4)      section_to_free = 3'b001;
+        else if(next_start_ptr == 8 && read_ptr == 8) section_to_free = 3'b010;
+        else if(next_start_ptr == 0 && read_ptr == 0) section_to_free = 3'b100;
     end
 end
 
@@ -226,12 +225,12 @@ always_comb begin
     next_start_ptr = start_ptr;
     if(cur_mode == MODE1 | cur_mode == MODE2) begin
         if(start_ptr + 4 > 11) next_start_ptr = start_ptr + 4 - 11;
-        else start_ptr + 4;
+        else next_start_ptr = start_ptr + 4;
     end
     // Increment by 1 in other case
     else begin
         if(start_ptr + 1 > 11) next_start_ptr = start_ptr + 1 - 11;
-        else start_ptr + 1;
+        else next_start_ptr = start_ptr + 1;
     end
 end
 always_ff @(posedge clk) begin
@@ -261,9 +260,10 @@ assign stall = (!section_valid[0] && read_ptr == 0) | (!section_valid[1] && read
 assign ifdata_next = ifmap_ram[read_ptr];
 
 // Multiplier
-MULT mult_fixed(.inA(mult_inA), .inB(mult_inB), .out(mult_out));
+mult_fixed MULT(.inA(mult_inA), .inB(mult_inB), .out(mult_out));
 
 // Not zero skipping or zero skipping
+/*
 `ifndef ZERO_SKIPPING
 `define
 always_ff @(posedge clk) begin
@@ -281,12 +281,14 @@ end
 
 `else
 `define
+*/
 logic skip_zero, skip_zero_ff;
 // Perform zero skip when either input is zero or conv is stall
 assign skip_zero = ~|ifdata_next | ~|weight_next | stall;
 
 always_ff @(posedge clk) begin
     if(rst) begin
+		mult_out_ff <= '0;
         mult_inA <= '0;
         mult_inB <= '0;
     end
@@ -305,15 +307,16 @@ always_ff @(posedge clk) begin
     if(rst) skip_zero_ff <= 0;
     else skip_zero_ff <= skip_zero;
 end
-`endif // ZERO SKIPPING END
+//`endif // ZERO SKIPPING END
 
 // MAC adder
 assign adder_inA = {{4{mult_out_ff[MULT_OUT_SIZE-1]}}, mult_out_ff}; // Sign extension of mult output
 assign adder_inB = psum_ram_out;
 
-MAC_ADDER adder_fixed(.inA(adder_inA), .inB(adder_inB), .out(adder_out));
+adder_fixed MAC_ADDER(.inA(adder_inA), .inB(adder_inB), .out(adder_out));
+
 always_ff @(posedge clk) begin
-    if(rst) adder_out_ff <= 0';
+    if(rst) adder_out_ff <= '0;
     else if(!accum_stall) adder_out_ff <= adder_out;
 end
 
@@ -324,10 +327,10 @@ assign psum_idx_max = (cur_mode == MODE1)? L1_OFMAP_SIZE - 1:
                       (cur_mode == MODE3)? L2_OFMAP_SIZE - 1:
                                            L3_OFMAP_SIZE - 1;
 always_ff @(posedge clk) begin
-    if(rst) psum_idx <= 0';
+    if(rst) psum_idx <= '0;
     else if(conv_cnt == max_conv_cnt && filter_ptr == 3) begin
         if(psum_idx == psum_idx_max) psum_idx <= '0;
-        else psum_idx + 1;
+        else psum_idx <= psum_idx + 1;
     end
 end
 
@@ -401,7 +404,7 @@ always_ff @(posedge clk) begin
 end
 
 // Accumulation adder for vertically accumulate psum
-ACCUM_ADDER adder_fixed(.inA(psum_in.psum), .inB(psum_output_buffer[psum_in.filter_idx]), .out(accum_adder_out));
+adder_fixed ACCUM_ADDER(.inA(psum_in.psum), .inB(psum_output_buffer[psum_in.filter_idx]), .out(accum_adder_out));
 
 // Psum out packet
 always_ff @(posedge clk) begin

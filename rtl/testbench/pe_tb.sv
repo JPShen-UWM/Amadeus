@@ -1,3 +1,4 @@
+`include "../amadeus/rtl/sv/sys_defs.sv"
 module pe_tb();
 logic           clk;
 logic           rst;
@@ -5,25 +6,24 @@ OP_MODE         mode;           // mode selection
 logic           change_mode;
 PE_IN_PACKET    pe_packet;      // PE packet broadcasted from buffer
 OP_STAGE        op_stage;
-PSUM_DATA_SIZE  psum_in;
+PSUM_PACKET     psum_in;
 logic           psum_ack_in;    // The psum out has been taken by next stage
 logic           onv_continue;  // reload ifmap, continue next round convolution
-PSUM_DATA_SIZE  psum_out;
+PSUM_PACKET     psum_out;
 logic           psum_ack_out;   // The psum in is acknoledged
 logic           conv_done;      // All the convolution is done, wait for continue to restart
 logic           error;          // Error raise when scrach pad is full and a new packet coming in
 logic           full; 
 
+logic [PSUM_DATA_SIZE-1:0] psum;
 
-pe DUT
-    #(ROW_IDX = 0,
-    COL_IDX = 0)(
+pe #(.ROW_IDX(0), .COL_IDX(0)) DUT (
     .clk(clk),
     .rst(rst),
-    .mode(mode),           // mode selection
+    .mode(mode[1:0]),           // mode selection
     .change_mode(change_mode),
     .pe_packet(pe_packet),      // PE packet broadcasted from buffer
-    .op_stage(op_stage),
+    .op_stage(op_stage[1:0]),
     .psum_in(psum_in),
     .psum_ack_in(psum_ack_in),    // The psum out has been taken by next stage
     .conv_continue(conv_continue),  // reload ifmap, continue next round convolution

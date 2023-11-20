@@ -1,4 +1,5 @@
 // Single cycle combination adder
+`include "../amadeus/rtl/sv/sys_defs.sv"
 module adder_fixed(
     input signed [PSUM_DATA_SIZE-1:0] inA,  // signed fixed point (12,5)
     input signed [PSUM_DATA_SIZE-1:0] inB,  // signed fixed point (12,5)

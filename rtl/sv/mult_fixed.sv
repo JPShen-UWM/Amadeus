@@ -1,4 +1,5 @@
 // Single cycle combination multiplier
+//`include "../amadeus/rtl/sv/sys_defs.sv"
 module mult_fixed(
     input [IFDATA_SIZE-1:0] inA,  // unsigned fixed point (8,7)
     input signed [WDATA_SIZE-1:0] inB,  // signed fixed point (8,6)
