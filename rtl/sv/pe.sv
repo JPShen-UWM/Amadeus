@@ -162,6 +162,7 @@ end
 
 always_ff @(posedge clk) begin
     if(rst) section_valid <= 3'b0;
+    else if(conv_continue) section_valid <= 3'b0;
     else section_valid <= section_valid_comb;
 end
 
@@ -214,6 +215,7 @@ end
 // ifmap ram
 always_ff @(posedge clk) begin
     if(rst) ifmap_ram <= '0;
+    else if(conv_continue) ifmap_ram <= '0;
     else if(section_write[0]) ifmap_ram[ 3:0] <= pe_packet.data;
     else if(section_write[1]) ifmap_ram[ 7:4] <= pe_packet.data;
     else if(section_write[2]) ifmap_ram[11:8] <= pe_packet.data;
@@ -234,6 +236,7 @@ always_comb begin
 end
 always_ff @(posedge clk) begin
     if(rst) start_ptr <= '0;
+    else if(conv_continue) start_ptr <= '0;
     else if(conv_cnt == max_conv_cnt) begin
         start_ptr <= next_start_ptr;
     end
@@ -420,7 +423,7 @@ end
 // convolution state: done/running
 always_ff @(posedge clk) begin
     if(rst) conv_done <= 1'b1;
-    else if(contconv_continueinue) conv_done <= '0;
+    else if(conv_continue) conv_done <= '0;
     else if(psum_idx_wb == psum_idx_max && filter_ptr_wb == 2'b11) conv_done <= 1;
 end
 
