@@ -89,7 +89,7 @@ always_ff @(posedge clk) begin
         if((cur_mode == MODE4 && filter_packet.packet_idx[2:0] == MODE4_FILTER_IDX) |
         (cur_mode != MODE4 && filter_packet.packet_idx[2:0] == ROW_IDX)) begin
             // Left shift filter line and put new data in right most position
-            filter_ram[filter_packet.packet_idx[4:3]] <= {filter_ram[filter_packet.packet_idx[4:3]][`L1_FILTER_SIZE-1: 4], filter_packet.data};
+            filter_ram[filter_packet.packet_idx[4:3]] <= {filter_ram[filter_packet.packet_idx[4:3]][`L1_FILTER_SIZE-5:0], filter_packet.data};
         end
     end
 end

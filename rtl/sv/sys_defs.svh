@@ -51,7 +51,7 @@ typedef struct packed {
     logic valid;                        // psum is valid for next pe accumulation
     //logic [5:0] psum_idx;               // psum index in the row
     logic [1:0] filter_idx;             // filter index
-    logic [`PSUM_DATA_SIZE-1:0] psum;
+    logic signed [`PSUM_DATA_SIZE-1:0] psum;
 } PSUM_PACKET;
 
 // enum
