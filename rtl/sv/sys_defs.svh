@@ -24,7 +24,7 @@
 
 // Data size
 `define IFDATA_SIZE         8   // Input feature map data size   unsigned fixed point (8,7)
-`define OFDATA_SIZE         8   // Output feature map data size  unsigned fixed point (8,3)
+`define OFDATA_SIZE         8   // Output feature map data size  unsigned fixed point (8,4)
 `define WDATA_SIZE          8   // Weight data size              signed fixed point (8,6)
 `define L1_FILTER_SIZE      11  // First layer filter size
 `define L2_FILTER_SIZE      5   // Second layer filter size
@@ -36,22 +36,40 @@
 `define L1_OFMAP_SIZE       55  // Layer 1 output feature map (227-11)/4+1 = 55
 `define L2_OFMAP_SIZE       27  // Layer 2 output feature map (31-5)/1+1 = 27
 `define L3_OFMAP_SIZE       13  // Layer 3 output feature map (15-3)/1+1 = 13
-`define MULT_OUT_SIZE       8   // PE multiplier data size signed fixed point (8,6)
-`define PSUM_DATA_SIZE      12  // PE multiplier data size signed fixed point (12,6)
-`define MULTIFILTER         4   // Maximum support calculate 4 filter at same time
+`define MULT_OUT_SIZE       8   // PE multiplier data size signed fixed point (8,5)
+`define PSUM_DATA_SIZE      12  // PE multiplier data size signed fixed point (12,5)
+`define MULTIFILTER         4   // Maximum support calculate 4 filter at same time]
+`define IFMP_BUFFER_ENRTY_NUM   35  // The number of entry one scratch in ifmp_buffer
+`define IFMP_BUFFER_ENTRY_WIDTH 256 // The width for one entry in ifmp_buffer scratch
+`define IFMP_DATA_SIZE      8   // The data size in byte from compress fifo to global buffer
+`define MEM_BANDWIDTH       8   // The memory bandwidth in byte
+`define COMRPESS_FIFO_ENTRY 128 // Size for compress fifo
 
 // struct
 typedef struct packed {
     logic [4:0] packet_idx,    // packet idx for ifmap, when use for filter index, row_idx = packet_idx[2:0] and filter_idx = packet_idx[4:3]
-    logic [3:0][IFDATA_SIZE-1:0] data
+    logic [3:0][`IFDATA_SIZE-1:0] data
 } PE_IN_PACKET;
 
 typedef struct packed {
     logic valid,                        // psum is valid for next pe accumulation
-    logic [7:0] psum_idx,               // psum index in the row
+    //logic [5:0] psum_idx,               // psum index in the row
     logic [1:0] filter_idx,             // filter index
-    logic [PSUM_DATA_SIZE-1:0] psum
+    logic [`PSUM_DATA_SIZE-1:0] psum
 } PSUM_PACKET;
+
+typedef struct packed {
+    logic packet_valid;
+    logic [`IFMP_DATA_SIZE-1:0] valid_mask;
+    logic [`IFMP_DATA_SIZE-1:0][7:0] data;
+} DECOMRPESS_FIFO_PACKET;
+
+typedef struct packer {
+    logic [3:0] zero;
+    logic [7:0] val;
+} COMPRESS_UNIT;
+
+
 
 // enum
 typedef enum logic [1:0] {
@@ -70,7 +88,8 @@ typedef enum logic [1:0] {
 typedef enum logic [1:0] {
     LAYER1,
     LAYER2,
-    LAYER3
+    LAYER3,
+    NULL
 } LAYER_TYPE;
 
 
