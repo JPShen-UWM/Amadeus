@@ -47,15 +47,16 @@
 
 // struct
 typedef struct packed {
-    logic [4:0] packet_idx,    // packet idx for ifmap, when use for filter index, row_idx = packet_idx[2:0] and filter_idx = packet_idx[4:3]
-    logic [3:0][`IFDATA_SIZE-1:0] data
+    logic valid;
+    logic [4:0] packet_idx;    // packet idx for ifmap, when use for filter index, row_idx = packet_idx[2:0] and filter_idx = packet_idx[4:3]
+    logic [3:0][`IFDATA_SIZE-1:0] data;
 } PE_IN_PACKET;
 
 typedef struct packed {
-    logic valid,                        // psum is valid for next pe accumulation
-    //logic [5:0] psum_idx,               // psum index in the row
-    logic [1:0] filter_idx,             // filter index
-    logic [`PSUM_DATA_SIZE-1:0] psum
+    logic valid;                        // psum is valid for next pe accumulation
+    //logic [5:0] psum_idx;               // psum index in the row
+    logic [1:0] filter_idx;             // filter index
+    logic signed [`PSUM_DATA_SIZE-1:0] psum;
 } PSUM_PACKET;
 
 typedef struct packed {

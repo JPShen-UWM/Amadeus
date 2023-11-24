@@ -1,2 +1,16 @@
 
 modeling/__pycache__/
+rtl/csrc/
+rtl/dve.daidir/
+rtl/simv.daidir/
+rtl/dve
+rtl/dve.log
+rtl/inter.fsdb
+rtl/novas_dump.log
+rtl/novas.conf
+rtl/novas.rc
+rtl/simv
+rtl/simv.log
+rtl/ucli.key
+rtl/verdi_config_file
+rtl/program.out
