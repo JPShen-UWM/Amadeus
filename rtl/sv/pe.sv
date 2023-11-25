@@ -108,7 +108,7 @@ always_ff @(posedge clk) begin
     if(rst) conv_cnt <= '0;
     if(change_mode) conv_cnt <= '0;
     else if(op_stage_in == CONV & conv_cnt_inc) begin
-        if(conv_cnt == conv_cnt_inc) conv_cnt <= '0;
+        if(conv_cnt == max_conv_cnt) conv_cnt <= '0;
         else conv_cnt <= conv_cnt + 1;
     end
 end
@@ -174,7 +174,7 @@ always_comb begin
     section_write = 3'b0;
     error = 0;
     // Free section
-    section_valid_comb = section_valid_comb & !section_to_free;
+    section_valid_comb = section_valid_comb & ~section_to_free;
     if(packet_in_valid) begin
         case(section_valid_comb)
             3'b000: begin
@@ -225,19 +225,19 @@ end
 always_comb begin
     next_start_ptr = start_ptr;
     if(cur_mode == MODE1 | cur_mode == MODE2) begin
-        if(start_ptr + 4 > 11) next_start_ptr = start_ptr + 4 - 11;
+        if(start_ptr + 4 > 11) next_start_ptr = start_ptr + 4 - 12;
         else next_start_ptr = start_ptr + 4;
     end
     // Increment by 1 in other case
     else begin
-        if(start_ptr + 1 > 11) next_start_ptr = start_ptr + 1 - 11;
+        if(start_ptr + 1 > 11) next_start_ptr = start_ptr + 1 - 12;
         else next_start_ptr = start_ptr + 1;
     end
 end
 always_ff @(posedge clk) begin
     if(rst) start_ptr <= '0;
     else if(conv_continue) start_ptr <= '0;
-    else if(conv_cnt == max_conv_cnt) begin
+    else if(conv_cnt == max_conv_cnt && filter_ptr == 2'b11) begin
         start_ptr <= next_start_ptr;
     end
 end
@@ -264,7 +264,7 @@ assign ifdata_next = ifmap_ram[read_ptr];
 mult_fixed MULT(.inA(mult_inA), .inB(mult_inB), .out(mult_out));
 
 // Not zero skipping or zero skipping
-/*
+
 `ifndef ZERO_SKIPPING
 `define
 always_ff @(posedge clk) begin
@@ -282,8 +282,9 @@ end
 
 `else
 `define
-*/
-logic skip_zero, skip_zero_ff;
+
+logic skip_zero;
+logic skip_zero_ff;
 // Perform zero skip when either input is zero or conv is stall
 assign skip_zero = ~|ifdata_next | ~|weight_next | stall;
 
@@ -308,7 +309,7 @@ always_ff @(posedge clk) begin
     if(rst) skip_zero_ff <= 0;
     else skip_zero_ff <= skip_zero;
 end
-//`endif // ZERO SKIPPING END
+`endif // ZERO SKIPPING END
 
 // MAC adder
 assign adder_inA = {{4{mult_out_ff[`MULT_OUT_SIZE-1]}}, mult_out_ff}; // Sign extension of mult output
@@ -428,7 +429,7 @@ end
 always_ff @(posedge clk) begin
     if(rst) conv_done <= 1'b1;
     else if(conv_continue) conv_done <= '0;
-    else if(psum_idx_wb == psum_idx_max && filter_ptr_wb == 2'b11) conv_done <= 1;
+    else if(psum_idx_wb == psum_idx_max && filter_ptr_wb == 2'b11 && conv_cnt == max_conv_cnt) conv_done <= 1;
 end
 
 endmodule

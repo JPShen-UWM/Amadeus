@@ -1,4 +1,4 @@
-`timescale 1ns/1ns
+`timescale 1ns/100ps
 module pe_tb();
 logic           clk;
 logic           rst;
@@ -9,17 +9,16 @@ PE_IN_PACKET    ifmap_packet;      // PE packet broadcasted from buffer
 OP_STAGE        op_stage;
 PSUM_PACKET     psum_in;
 logic           psum_ack_in;    // The psum out has been taken by next stage
-logic           onv_continue;  // reload ifmap, continue next round convolution
+logic           conv_continue;  // reload ifmap, continue next round convolution
 PSUM_PACKET     psum_out;
 logic           psum_ack_out;   // The psum in is acknoledged
 logic           conv_done;      // All the convolution is done, wait for continue to restart
 logic           error;          // Error raise when scrach pad is full and a new packet coming in
 logic           full; 
-logic           conv_continue;
 
 real filter[3:0][10:0];
 real ifmap[226:0];
-real ofmap[3:0][54:0];
+real golden_psum[3:0][54:0];
 real psum_queue[3:0][$];
 
 logic time_out;
@@ -42,7 +41,10 @@ pe #(.ROW_IDX(0), .COL_IDX(0)) DUT (
     .full(full)          // ifmap scratch pad is full
 );
 
-always #5 clk = ~clk; // 100 MHz clock
+always begin
+		#5;
+		clk = ~clk;
+	end
 
 task load_filter();
     logic signed [3:0][10:0][7:0] filter_fixed; // Fixed point filter
@@ -61,17 +63,17 @@ task load_filter();
     for(int i = 0; i < 4; i++) begin
         if(mode == MODE1 || mode == MODE2) begin
             @(posedge clk);
-            filter_packet.data = {8'b0, filter_fixed[0][10:8]};
+            filter_packet.data = {8'b0, filter_fixed[i][10:8]};
             filter_packet.packet_idx[2:0] = 0; 
             filter_packet.packet_idx[4:3] = i;
             filter_packet.valid = 1;
             @(posedge clk);
-            filter_packet.data = filter_fixed[0][7:4];
+            filter_packet.data = filter_fixed[i][7:4];
             filter_packet.packet_idx[2:0] = 0; 
             filter_packet.packet_idx[4:3] = i;
             filter_packet.valid = 1;
             @(posedge clk);
-            filter_packet.data = filter_fixed[0][3:0];
+            filter_packet.data = filter_fixed[i][3:0];
             filter_packet.packet_idx[2:0] = 0; 
             filter_packet.packet_idx[4:3] = i;
             filter_packet.valid = 1;
@@ -87,7 +89,7 @@ task send_ifmap();
     logic signed [226:0][7:0] ifmap_fixed; // Fixed point ifmap
     integer ifmap_mantissa;
     // Convert real ifmap to fixed point
-    for(int j = 0; j < 226; j++) begin
+    for(int j = 0; j < 227; j++) begin
         ifmap_mantissa = $rtoi(ifmap[j] * 128);
         ifmap_fixed[j] = ifmap_mantissa[7:0];
     end
@@ -96,8 +98,10 @@ task send_ifmap();
     if(mode == MODE1 || mode == MODE2) begin
         for(int i = 0; i < 227; i=i+4) begin
             // Wait till ifmap scratch pad is not full
-            while(full) begin
+            ifmap_packet.valid = 0;
+            while(full & !time_out) begin
                 @(posedge clk);
+                #0.1;
             end
             ifmap_packet.valid = 1;
             ifmap_packet.packet_idx = 0;
@@ -107,7 +111,9 @@ task send_ifmap();
             if(i+3 >= 227) ifmap_packet.data[3] = 8'b0;
             else ifmap_packet.data[3] = ifmap_fixed[i+3];
             @(posedge clk);
+            #0.1;
             ifmap_packet.valid = 0;
+            if(time_out) break;
         end
     end
     $display("All ifmap packet sent at time: %0t",$time);
@@ -116,7 +122,7 @@ endtask
 // Feed in psum packet
 task feed_psum();
     while(!time_out) begin
-        for(int i = 0; i < 3; i++) begin
+        for(int i = 0; i < 4; i++) begin
             psum_in.valid = 1;
             psum_in.filter_idx = i;
             psum_in.psum = 0;
@@ -131,15 +137,19 @@ endtask
 // Collect psum and push to psum queue
 task collect_psum();
     real psum_real;
+    real mantissa_real;
+    integer mantissa_int;
     // Infinite loop
     while(!time_out) begin
         if(psum_out.valid) begin
             psum_ack_in = 1;
-            psum_real = $bitstoreal(psum_out.psum)/32.0;
+            mantissa_int = {{20{psum_out.psum[11]}},psum_out.psum};
+            mantissa_real = $itor(mantissa_int);
+            psum_real = mantissa_real/32.0;
             psum_queue[psum_out.filter_idx].push_back(psum_real);
-            @(posedge clk)
-            psum_ack_in = 0;
         end
+        @(posedge clk);
+        psum_ack_in = 0;
     end
 endtask
 
@@ -153,45 +163,89 @@ task time_out_check();
             $display("ERROR! TIME OUT!");
             break;
         end
+        @(posedge clk);
     end
     if(conv_done) begin
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
-        @(posedge clk);
+        repeat(10) @(posedge clk);
         time_out = 1;
-        $display("Conv_done assert at cycle: %i, time: %0t", cycle_count, $time);
+        $display("Conv_done assert at cycle: %d, time: %0t", cycle_count, $time);
     end
 endtask
 
 // Simple filter set
 task set_simple_filter();
-    filter[0] = {1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-    filter[1] = {1.0, 0.0, -1.0, 0.0, 1.0, 0.0, -1.0, 0.0, 1.0, 0.0, -1.0};
-    filter[2] = {1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, -1.0, -1.0, -1.0, -1.0};
-    filter[3] = {-1.0, -1.0, -1.0, -1.0, -1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+    filter[0] = {1.0, 0.0, 1.0, -0.25, 1.0, 0.0, 1.0, 0.0, 1.0, 0.25, 1.0};
+    filter[1] = {1.0, 0.5, -1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, -0.25, -1.0};
+    filter[2] = {1.0, 0.25, 1.0, 1.0, 1.0, 0.0, -1.0, -1.0, -1.0, -1.0, -1.0};
+    filter[3] = {-1.0, 0.25, -1.0, 0, -1.0, 1.0, -1.0, 0.5, -1.0, 0, -1.0};
 endtask
+
 // Simple ifmap
 task set_simple_ifmap();
-    for(int i = 0; i < 50; i++) begin
+    for(int i = 0; i < 11; i++) begin
         ifmap[i] = 1.0;
+    end
+    for(int i = 11; i < 50; i++) begin
+        ifmap[i] = 0.25;
     end
     for(int i = 50; i < 100; i++) begin
         ifmap[i] = 0.5;
     end
     for(int i = 100; i < 150; i++) begin
-        ifmap[i] = 1.0;
+        ifmap[i] = 0.75;
     end
     for(int i = 150; i < 227; i++) begin
-        ifmap[i] = 1.0;
+        ifmap[i] = 0.25;
     end
 endtask
 
+// Golden output
+task golden_output();
+    int filter_size;
+    int ifmap_size;
+    int ofmap_size;
+    int stride;
+    if(mode == MODE1 | mode == MODE2) begin
+        filter_size = `L1_FILTER_SIZE;
+        ifmap_size = `L1_IFMAP_SIZE;
+        ofmap_size = `L1_OFMAP_SIZE;
+        stride = 4;
+    end
+    else if(mode == MODE3) begin
+        filter_size = `L2_FILTER_SIZE;
+        ifmap_size = `L2_IFMAP_SIZE;
+        ofmap_size = `L2_OFMAP_SIZE;
+        stride = 1;
+    end
+    else if(mode == MODE4) begin
+        filter_size = `L3_FILTER_SIZE;
+        ifmap_size = `L3_IFMAP_SIZE;
+        ofmap_size = `L3_OFMAP_SIZE;
+        stride = 1;
+    end
+    // Convolution
+    for(int i = 0; i < ofmap_size; i++) begin
+        for(int j = 0; j < 4; j++) begin
+            golden_psum[j][i] = 0.0;
+            for(int k = 0; k < filter_size; k++) begin
+                golden_psum[j][i] = golden_psum[j][i] + filter[j][k] * ifmap[i*stride + k];
+            end
+        end
+    end
+endtask
+
+// fuzzy compare
+// Return 0 if x = y
+function bit compare(input real x,y);
+    real tolerance = 0.1;
+    if(x < y - tolerance | x > y + tolerance) return 1;
+    else return 0;
+endfunction
 
 // Report task
 task report_phase();
-    integer psum_size0, psum_size1, psum_size2, psum_size3;
+    int psum_size0, psum_size1, psum_size2, psum_size3;
+    int error_count;
     psum_size0 = psum_queue[0].size();
     psum_size1 = psum_queue[1].size();
     psum_size2 = psum_queue[2].size();
@@ -205,6 +259,21 @@ task report_phase();
     $display("PSUM 1 = %p", psum_queue[1]);
     $display("PSUM 2 = %p", psum_queue[2]);
     $display("PSUM 3 = %p", psum_queue[3]);
+    error_count = 0;
+    for(int i = 0; i < 4; i++) begin
+        for(int j = 0; j < psum_size0; j++) begin
+            if(compare(psum_queue[i][j], golden_psum[i][j])) begin
+                $display("ERROR! psum[%d][%d] expected: %f, get: %f", i, j, golden_psum[i][j], psum_queue[i][j]);
+                error_count++;
+            end
+        end
+    end
+    if(error_count == 0) begin
+        $display("Yahoo!!! All Test Pass!!!");
+    end
+    else begin
+        $display("Fuck!!! There are %d potential errors!", error_count);
+    end
 endtask
 
 // Start convolution
@@ -256,6 +325,7 @@ initial begin
         collect_psum();
         send_ifmap();
     join
+    golden_output();
     report_phase();
     $finish();
 end
