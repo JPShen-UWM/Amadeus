@@ -43,7 +43,8 @@
 `define IFMP_BUFFER_ENTRY_WIDTH 256 // The width for one entry in ifmp_buffer scratch
 `define IFMP_DATA_SIZE      8   // The data size in byte from compress fifo to global buffer
 `define MEM_BANDWIDTH       8   // The memory bandwidth in byte
-`define COMRPESS_FIFO_ENTRY 128 // Size for compress fifo
+`define IFMAP_BUFFER
+
 
 // struct
 typedef struct packed {

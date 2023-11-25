@@ -7,7 +7,7 @@ module decompressor(
     input mem_ack, // if decompressor issue a mem_req, in the same cycle if memory bandwidth is available, it will return a mem_ack
     input start, // from controller (TO DO: maybe in global buffer)
     input LAYER_TYPE layer_type_in,
-    output global_buffer_ack,
+    output decompressor_ack,
     output mem_req, // assert when compress fifo can receive data from memory
     output DECOMRPESS_FIFO_PACKET decompress_fifo_packet
 );
@@ -96,7 +96,7 @@ module decompressor(
     assign layer1_handshake = !data_fifo_layer1_empty && global_buffer_req;
 
     // control logic for layer1
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
         if(!rst_n | start) begin
             layer1_data_fifo_read_ptr       <= '0;
         end
@@ -108,7 +108,7 @@ module decompressor(
     assign fetch_layer1 = !fetch_full_layer1 && (layer_type == LAYER1);
 
     // for layer1 the enbale signal for decompressor is disable after it has already loaded one full input feature map channel from memory
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
         if(!rst_n | start) begin
             data_counter_write_inner <= '0;
             data_counter_write_outer <= '0;
@@ -120,7 +120,7 @@ module decompressor(
     end
 
     // data read counter for layer1
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
         if(!rst_n | start) begin
             layer1_data_counter_read <= '0;
         end
@@ -180,6 +180,19 @@ module decompressor(
     logic [1:0] aligned_data_valid; // valid bit for aligned_data[9:5] and aligned_data[4:0]
     logic layer23_stall; // for layer23, if the fifo_packet is all valid but global buffer has not require, we need to stall all operation
     logic layer23_handshake; // for layer23 decrompressor handshake with global buffer
+        //
+    logic [4:0] aligned_data_accumulate_num_mask; // 00111 represent the accumulate num from the third compress unit is larger than remained slot in decompressed_fifo_packet
+    logic [2:0] aligned_data_read_ptr_move; // the num that aligned_data_read_ptr can move, taking compress unit is invalid into consideration, will not pass invalid compress unit
+    logic [3:0] aligned_data_read_ptr_next;
+    logic aligned_data_read_ptr_move_not_full; // aligned data read ptr will move the full 5 compress unit, which is the size of compress unit can be handle within one cycle
+    logic [4:0] aligned_data_read_ptr_move_max; // the max positon the aligned_data_read_ptr can move, for example
+                                                // 1. remaining slot = 6, and aligned_data_accumulate_num_mask[2][3][4] = 5, so aligned_data_accumulate_num_mask = 5'b0, however the layer23_aligned_data_valid_handle_group = 5'b00111, the 4th and 5th compress units are invalid
+                                                // in this case, we can only move aligned_data_read_ptr to index "3" instead of index "5"
+                                                // aligned_data_read_ptr_move_max = 5'b11000, when we give it to priority encoder, it will give (01000), encode to 3, add to current align_data_read_ptr
+    logic [4:0] layer23_aligned_data_valid_handle_group; // valid for 5 compress unit which will be handled within one cycle
+    logic [6:0] layer23_fifo_packet_remain_num; // The remaining slot to fill within layer23_fifo_packet which have 8 slot (every cycle send to global buffer for 8 element)
+    logic [6:0] layer23_fifo_packet_remain_num_next;
+    logic [6:0] layer23_fifo_packet_enqueue_num; // The number of byte which send from aligned_data to fifo_packet
 
     assign data_fifo_layer23_empty = layer23_data_fifo_read_ptr == data_fifo_write_ptr;
     assign layer23_stall = layer23_fifo_packet.packet_valid & !global_buffer_req;
@@ -195,7 +208,7 @@ module decompressor(
     assign fetch_full_layer23 = (data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)] != layer23_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)]) && (data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)-1:0] == layer23_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)-1:0]);
     assign fetch_layer23 = !fetch_full_layer23 && (layer_type == LAYER2 || layer_type == LAYER3);
 
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n or start) begin
             aligned_data_valid <= '0;
         end
@@ -240,7 +253,7 @@ module decompressor(
         end
     end
 
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n or start) begin
             layer23_aligned_data <= '0;
         end
@@ -273,20 +286,7 @@ module decompressor(
     assign layer23_aligned_data_accumulate_num[3] = layer23_aligned_data_accumulate_num[2] + layer23_aligned_data_compress_unit_num[3];
     assign layer23_aligned_data_accumulate_num[4] = layer23_aligned_data_accumulate_num[3] + layer23_aligned_data_compress_unit_num[4];
 
-    //
-    logic [4:0] aligned_data_accumulate_num_mask; // 00111 represent the accumulate num from the third compress unit is larger than remained slot in decompressed_fifo_packet
-    logic [2:0] aligned_data_read_ptr_move; // the num that aligned_data_read_ptr can move, taking compress unit is invalid into consideration, will not pass invalid compress unit
-    logic [3:0] aligned_data_read_ptr_next;
-    logic aligned_data_read_ptr_move_not_full; // aligned data read ptr will move the full 5 compress unit, which is the size of compress unit can be handle within one cycle
-    logic [4:0] aligned_data_read_ptr_move_max; // the max positon the aligned_data_read_ptr can move, for example
-                                                // 1. remaining slot = 6, and aligned_data_accumulate_num_mask[2][3][4] = 5, so aligned_data_accumulate_num_mask = 5'b0, however the layer23_aligned_data_valid_handle_group = 5'b00111, the 4th and 5th compress units are invalid
-                                                // in this case, we can only move aligned_data_read_ptr to index "3" instead of index "5"
-                                                // aligned_data_read_ptr_move_max = 5'b11000, when we give it to priority encoder, it will give (01000), encode to 3, add to current align_data_read_ptr
-    logic [4:0] layer23_aligned_data_valid_handle_group; // valid for 5 compress unit which will be handled within one cycle
-    logic [6:0] layer23_fifo_packet_remain_num; // The remaining slot to fill within layer23_fifo_packet which have 8 slot (every cycle send to global buffer for 8 element)
-    logic [6:0] layer23_fifo_packet_remain_num_next;
-    logic [6:0] layer23_fifo_packet_enqueue_num; // The number of byte which send from aligned_data to fifo_packet
-
+    // get the first position of compress unit which has accumulated element num larger than layer23_fifo_packet_remain_num 
     for(genvar i = 0; i < 5; i=i+1) begin:accumulate_num_mask
         assign aligned_data_accumulate_num_mask[i] = layer23_aligned_data_accumulate_num[i] > layer23_fifo_packet_remain_num ? 1'b1 : 1'b0;
         assign layer23_aligned_data_valid_handle_group[i] = (layer23_aligned_data_read_ptr+i <= layer23_aligned_data_tail_ptr) & (layer23_aligned_data_tail_ptr != 0);
@@ -303,7 +303,7 @@ module decompressor(
 
     // update the layer23_data_fifo_read_ptr, move the layer23_data_fifo_read_ptr only when "layer23_aligned_data_read_ptr > 4"
     assign layer23_data_fifo_read_ptr_next = (layer23_aligned_data_read_ptr > 4) ? layer23_data_fifo_read_ptr + 1'b1 : layer23_data_fifo_read_ptr;
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n | start) begin
             layer23_data_fifo_read_ptr  <= '0;
         end
@@ -314,7 +314,7 @@ module decompressor(
 
     // update the layer23_aligned_data_read_ptr
     assign aligned_data_read_ptr_next = !aligned_data_read_ptr_move_not_full ? layer23_aligned_data_read_ptr + 5 : layer23_aligned_data_read_ptr + aligned_data_read_ptr_move;
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n | start) begin
             layer23_aligned_data_read_ptr  <= '0;
         end
@@ -325,7 +325,7 @@ module decompressor(
 
     // update the layer23_fifo_packet_remain_num
     assign layer23_fifo_packet_remain_num_next = (layer23_fifo_packet_remain_num > layer23_aligned_data_accumulate_num[4]) ? layer23_fifo_packet_remain_num - layer23_aligned_data_accumulate_num[4] : 8;
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n) begin
             layer23_fifo_packet_remain_num <= 8;
         end
@@ -370,7 +370,7 @@ module decompressor(
 
     assign layer23_data_counter_read_upper = layer_type == LAYER2 ? 92 :
                                              layer_type == LAYER3 ? 22 : 0;
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n or start) begin
             layer23_data_counter_read <= '0;
         end
@@ -379,7 +379,7 @@ module decompressor(
         end
     end
 
-    always_ff@(posedge clk or negedge rst_n) begin
+    always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
         if(!rst_n or start) begin
             layer23_fifo_packet <= '0;
         end
@@ -390,7 +390,7 @@ module decompressor(
 
 
     /// Output of Decompressor
-    assign global_buffer_ack = decompress_fifo_packet.packet_valid;
+    assign decompressor_ack = decompress_fifo_packet.packet_valid;
     assign mem_req = fetch_layer1 | fetch_layer23;
     assign decompress_fifo_packet = (layer_type == LAYER1) ? layer1_fifo_packet : layer23_fifo_packet;
 
