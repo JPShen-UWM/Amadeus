@@ -32,11 +32,18 @@ module decompressor(
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n | stop_fetch) begin
             enable <= 0;
-            layer_type <= NULL;
         end
         else if(start) begin
             enable <= 1'b1;
-            layer_type <= layer_type == NULL ? layer_type_in : layer_type;
+        end
+    end
+    
+    always_ff@(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            layer_type <= NULL;
+        end
+        else if(start)begin
+            layer_type <= layer_type_in;
         end
     end
 
@@ -78,8 +85,8 @@ module decompressor(
             data_fifo_fetch_ptr      <= '0;
         end
         else if(enable) begin
-            data_fifo_write_ptr      <= mem_data_valid & !stop_fetch ? data_fifo_write_ptr + 1'b1 : data_fifo_write_ptr;
-            data_fifo_fetch_ptr      <= fetch & mem_ack ? data_fifo_fetch_ptr + 1'b1 : data_fifo_fetch_ptr; // fetch_ptr can only move if 1. there is available slot if data_fifo, 2. there is mem_ack
+            data_fifo_write_ptr      <= mem_data_valid & !stop_fetch ? (data_fifo_write_ptr + 1'b1) : data_fifo_write_ptr;
+            data_fifo_fetch_ptr      <= fetch & mem_ack ? (data_fifo_fetch_ptr + 1'b1) : data_fifo_fetch_ptr; // fetch_ptr can only move if 1. there is available slot if data_fifo, 2. there is mem_ack
         end
     end
 
@@ -114,8 +121,8 @@ module decompressor(
             data_counter_write_outer <= '0;
         end
         else if(enable & layer_type == LAYER1 & mem_data_valid) begin
-            data_counter_write_inner <= data_counter_write_inner == 29 ? 1 : data_counter_write_inner + 1'b1;
-            data_counter_write_outer <= data_counter_write_inner == 29 ? data_counter_write_outer + 1'b1 : data_counter_write_outer;
+            data_counter_write_inner <= (data_counter_write_inner) == 29 ? 1 : data_counter_write_inner + 1'b1;
+            data_counter_write_outer <= (data_counter_write_inner) == 29 ? data_counter_write_outer + 1'b1 : data_counter_write_outer;
         end
     end
 
@@ -125,13 +132,13 @@ module decompressor(
             layer1_data_counter_read <= '0;
         end
         else if(layer1_handshake) begin
-            layer1_data_counter_read <= layer1_data_counter_read == 29 ? 1 : layer1_data_counter_read + 1'b1;
+            layer1_data_counter_read <= (layer1_data_counter_read == 29) ? 1 : layer1_data_counter_read + 1'b1;
         end
     end
 
     // generate the fifo output for layer1
     assign layer1_fifo_packet.valid_packet = !data_fifo_layer1_empty;
-    assign layer1_fifo_packet.valid_mask = layer1_data_counter_read == 29 ? 8'b00000111 : {8{1'b1}}; // TO DO,need to have a read counter
+    assign layer1_fifo_packet.valid_mask = (layer1_data_counter_read == 29) ? 8'b00000111 : {8{1'b1}}; // TO DO,need to have a read counter
     for(genvar i = 0; i < 8; i=i+1) begin : layer1_fifo_packet_gen
         assign layer1_fifo_packet.data[i] = data_fifo[layer1_data_fifo_read_ptr][8*i+7:8*i];
     end
@@ -340,7 +347,7 @@ module decompressor(
     assign layer23_fifo_packet_ptr = 8 - layer23_fifo_packet_remain_num;
     logic [4:0] compress_unit_val_valid; // The val is choosen to send to fifo_packet in one compress unit; we have total 5 compress unit to handle in one cycle
     logic [4:0][2:0] compress_unit_val_position; // The position for val, considering variant zero ahead
-    assign compress_unit_val_valid = ~aligned_data_accumulate_num_mask;
+    assign compress_unit_val_valid = ~aligned_data_read_ptr_move_max;
     for(genvar i = 0; i < 5; i=i+1) begin: compress_unit_val_position_gen
         assign compress_unit_val_position[i] = layer23_aligned_data_accumulate_num[i]-1;
     end
