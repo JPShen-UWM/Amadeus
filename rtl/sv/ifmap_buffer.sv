@@ -5,7 +5,7 @@ module ifmap_buffer(
     input LAYER_TYPE layer_type_in,
     input DECOMRPESS_FIFO_PACKET decompressed_fifo_packet,
     input decompressor_ack,
-    input free_ifmap_buffer, // from noc need to free one memory batch
+    input free_ifmap_buffer, // from controller, means this memory batch will not be used anymore need to free this memory batch
     output global_buffer_req,
     output logic [34:0][256*8-1:0] ifmap_data,
     output ifmap_data_valid
@@ -57,7 +57,14 @@ module ifmap_buffer(
         end
     end
 
+    /// The cycle for two batch is full, free one and enqueue the empty batch
+    /// |''''''|......|''''''|......|''''''|......|''''''|......|''''''|.......|
+    ///  free_signal        free          ready       en/dequeue
+    ///                                           | set wptr = 7|  start request new data and write in from 7 line |
 
+    /// The cycle for one batch is just full, enqueue the other batch
+    /// |''''''|......|''''''|......|''''''|......|
+    ///       full         ready       en/dequeue
     /// enqueue and dequeue ///
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n or &ready) begin
@@ -145,9 +152,13 @@ module ifmap_buffer(
 
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start or free[0]) begin
+        if(!rst_n or start) begin
             memory_batch1_element_write_ptr <= '0;
             memory_batch1_line_write_ptr    <= '0;
+        end
+        else if(free[0]) begin
+            memory_batch1_element_write_ptr <= '0;
+            memory_batch1_line_write_ptr    <= layer_type == LAYER1 ? 7 : 0;
         end
         else if(chosen_enqueue[0] && global_buffer_decompressor_handshake) begin
             memory_batch1_element_write_ptr <= memory_batch1_element_write_ptr_next;
@@ -166,6 +177,10 @@ module ifmap_buffer(
             memory_batch2_element_write_ptr <= '0;
             memory_batch2_line_write_ptr    <= '0;
         end
+        else if(free[1]) begin
+            memory_batch2_element_write_ptr <= '0;
+            memory_batch2_line_write_ptr    <= layer_type == LAYER1 ? 7 : 0;
+        end
         else if(chosen_enqueue[1] && global_buffer_decompressor_handshake) begin
             memory_batch2_element_write_ptr <= memory_batch2_element_write_ptr_next;
             memory_batch2_line_write_ptr    <= memory_batch2_line_write_ptr_next;
@@ -178,7 +193,10 @@ module ifmap_buffer(
         if(!rst_n or start or free[0]) begin
             memory_batch1 <= '0;
         end
-        else if(chosen_enqueue[0] && global_buffer_decompressor_handshake && !ready[0]) begin
+        else if(free[1]) begin
+            memory_batch1[6:0] <= memory_batch2[6:0];
+        end
+        else if (chosen_enqueue[0] && global_buffer_decompressor_handshake && !ready[0]) begin
             for(integer i = 0; i < `IFMP_DATA_SIZE; i=i+1) begin
                 if(memory_batch1_element_write_ptr + i < memory_batch_element_write_counter) begin
                     memory_batch1[memory_batch1_line_write_ptr][8*(memory_batch1_element_write_ptr+i)+7:8*(memory_batch1_element_write_ptr+i)] <= decompressed_fifo_packet.valid_mask[i] ? decompressed_fifo_packet.data[i] : memory_batch1[memory_batch1_line_write_ptr][8*(memory_batch1_element_write_ptr+i)+7:8*(memory_batch1_element_write_ptr+i)];
@@ -194,6 +212,9 @@ module ifmap_buffer(
         if(!rst_n or start or free[1]) begin
              memory_batch2 <= '0;
         end
+        else if(free[0]) begin
+            memory_batch2[6:0] <= memory_batch1[6:0];
+        end
         else if(chosen_enqueue[1] && global_buffer_decompressor_handshake && !ready[1]) begin
             for(integer i = 0; i < `IFMP_DATA_SIZE; i=i+1) begin
                 if(memory_batch2_element_write_ptr + i < memory_batch_element_write_counter) begin
@@ -207,7 +228,7 @@ module ifmap_buffer(
     end
 
     /// output ///
-    assign global_buffer_req = |(chosen_enqueue & ~ready) & ~stop_req;
+    assign global_buffer_req = |(chosen_enqueue & ~ready) & ~stop_req & ~(|free); // in free cycle, need to send the top 7 line of dequeue memory batch to enqueue memory batch
     assign ifmap_data = chosen_dequeue[0] ? memory_batch1 :
                         chosen_dequeue[1] ? memory_batch2 :
                                             '0;
