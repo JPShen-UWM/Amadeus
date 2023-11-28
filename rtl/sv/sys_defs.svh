@@ -38,7 +38,13 @@
 `define L3_OFMAP_SIZE       13  // Layer 3 output feature map (15-3)/1+1 = 13
 `define MULT_OUT_SIZE       8   // PE multiplier data size signed fixed point (8,5)
 `define PSUM_DATA_SIZE      12  // PE multiplier data size signed fixed point (12,5)
-`define MULTIFILTER         4   // Maximum support calculate 4 filter at same time
+`define MULTIFILTER         4   // Maximum support calculate 4 filter at same time]
+`define IFMP_BUFFER_ENRTY_NUM   35  // The number of entry one scratch in ifmp_buffer
+`define IFMP_BUFFER_ENTRY_WIDTH 256 // The width for one entry in ifmp_buffer scratch
+`define IFMP_DATA_SIZE      8   // The data size in byte from compress fifo to global buffer
+`define MEM_BANDWIDTH       8   // The memory bandwidth in byte
+`define MEM_BATCH_SIZE      35
+
 
 // struct
 typedef struct packed {
@@ -54,6 +60,26 @@ typedef struct packed {
     logic signed [`PSUM_DATA_SIZE-1:0] psum;
 } PSUM_PACKET;
 
+typedef struct packed {
+    logic packet_valid;
+    logic [`IFMP_DATA_SIZE-1:0] valid_mask;
+    logic [`IFMP_DATA_SIZE-1:0][7:0] data;
+} DECOMRPESS_FIFO_PACKET;
+
+typedef struct packed {
+    logic [3:0] zero;
+    logic [7:0] val;
+} COMPRESS_UNIT;
+
+typedef struct packed {
+    logic [5:0][6:0] 
+} PE_IFMAP_STATUS_ARRAY;
+
+typedef struct packed {
+    PE_IN_PACKET [11:0] diagonal_bus;
+} DIAGONAL_BUS_PACKET;
+
+
 // enum
 typedef enum logic [1:0] {
     MODE1 = 2'b00,      // Layer 1 up part
@@ -67,6 +93,13 @@ typedef enum logic [1:0] {
     LOAD_FILTER     = 2'b01,
     CONV            = 2'b10
 } OP_STAGE;
+
+typedef enum logic [1:0] {
+    LAYER1,
+    LAYER2,
+    LAYER3,
+    NULL
+} LAYER_TYPE;
 
 
 `endif // __SYS_DEFS_VH__
