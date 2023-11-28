@@ -232,6 +232,6 @@ module ifmap_buffer(
     assign ifmap_data = chosen_dequeue[0] ? memory_batch1 :
                         chosen_dequeue[1] ? memory_batch2 :
                                             '0;
-    assign ifmap_data = |chosen_dequeue;
+    assign ifmap_data_valid = |chosen_dequeue;
 
 endmodule

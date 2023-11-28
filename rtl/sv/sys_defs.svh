@@ -43,6 +43,7 @@
 `define IFMP_BUFFER_ENTRY_WIDTH 256 // The width for one entry in ifmp_buffer scratch
 `define IFMP_DATA_SIZE      8   // The data size in byte from compress fifo to global buffer
 `define MEM_BANDWIDTH       8   // The memory bandwidth in byte
+`define MEM_BATCH_SIZE      35
 
 
 // struct
@@ -65,11 +66,18 @@ typedef struct packed {
     logic [`IFMP_DATA_SIZE-1:0][7:0] data;
 } DECOMRPESS_FIFO_PACKET;
 
-typedef struct packer {
+typedef struct packed {
     logic [3:0] zero;
     logic [7:0] val;
 } COMPRESS_UNIT;
 
+typedef struct packed {
+    logic [5:0][6:0] 
+} PE_IFMAP_STATUS_ARRAY;
+
+typedef struct packed {
+    PE_IN_PACKET [11:0] diagonal_bus;
+} DIAGONAL_BUS_PACKET;
 
 
 // enum
