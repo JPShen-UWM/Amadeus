@@ -22,8 +22,8 @@ all:	simv
 # Modify starting here
 #####
 HEADERS = sv/sys_defs.svh
-TESTBENCH = testbench/pe_tb.sv
-SIMFILES = sv/*.sv
+TESTBENCH = testbench/wb_tb.sv
+SIMFILES = sv/weight_buffer.sv
 SYNFILES = pe.vg
 
 export HEADERS

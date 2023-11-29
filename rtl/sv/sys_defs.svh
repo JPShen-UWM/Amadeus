@@ -65,7 +65,7 @@ typedef struct packed {
     logic [`IFMP_DATA_SIZE-1:0][7:0] data;
 } DECOMRPESS_FIFO_PACKET;
 
-typedef struct packer {
+typedef struct packed {
     logic [3:0] zero;
     logic [7:0] val;
 } COMPRESS_UNIT;
