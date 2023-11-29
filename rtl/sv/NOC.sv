@@ -8,6 +8,7 @@ module NOC(
     input                           pe_complete,
     input [34:0][256*8-1:0]         ifmap_data_in,
     input                           ifmap_data_valid_in,
+    input [5:0][6:0]                pe_full,
     //
     output                          pe_calculation_complete, // to controller
     output                          free_ifmap_buffer,
@@ -182,6 +183,25 @@ module NOC(
     assign layer1_diagbus_pattern[28] = 12'b010000000000;
     assign layer1_diagbus_pattern[29] = 12'b100000000000;
 
+    // the full signal for input feature map in layer1
+    logic [28:0] layer1_pe_full;
+    // if current calculation is the 8th iteration for layer1, the 7th column of pe should be disable
+    logic layer1_is_last_iteration;
+    assign layer1_is_last_iteration = complete_count > 5;
+    assign layer1_pe_full[0]  = pe_full[0][0];
+    assign layer1_pe_full[1]  = pe_full[1][0];
+    assign layer1_pe_full[2]  = pe_full[2][0];
+    assign layer1_pe_full[3]  = pe_full[3][0];
+    assign layer1_pe_full[4]  = pe_full[4][0] | pe_full[0][1];
+    assign layer1_pe_full[5]  = (pe_full[5][0] & mode == MODE1) | pe_full[1][1];
+    assign layer1_pe_full[6]  = pe_full[2][1];
+    assign layer1_pe_full[7]  = pe_full[3][1];
+    assign layer1_pe_full[8]  = pe_full[4][1] | pe_full[0][2];
+    assign layer1_pe_full[9]  = (pe_full[5][1] & mode == MODE1) | pe_full[1][2];
+    assign layer1_pe_full[10] = pe_full[2][1];
+    assign layer1_pe_full[11] = pe_full[3][1];
+    assign layer1_pe_full[12] = pe_full[4][1] | pe_full[0][2];
+    assign layer1_pe_full[13] = (pe_full[5][1] & mode == MODE1) | pe_full[1][2];
 
     /* layer 2
     diagonal bus    d0      0	1	2	3	4	5	6
