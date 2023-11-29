@@ -6,7 +6,7 @@
 //                 the pipeline design.                                //
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
-
+`timescale 1ns/100ps
 
 `ifndef __SYS_DEFS_VH__
 `define __SYS_DEFS_VH__
@@ -70,11 +70,11 @@ typedef struct packed {
     logic [3:0] zero;
     logic [7:0] val;
 } COMPRESS_UNIT;
-
+/*
 typedef struct packed {
     logic [5:0][6:0] 
 } PE_IFMAP_STATUS_ARRAY;
-
+*/
 typedef struct packed {
     PE_IN_PACKET [11:0] diagonal_bus;
 } DIAGONAL_BUS_PACKET;
