@@ -41,11 +41,6 @@ pe #(.ROW_IDX(0), .COL_IDX(0)) DUT (
     .full(full)          // ifmap scratch pad is full
 );
 
-always begin
-		#5;
-		clk = ~clk;
-	end
-
 task load_filter();
     logic signed [3:0][10:0][7:0] filter_fixed; // Fixed point filter
     integer filter_mantissa;
@@ -103,6 +98,10 @@ task send_ifmap();
                 @(posedge clk);
                 #0.1;
             end
+            // Add data gap to test no ifmap stall work correctly
+            if(i%7 == 0 | i%5 == 0) begin
+                repeat(300) @(posedge clk);
+            end
             ifmap_packet.valid = 1;
             ifmap_packet.packet_idx = 0;
             ifmap_packet.data[0] = ifmap_fixed[i];
@@ -121,15 +120,25 @@ endtask
 
 // Feed in psum packet
 task feed_psum();
+integer counter = 0;
+@(posedge clk);
     while(!time_out) begin
         for(int i = 0; i < 4; i++) begin
+            //#0.1;
+            // Insert random psum input stall
+            if(counter%19 == 3 | counter%23 == 5) begin
+                repeat(100) @(posedge clk);
+            end
+            #0.1
             psum_in.valid = 1;
             psum_in.filter_idx = i;
             psum_in.psum = 0;
+            @(posedge clk);
             while(!psum_ack_out & !time_out) begin
                 @(posedge clk);
             end
-            @(posedge clk);
+            psum_in.valid = 0;
+            counter = counter + 1;
         end
     end
 endtask
@@ -139,9 +148,18 @@ task collect_psum();
     real psum_real;
     real mantissa_real;
     integer mantissa_int;
+    integer counter = 0;
     // Infinite loop
+    @(posedge clk);
     while(!time_out) begin
+        #0.1;
         if(psum_out.valid) begin
+            // Insert random collecting psum stall
+            // Try to trigger accum_stall
+            if(counter % 21 == 10 | counter % 14 == 10) begin
+                repeat(100) @(posedge clk);
+            end
+            counter = counter + 1;
             psum_ack_in = 1;
             mantissa_int = {{20{psum_out.psum[11]}},psum_out.psum};
             mantissa_real = $itor(mantissa_int);
@@ -149,7 +167,7 @@ task collect_psum();
             psum_queue[psum_out.filter_idx].push_back(psum_real);
         end
         @(posedge clk);
-        psum_ack_in = 0;
+        psum_ack_in <= 0;
     end
 endtask
 
@@ -158,7 +176,7 @@ task time_out_check();
     integer cycle_count = 0;
     while(!conv_done) begin
         cycle_count = cycle_count + 1;
-        if(cycle_count > 4000) begin
+        if(cycle_count > 20000) begin
             time_out = 1;
             $display("ERROR! TIME OUT!");
             break;
@@ -166,7 +184,7 @@ task time_out_check();
         @(posedge clk);
     end
     if(conv_done) begin
-        repeat(10) @(posedge clk);
+        repeat(100) @(posedge clk);
         time_out = 1;
         $display("Conv_done assert at cycle: %d, time: %0t", cycle_count, $time);
     end
@@ -175,7 +193,7 @@ endtask
 // Simple filter set
 task set_simple_filter();
     filter[0] = {1.0, 0.0, 1.0, -0.25, 1.0, 0.0, 1.0, 0.0, 1.0, 0.25, 1.0};
-    filter[1] = {1.0, 0.5, -1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, -0.25, -1.0};
+    filter[1] = {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
     filter[2] = {1.0, 0.25, 1.0, 1.0, 1.0, 0.0, -1.0, -1.0, -1.0, -1.0, -1.0};
     filter[3] = {-1.0, 0.25, -1.0, 0, -1.0, 1.0, -1.0, 0.5, -1.0, 0, -1.0};
 endtask
@@ -188,13 +206,13 @@ task set_simple_ifmap();
     for(int i = 11; i < 50; i++) begin
         ifmap[i] = 0.25;
     end
-    for(int i = 50; i < 100; i++) begin
+    for(int i = 50; i < 101; i++) begin
         ifmap[i] = 0.5;
     end
-    for(int i = 100; i < 150; i++) begin
+    for(int i = 101; i < 153; i++) begin
         ifmap[i] = 0.75;
     end
-    for(int i = 150; i < 227; i++) begin
+    for(int i = 153; i < 227; i++) begin
         ifmap[i] = 0.25;
     end
 endtask
@@ -303,7 +321,6 @@ task reset();
     conv_continue = 0;
     time_out = 0;
     @(negedge clk);
-    @(negedge clk);
     rst = 0;
     $display("Reset complete at time: %0t",$time); 
 endtask
@@ -311,7 +328,10 @@ endtask
 
 // Test process
 
-always #5 clk = ~clk;
+always begin
+    #5;
+    clk = ~clk;
+end
 
 initial begin
     reset();
