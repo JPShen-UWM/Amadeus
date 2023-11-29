@@ -8,7 +8,8 @@ module ifmap_buffer(
     input free_ifmap_buffer, // from controller, means this memory batch will not be used anymore need to free this memory batch
     output global_buffer_req,
     output logic [34:0][256*8-1:0] ifmap_data,
-    output ifmap_data_valid
+    output ifmap_data_valid,
+    output ifmap_data_change // send to controller, represent ifmap data is ready for a new conv, used for handshake to start the new start_conv
 );
     // when there is one ready in memory batch, COUNT++
     localparam LAYER1_READY_COUNT = 8;
@@ -46,6 +47,7 @@ module ifmap_buffer(
 
     // others
     logic [3:0] valid_element_count;
+    logic chosen_dequeue_m1;
 
     LAYER_TYPE layer_type;
     always_ff@(posedge clk or negedge rst_n) begin
@@ -233,5 +235,15 @@ module ifmap_buffer(
                         chosen_dequeue[1] ? memory_batch2 :
                                             '0;
     assign ifmap_data_valid = |chosen_dequeue;
+
+    always_ff@(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            chosen_dequeue_m1 <= '0
+        end
+        else begin
+            chosen_dequeue_m1 <= chosen_dequeue;
+        end
+    end
+    assign ifmap_data_change = chosen_dequeue != chosen_dequeue_m1 & ifmap_data_valid;
 
 endmodule

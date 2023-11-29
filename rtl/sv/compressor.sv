@@ -29,7 +29,7 @@ end
 
 logic [15:0]                 zero;
 logic [15:0][4:0]            zero_num; //0-15:
-logic [2:0]                  group; // group over 5 is invalid
+logic [15:0][2:0]            group; // group over 5 is invalid
 logic [15:0][4:0]            valid_taken_count;
 logic [15:0][4:0]            min_vld;
 logic [15:0]                 outmap_data_valid;
@@ -39,11 +39,16 @@ logic [5:1][15:0][3:0]       group_zero_update_value;
 logic [5:1][15:0]            group_value_update;
 logic [5:1]                  group_value_update_OR;
 logic [5:1][15:0][7:0]       group_value_update_value;
-logic [3:0]                  last_cycle_info; // [3]=? [2:0]=***
 logic [5:1]                  AND_result;
 logic [5:1]                  XOR_result;
 logic [5:1]                  OR_result;
 logic [5:1][3:0]             update_group_num;
+
+logic                        mem_req_accepted;
+
+
+assign mem_req_accepted = (mem_req && mem_ack);
+
 
 genvar i,j;
 generate
@@ -52,19 +57,43 @@ generate
        assign zero[i] = ~(|outmap_data[i]);
     end
 
-    // sent compressed packet, start brand new
-    assign last_cycle_info = (mem_req && mem_ack) ? 4'd0 : compressed_data[63:60];
+    /*
+    zero_num[0]
+    1. if mem req accepeted, new compression, first zero_num is either 1 or 0 depend on first outmap_data input
+    2. or if last cycle end with compressing vld data, fist zero_num is the same as above 
+      (if outmap_data[0]=0, it is the first 0 in a new group, zero_num[0]=1. if outmap_data[0]!=0, it skips the 4-bit zero to the vld data, zero_num[0]=0)
+    3. if not the above two cases, then last cycle compression end with zero, ?=0. 
+            if compress_group[last_cycle_update_group].zero is full, no matter outmap_data input is 0 or value, zero_num[0]=0.
+            if compress_group[last_cycle_update_group].zero is not full, but outmap_data input is non-0 value, zero_num[0]=0.
+            else compress_group[last_cycle_update_group].zero is not full, and outmap_data input is 0, we increment compress_group[last_cycle_update_group].zero
 
-    assign zero_num[0] = last_cycle_info[3] ? zero[i] : ((compress_group[last_cycle_info[2:0]].zero == 15)? 'b0 : compress_group[last_cycle_info[2:0]].zero + zero[0]);
+    zero_num[i]
+    1. if zero_num[i-1]==15 and outmap_data[i]==0, record this 0 as a value, thus zero_num[i]=0
+    2. if outmap_data[i]!=0, zero_num[i]=0
+    3. else keep incrementing on zero_num[i-1]
+    */
+    assign zero_num[0] = (mem_req_accepted || compressed_data[63]) ? zero[i] : ((compress_group[compressed_data[62:60]]==15) || (!zero[0]) ? 'b0 : compress_group[compressed_data[62:60]].zero + 1);
     for(i=1;i<16;i++) begin
        assign zero_num[i] = ((zero_num[i-1]==15)||(!zero[i])) ? 'b0: zero_num[i-1] + zero[i];
     end
+    
+    /*
+      group[0]
+      1. if mem req accepted, reset group to 1. Might need to change if we want to add in Start control signal.
+      2. if last cycle end with compressing value, increment last cycle group
+      3. else no change 
 
-    assign group[0] = ((|zero_num[0])||(last_cycle_info[2:0]==3'b111)) ? last_cycle_info[2:0] : last_cycle_info[2:0] + 1;
+      group[i]
+      1. if zero_num[i]!=0, thus handling zero#, group stay the same
+      2. or if last group is 7(which is invalid), group stay the same, we will only use group 1-5
+      3. else handling non-0 value, increment group[i-1] 
+    */
+    assign group[0] = mem_req_accepted ? 3'd1 : (compressed_data[63] ? (compressed_data[62:60] + 1) : compressed_data[62:60]);
     for(i=1;i<16;i++) begin
-       assign group[i] = ((|zero_num[0])||(group[i-1]==3'b111)) ? group[i-1] : group[i-1] + 1;
+       assign group[i] = ((|zero_num[i])||(group[i-1]==3'b111)) ? group[i-1] : group[i-1] + 1;
     end  
 
+    // Check if each outmap_data is valid
     assign min_vld[0] = 5'd1;
     assign outmap_data_valid[0] = min_vld[0] <= outmap_data_valid_num;
     for(i=1;i<16;i++) begin
@@ -72,12 +101,22 @@ generate
        assign outmap_data_valid[i] = min_vld[i] <= outmap_data_valid_num;
     end      
 
+
+    /* Obtain valid taken num by checking:
+      1. if each outmap_data input's group is in valid range 1-5 (if compress_group can take this outmap_data)
+      2. if each outmap_data is valid
+    */
     assign valid_taken_count[0] = (group[0] < 6) && (outmap_data_valid[0]);
     for(i=0;i<16;i++) begin
        assign valid_taken_count[i] = valid_taken_count[i-1] + ((group[i] < 6) && (outmap_data_valid[i]));
     end  
     assign valid_taken_num = valid_taken_count[15];
 
+    /*
+      Update group_zero_update: 1.group in valid range 2.outmap_data valid 3. this outmap_data should be updated as a zero
+      Update group_value_update: 1.group in valid range 2.outmap_data valid 3. this outmap_data should be updated as a value
+      We will obtain total of ten [15:0], use them to determine: which are the correct zeros / value to udpate for each group (mask)
+    */
     for(i=1;i<6;i++) begin
        for(j=0;j<16;j++) begin
           assign group_zero_update[i][j]  = (group[j]==i) && outmap_data_valid[j] && (|zero_num[j]);
@@ -85,20 +124,27 @@ generate
        end
     end  
     
+    /*
+    group_zero_update_value: will be searched and accumulated from top to bottom with the group_zero_update mask, correct zero# will appear at group_zero_update_value[i][15]
+    group_value_update_value: will be searched and accumulated from top to bottom with the group_value_update mask, correct value will appear at group_value_update_value[i][15]
+    */
     for(i=1;i<6;i++) begin
        assign group_zero_update_value[i][0]  = group_zero_update[i][0]  ? zero_num[0] : 4'd0;
        assign group_value_update_value[i][0] = group_value_update[i][0] ? outmap_data[0] : 8'd0;
-       for(j=1;j<16;j++) begin // the correct zero # and value to update is always at group_zero_update_value[i][15]
+       for(j=1;j<16;j++) begin
           assign group_zero_update_value[i][j]  = group_zero_update[i][j]  ? zero_num[j] : group_zero_update_value[i][j-1];
           assign group_value_update_value[i][j] = group_value_update[i][j] ? outmap_data[j] : group_value_update_value[i][j-1];
        end
     end
+
+    // Update nxt_compress_group zero and val
 
     for(i=1;i<6;i++) begin
       assign nxt_compress_group[i].zero = |group_zero_update[i]  ? group_zero_update_value[i][15]  : compress_group[i].zero;
       assign nxt_compress_group[i].val  = |group_value_update[i] ? group_value_update_value[i][15] : compress_group[i].val;
     end
 
+    // Update nxt_compressed_data
     for(i=0;i<5;i++) begin
       assign nxt_compressed_data[12*i+3:12*i]    = nxt_compress_group[i+1].zero;
       assign nxt_compressed_data[12*i+11:12*i+4] = nxt_compress_group[i+1].val;
@@ -118,15 +164,15 @@ generate
        assign update_group_num[i] = update_group_num[i-1] + OR_result[i];
     end
 
-
-    assign nxt_compressed_data[63] = (mem_req & (!mem_ack)) ? compressed_data[63] : 
-                                                            (|AND_result ? (&AND_result ? 1'b1 : (|XOR_result ? 1'b0 : 1'b1)) : 1'b0);
-    assign nxt_compressed_data[62:60] = (mem_req & (!mem_ack)) ? compressed_data[62:60] : update_group_num[5];
-
-    assign nxt_mem_req = (mem_req & (!mem_ack)) ? mem_req : (&AND_result || (!(&AND_result) && (|OR_result) && (outmap_data_valid_num<16)));
-
 endgenerate
 
-
+    // Determine if we end compression with zero# or val
+    assign nxt_compressed_data[63] = (mem_req & (!mem_ack)) ? compressed_data[63] : 
+                                                            (|AND_result ? (&AND_result ? 1'b1 : (|XOR_result ? 1'b0 : 1'b1)) : 1'b0);
+    // Determine the group that we end compression with
+    assign nxt_compressed_data[62:60] = (mem_req & (!mem_ack)) ? compressed_data[62:60] : update_group_num[5];
+    
+    // Determine if we want to send mem req: 1. no space in compress_group 2. some space in compress_group but outmap_valid_data<16 (no more outmap_data input for this compression)
+    assign nxt_mem_req = (mem_req & (!mem_ack)) ? mem_req : (&AND_result || (!(&AND_result) && (|OR_result) && (outmap_data_valid_num<16)));
 
 endmodule
