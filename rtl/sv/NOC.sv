@@ -7,6 +7,7 @@ module NOC(
     input LAYER_TYPE                layer_type_in,
     input OP_MODE                   mode_in,          // mode selection
     input                           conv_complete,
+    // 
     input [34:0][256*8-1:0]         ifmap_data_in,
     input                           ifmap_data_valid_in,
     input [5:0][6:0]                pe_full,
@@ -380,8 +381,7 @@ module NOC(
     end
 
 
-    /*############################################# INPUT FEATURE MAP NOC LOGIC #############################################*/
 
+    /*############################################# PSUM NOC LOGIC #############################################*/
 
-    /*############################################# INPUT FEATURE MAP NOC LOGIC #############################################*/
 endmodule
