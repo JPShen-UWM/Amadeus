@@ -71,9 +71,9 @@ typedef struct packed {
     logic [7:0] val;
 } COMPRESS_UNIT;
 
-typedef struct packed {
-    logic [5:0][6:0] 
-} PE_IFMAP_STATUS_ARRAY;
+// typedef struct packed {
+//     logic [5:0][6:0];
+// } PE_IFMAP_STATUS_ARRAY;
 
 typedef struct packed {
     PE_IN_PACKET [11:0] diagonal_bus;

@@ -11,7 +11,8 @@ module weight_buffer_tb;
     reg mem_data_valid;
     reg [63:0] weight_data;
     reg free_weight_buffer;
-
+    PE_IN_PACKET packet_out[0:5];
+    reg output_filter;
 
     wire mem_req;
     wire ready_to_output;
@@ -23,6 +24,8 @@ module weight_buffer_tb;
         .mem_data_valid(mem_data_valid),
         .weight_data(weight_data),
         .free_weight_buffer(free_weight_buffer),
+        .output_filter,
+        .packet_out(packet_out),
         .mem_req(mem_req),
         .ready_to_output(ready_to_output)
     );
@@ -36,20 +39,23 @@ module weight_buffer_tb;
         mem_data_valid = 0;
         weight_data = 0;
         free_weight_buffer = 0;
-#10;
+        output_filter=0;
+        #10;
 
        
         rst_n = 0;
         repeat_data_task;
-        weight_data = 1;
-        #10;
-        weight_data = 2;
-        #10;
-        free_weight_buffer=1;
-        #10;
-        free_weight_buffer=0;
-        mode_in = MODE3;
-        repeat_data_mode3_task;
+        // weight_data = 1;
+        // #10;
+        // weight_data = 2;
+        // #10;
+        // free_weight_buffer=1;
+        // #10;
+        // free_weight_buffer=0;
+        // mode_in = MODE3;
+        // repeat_data_mode3_task;
+        output_filter=1;
+        #120;
         $display("Test Completed");
         $finish;
     end
