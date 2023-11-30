@@ -23,6 +23,11 @@ real psum_queue[3:0][$];
 
 logic time_out;
 
+int filter_size;
+    int ifmap_size;
+    int ofmap_size;
+    int stride;
+
 pe #(.ROW_IDX(0), .COL_IDX(0)) DUT (
     .clk(clk),
     .rst(rst),
@@ -75,6 +80,29 @@ task load_filter();
             @(posedge clk);
             filter_packet.valid = 0;
         end
+        else if(mode == MODE3) begin
+            @(posedge clk);
+            filter_packet.data = {24'b0, filter_fixed[i][4]};
+            filter_packet.packet_idx[2:0] = 0; 
+            filter_packet.packet_idx[4:3] = i;
+            filter_packet.valid = 1;
+            @(posedge clk);
+            filter_packet.data = filter_fixed[i][3:0];
+            filter_packet.packet_idx[2:0] = 0; 
+            filter_packet.packet_idx[4:3] = i;
+            filter_packet.valid = 1;
+            @(posedge clk);
+            filter_packet.valid = 0;
+        end
+        else if(mode == MODE4) begin
+            @(posedge clk);
+            filter_packet.data = {8'b0, filter_fixed[i][2:0]};
+            filter_packet.packet_idx[2:0] = 0; 
+            filter_packet.packet_idx[4:3] = i;
+            filter_packet.valid = 1;
+            @(posedge clk);
+            filter_packet.valid = 0;
+        end
         // @TODO add mode3, mode4
     end
     $display("Finish loading filter at time: %0t",$time); 
@@ -115,6 +143,56 @@ task send_ifmap();
             if(time_out) break;
         end
     end
+    else if(mode == MODE3) begin
+        for(int i = 0; i < 31; i=i+4) begin
+            // Wait till ifmap scratch pad is not full
+            ifmap_packet.valid = 0;
+            while(full & !time_out) begin
+                @(posedge clk);
+                #0.1;
+            end
+            // Add data gap to test no ifmap stall work correctly
+            if(i%7 == 0 | i%5 == 0) begin
+                repeat(300) @(posedge clk);
+            end
+            ifmap_packet.valid = 1;
+            ifmap_packet.packet_idx = 0;
+            ifmap_packet.data[0] = ifmap_fixed[i];
+            ifmap_packet.data[1] = ifmap_fixed[i+1];
+            ifmap_packet.data[2] = ifmap_fixed[i+2];
+            if(i+3 >= 31) ifmap_packet.data[3] = 8'b0;
+            else ifmap_packet.data[3] = ifmap_fixed[i+3];
+            @(posedge clk);
+            #0.1;
+            ifmap_packet.valid = 0;
+            if(time_out) break;
+        end
+    end
+    else if(mode == MODE4) begin
+        for(int i = 0; i < 15; i=i+4) begin
+            // Wait till ifmap scratch pad is not full
+            ifmap_packet.valid = 0;
+            while(full & !time_out) begin
+                @(posedge clk);
+                #0.1;
+            end
+            // Add data gap to test no ifmap stall work correctly
+            if(i%7 == 0 | i%4 == 0) begin
+                repeat(300) @(posedge clk);
+            end
+            ifmap_packet.valid = 1;
+            ifmap_packet.packet_idx = 0;
+            ifmap_packet.data[0] = ifmap_fixed[i];
+            ifmap_packet.data[1] = ifmap_fixed[i+1];
+            ifmap_packet.data[2] = ifmap_fixed[i+2];
+            if(i+3 >= 15) ifmap_packet.data[3] = 8'b0;
+            else ifmap_packet.data[3] = ifmap_fixed[i+3];
+            @(posedge clk);
+            #0.1;
+            ifmap_packet.valid = 0;
+            if(time_out) break;
+        end
+    end
     $display("All ifmap packet sent at time: %0t",$time);
 endtask
 
@@ -137,7 +215,7 @@ integer counter = 0;
             while(!psum_ack_out & !time_out) begin
                 @(posedge clk);
             end
-            psum_in.valid = 0;
+            psum_in.valid <= 0;
             counter = counter + 1;
         end
     end
@@ -192,7 +270,7 @@ endtask
 
 // Simple filter set
 task set_simple_filter();
-    filter[0] = {1.0, 0.0, 1.0, -0.25, 1.0, 0.0, 1.0, 0.0, 1.0, 0.25, 1.0};
+    filter[0] = {1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
     filter[1] = {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
     filter[2] = {1.0, 0.25, 1.0, 1.0, 1.0, 0.0, -1.0, -1.0, -1.0, -1.0, -1.0};
     filter[3] = {-1.0, 0.25, -1.0, 0, -1.0, 1.0, -1.0, 0.5, -1.0, 0, -1.0};
@@ -217,12 +295,13 @@ task set_simple_ifmap();
     end
 endtask
 
-// Golden output
-task golden_output();
-    int filter_size;
-    int ifmap_size;
-    int ofmap_size;
-    int stride;
+task switch_mode(input OP_MODE new_mode);
+    @(posedge clk);
+    mode <= new_mode;
+    change_mode <= 1;
+    @(posedge clk);
+    change_mode <= 0;
+    @(posedge clk);
     if(mode == MODE1 | mode == MODE2) begin
         filter_size = `L1_FILTER_SIZE;
         ifmap_size = `L1_IFMAP_SIZE;
@@ -241,6 +320,10 @@ task golden_output();
         ofmap_size = `L3_OFMAP_SIZE;
         stride = 1;
     end
+endtask
+
+// Golden output
+task golden_output();
     // Convolution
     for(int i = 0; i < ofmap_size; i++) begin
         for(int j = 0; j < 4; j++) begin
@@ -268,15 +351,6 @@ task report_phase();
     psum_size1 = psum_queue[1].size();
     psum_size2 = psum_queue[2].size();
     psum_size3 = psum_queue[3].size();
-    $display("Conv done at time :%0t",$time);
-    $display("PSUM 0 size: %i", psum_size0);
-    $display("PSUM 1 size: %i", psum_size1);
-    $display("PSUM 2 size: %i", psum_size2);
-    $display("PSUM 3 size: %i", psum_size3);
-    $display("PSUM 0 = %p", psum_queue[0]);
-    $display("PSUM 1 = %p", psum_queue[1]);
-    $display("PSUM 2 = %p", psum_queue[2]);
-    $display("PSUM 3 = %p", psum_queue[3]);
     error_count = 0;
     for(int i = 0; i < 4; i++) begin
         for(int j = 0; j < psum_size0; j++) begin
@@ -286,8 +360,17 @@ task report_phase();
             end
         end
     end
+    $display("Conv done at time :%0t",$time);
+    $display("PSUM 0 size: %i", psum_size0);
+    $display("PSUM 1 size: %i", psum_size1);
+    $display("PSUM 2 size: %i", psum_size2);
+    $display("PSUM 3 size: %i", psum_size3);
+    $display("PSUM 0 = %p", psum_queue[0]);
+    $display("PSUM 1 = %p", psum_queue[1]);
+    $display("PSUM 2 = %p", psum_queue[2]);
+    $display("PSUM 3 = %p", psum_queue[3]);
     if(error_count == 0) begin
-        $display("Yahoo!!! All Test Pass!!!");
+        $display("Yahoo!!! All Test Pass!!! maybe");
     end
     else begin
         $display("Fuck!!! There are %d potential errors!", error_count);
@@ -335,6 +418,7 @@ end
 
 initial begin
     reset();
+    switch_mode(MODE1);
     set_simple_filter();
     set_simple_ifmap();
     load_filter();
