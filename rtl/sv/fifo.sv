@@ -5,7 +5,9 @@ module fifo#(parameter DEPTH = 8, WIDTH = 8)(
     input ren,
     input [WIDTH-1:0] data_in,
     output [WIDTH-1:0] data_out,
-    output data_valid
+    output data_valid,
+    output full,
+    output empty
 );
     logic [$clog2(DEPTH):0] counter;
     logic [$clog2(DEPTH):0] rptr_next;
@@ -14,8 +16,6 @@ module fifo#(parameter DEPTH = 8, WIDTH = 8)(
     logic [$clog2(DEPTH):0] wptr_next;
 
     logic [DEPTH-1:0][WIDTH-1:0] fifo_data;
-
-    logic full,empty;
 
     // update counter
     always_ff@(posedge clk or negedge rst_n) begin
