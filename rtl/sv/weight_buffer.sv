@@ -14,7 +14,8 @@ module weight_buffer(
     output logic ready_to_output,//buffer is full ready to output
     //to pe
 
-    output PE_IN_PACKET packet_out[0:5]//line6
+    output PE_IN_PACKET packet_out[0:5],//line6
+    output output_finish
 );
     // localparam buffer_maxrow_idx=`L1_FILTER_SIZE*`MULT_OUT_SIZE;//44*11*8bits
     logic mem_req_comb,ready_to_output_comb;
@@ -116,7 +117,7 @@ module weight_buffer(
     end
 // ////////////////////////output logic/////////////////////////////////////////////////////
 //output counter calculation,
-logic output_finsih_comb,output_finsih;
+logic output_finish_comb,output_finish;
 logic [1:0] output_cycle_counter;
 logic [1:0] output_layer_idx;
 localparam [5:0] offset [3:0]={33,22,11,0};
@@ -128,7 +129,7 @@ localparam [5:0] idx4 [5:0]={2,1,0,2,1,0};
             output_layer_idx<=0;
             output_cycle_counter<=0;
         end
-        else if(!output_finsih)begin
+        else if(!output_finish)begin
            if(output_cycle_counter==2) begin
             output_cycle_counter<=0;
             output_layer_idx<=output_layer_idx+1;
@@ -136,13 +137,13 @@ localparam [5:0] idx4 [5:0]={2,1,0,2,1,0};
            else output_cycle_counter<=output_cycle_counter+1;
         end
     end
-assign output_finsih_comb=(output_layer_idx<3)? 0:(output_cycle_counter==2)? 1:0;
+assign output_finish_comb=(output_layer_idx<3)? 0:(output_cycle_counter==2)? 1:0;
     always_ff@(posedge clk) begin
         if(rst_n||!ready_to_output||!output_filter)begin
-            output_finsih<=0;
+            output_finish<=0;
         end
         else begin
-            output_finsih<=output_finsih_comb;
+            output_finish<=output_finish_comb;
         end
     end
  always_ff@(posedge clk) begin
@@ -151,7 +152,7 @@ assign output_finsih_comb=(output_layer_idx<3)? 0:(output_cycle_counter==2)? 1:0
                 packet_out[i]<='{default:0};
             end
         end
-        else if(!output_finsih)  begin
+        else if(!output_finish)  begin
         case (cur_mode)
             MODE1: begin 
                 if(output_cycle_counter==0)begin

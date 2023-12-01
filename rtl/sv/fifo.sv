@@ -1,10 +1,14 @@
-module fifo#(parameter DEPTH = 8, WIDTH = 8)(
+module fifo
+#(parameter DEPTH = 8,
+  parameter WIDTH = 8,
+  parameter type DTYPE = logic[WIDTH-1:0]
+ )(
     input clk,
     input rst_n,
     input wen,
     input ren,
-    input [WIDTH-1:0] data_in,
-    output [WIDTH-1:0] data_out,
+    input DTYPE data_in,
+    output DTYPE data_out,
     output data_valid,
     output full,
     output empty
@@ -15,7 +19,7 @@ module fifo#(parameter DEPTH = 8, WIDTH = 8)(
     logic [$clog2(DEPTH):0] rptr_next;
     logic [$clog2(DEPTH):0] wptr_next;
 
-    logic [DEPTH-1:0][WIDTH-1:0] fifo_data;
+    DTYPE [DEPTH-1:0]  fifo_data;
 
     // update counter
     always_ff@(posedge clk or negedge rst_n) begin

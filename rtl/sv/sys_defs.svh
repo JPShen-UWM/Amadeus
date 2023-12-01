@@ -44,6 +44,7 @@
 `define IFMP_DATA_SIZE      8   // The data size in byte from compress fifo to global buffer
 `define MEM_BANDWIDTH       8   // The memory bandwidth in byte
 `define MEM_BATCH_SIZE      35
+`define MEM_ADDR_SIZE       16
 
 
 // struct
@@ -81,6 +82,11 @@ typedef struct packed {
     PE_IN_PACKET [11:0] diagonal_bus;
 } DIAGONAL_BUS_PACKET;
 
+typedef struct packer {
+    MEMORY_SOURCE mem_req_src;
+    logic [`MEM_ADDR_SIZE-1:0] addr;
+} MEM_REQ_PACKET;
+
 
 // enum
 typedef enum logic [1:0] {
@@ -102,6 +108,29 @@ typedef enum logic [1:0] {
     LAYER3,
     NULL
 } LAYER_TYPE;
+
+typedef enum logic[3:0] {
+    IDLE,
+    WEIGHT_LOAD,
+    WEIGHT_OUTPUT,
+    IFMAP_LOAD,
+    WAIT_TO_RESTART_CONV_P4, // if pe array just finish all conv, ifmap need to change to ifmap
+    WAIT_TO_RESTART_CONV_P3,
+    WAIT_TO_RESTART_CONV_P2,
+    WAIT_TO_RESTART_CONV_P1,
+    WAIT_TO_RESTART_CONV;
+    PE_CONV_MODE1,
+    PE_CONV_MODE2,
+    PE_CONV_MODE3,
+    PE_CONV_MODE4,
+    COMPLETE
+} CONTROL_STATE;
+
+typedef enum logic[1:0] {
+    DECOMPRESSOR  = 2'b00,
+    WEIGHT_BUFFER = 2'b01,
+    COMPRESSOR    = 2'b10
+} MEMORY_SOURCE;
 
 
 `endif // __SYS_DEFS_VH__

@@ -1,13 +1,14 @@
 module decompressor(
     input clk,
     input rst_n,
-    input global_buffer_req,
+    input start, // from controller (TO DO: maybe in global buffer)
+    input ifmap_buffer_req,
     input [`MEM_BANDWIDTH*8-1:0] mem_data,
     input mem_data_valid,
     input mem_ack, // if decompressor issue a mem_req, in the same cycle if memory bandwidth is available, it will return a mem_ack
-    input start, // from controller (TO DO: maybe in global buffer)
     input LAYER_TYPE layer_type_in,
-    output decompressor_ack,
+
+    output decompressor_ack, // decompressor can give valid data
     output mem_req, // assert when compress fifo can receive data from memory
     output DECOMRPESS_FIFO_PACKET decompress_fifo_packet
 );
@@ -37,7 +38,7 @@ module decompressor(
             enable <= 1'b1;
         end
     end
-    
+
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
             layer_type <= NULL;
@@ -72,8 +73,8 @@ module decompressor(
     // This is the data fifo for buffering the data from memory,
     // The fifo has 16 entry which each entry has 64 bits
     // The fifo has two group of control logic
-    // 1. control logic for layer1, if global_buffer_req assert, it will read one entry from data fifo
-    // 2, control logic for layer2 and layer3, if global_buffer_req assert, it will read base on the decompress_reult
+    // 1. control logic for layer1, if ifmap_buffer_req assert, it will read one entry from data fifo
+    // 2, control logic for layer2 and layer3, if ifmap_buffer_req assert, it will read base on the decompress_reult
     logic [DATA_FIFO_DEPTH-1:0][7:0] data_fifo;
     logic fetch;
 
@@ -100,7 +101,7 @@ module decompressor(
 
     assign data_fifo_layer1_empty = layer1_data_fifo_read_ptr == layer1_data_fifo_write_ptr;
     assign fetch_full_layer1 = (data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)] != layer1_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)]) && (data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)-1:0] == layer1_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)-1:0]);
-    assign layer1_handshake = !data_fifo_layer1_empty && global_buffer_req;
+    assign layer1_handshake = !data_fifo_layer1_empty && ifmap_buffer_req;
 
     // control logic for layer1
     always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
@@ -202,7 +203,7 @@ module decompressor(
     logic [6:0] layer23_fifo_packet_enqueue_num; // The number of byte which send from aligned_data to fifo_packet
 
     assign data_fifo_layer23_empty = layer23_data_fifo_read_ptr == data_fifo_write_ptr;
-    assign layer23_stall = layer23_fifo_packet.packet_valid & !global_buffer_req;
+    assign layer23_stall = layer23_fifo_packet.packet_valid & !ifmap_buffer_req;
 
     assign layer23_aligned_data_valid_group[0] = (layer23_data_fifo_read_ptr != data_fifo_write_ptr);
     assign layer23_aligned_data_valid_group[1] = ((layer23_data_fifo_read_ptr + 1) != data_fifo_write_ptr) & layer23_aligned_data_valid_group[0];
@@ -398,7 +399,7 @@ module decompressor(
 
     /// Output of Decompressor
     assign decompressor_ack = decompress_fifo_packet.packet_valid;
-    assign mem_req = fetch_layer1 | fetch_layer23;
+    assign mem_req = (fetch_layer1 | fetch_layer23) & enable;
     assign decompress_fifo_packet = (layer_type == LAYER1) ? layer1_fifo_packet : layer23_fifo_packet;
 
 endmodule
