@@ -6,7 +6,8 @@ module ifmap_buffer(
     input DECOMRPESS_FIFO_PACKET decompressed_fifo_packet,
     input decompressor_ack,
     input free_ifmap_buffer, // from controller, means this memory batch will not be used anymore need to free this memory batch
-    output global_buffer_req,
+
+    output ifmap_buffer_req,
     output logic [34:0][256*8-1:0] ifmap_data,
     output ifmap_data_valid,
     output ifmap_data_change // send to controller, represent ifmap data is ready for a new conv, used for handshake to start the new start_conv
@@ -134,7 +135,7 @@ module ifmap_buffer(
         .output(valid_element_count)
     );
 
-    assign global_buffer_decompressor_handshake = global_buffer_req & decompressor_ack;
+    assign global_buffer_decompressor_handshake = ifmap_buffer_req & decompressor_ack;
 
     /// write ptr logic ///
     // set the upper counter limit according to different layer
@@ -230,7 +231,7 @@ module ifmap_buffer(
     end
 
     /// output ///
-    assign global_buffer_req = |(chosen_enqueue & ~ready) & ~stop_req & ~(|free); // in free cycle, need to send the top 7 line of dequeue memory batch to enqueue memory batch
+    assign ifmap_buffer_req = |(chosen_enqueue & ~ready) & ~stop_req & ~(|free); // in free cycle, need to send the top 7 line of dequeue memory batch to enqueue memory batch
     assign ifmap_data = chosen_dequeue[0] ? memory_batch1 :
                         chosen_dequeue[1] ? memory_batch2 :
                                             '0;
