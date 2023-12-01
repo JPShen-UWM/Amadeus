@@ -1,7 +1,8 @@
 module weight_buffer(
     input            clk,
     input            rst_n,
-    input OP_MODE mode_in,           // mode selection
+    input OP_MODE mode_in,// mode selection
+    input start_load,           
     input mem_data_valid,
     input [63:0] weight_data,//8bytes one cycle frome memory
     //add start signal to tell WB output the filter
@@ -9,15 +10,16 @@ module weight_buffer(
     //from controller
     input free_weight_buffer,
     //to memory
-    output logic mem_req,//need data or not
+    output logic mem_req_delay,//need data or not
     // to controller
-    output logic ready_to_output,//buffer is full ready to output
+    output logic ready_to_output_delay,//buffer is full ready to output
     //to pe
-
-    output PE_IN_PACKET packet_out[0:5]//line6
+    output logic finish_output_delay,
+    output PE_IN_PACKET packet_out_delay[0:5]//line6
 );
+    logic mem_req,ready_to_output;
+    PE_IN_PACKET packet_out[0:5];
     // localparam buffer_maxrow_idx=`L1_FILTER_SIZE*`MULT_OUT_SIZE;//44*11*8bits
-    logic mem_req_comb,ready_to_output_comb;
     logic [5:0] row_idx;        
     logic  cycle_count;    
     OP_MODE cur_mode;
@@ -31,7 +33,7 @@ module weight_buffer(
         row_idx<=0;
         cycle_count<=0;
         end
-        else if(mem_data_valid&&mem_req) begin
+        else if(mem_data_valid&&mem_req&&start_load) begin
             case (cur_mode)
             MODE1,MODE2: begin // mode1 ? mode2
                     cycle_count <= cycle_count+1;
@@ -48,48 +50,51 @@ module weight_buffer(
     end
 ////mem_req set and ready to output set
     always_comb begin
+        if(!start_load)begin
+        mem_req=0;
+        ready_to_output=0;
+        end
+        else begin
+
         case (cur_mode)
                 MODE1,MODE2: begin                 
-                    if (row_idx>43) begin
-                        mem_req_comb=0;
-                        ready_to_output_comb=1;
+                    if (row_idx==43&&cycle_count==1) begin
+                        mem_req=0;
+                        ready_to_output=1;
                     end
                     else begin
-                        mem_req_comb=1;
-                        ready_to_output_comb=0;
+                        mem_req=1;
+                        ready_to_output=0;
                     end
                 end
                 MODE3: begin 
-                    if (row_idx>19) begin
-                        mem_req_comb=0;
-                        ready_to_output_comb=1;
+                    if (row_idx==19&&cycle_count==1) begin
+                        mem_req=0;
+                        ready_to_output=1;
                     end
                     else begin
-                        mem_req_comb=1;
-                        ready_to_output_comb=0;
+                        mem_req=1;
+                        ready_to_output=0;
                     end
                 end
                 MODE4: begin 
-                    if (row_idx>11) begin
-                        mem_req_comb=0;
-                        ready_to_output_comb=1;
+                    if (row_idx==11&&cycle_count==1) begin
+                        mem_req=0;
+                        ready_to_output=1;
                     end
                     else begin
-                        mem_req_comb=1;
-                        ready_to_output_comb=0;
+                        mem_req=1;
+                        ready_to_output=0;
                     end
                 end
             endcase
-    end
-     always_ff@(posedge clk) begin
-        if(rst_n||free_weight_buffer)begin
-            mem_req<=1;
-            ready_to_output<=0;
-        end else begin
-            mem_req<=mem_req_comb;
-            ready_to_output<=ready_to_output_comb;
         end
-     end
+    end
+      always_ff@(posedge clk) begin
+                            mem_req_delay<=mem_req;
+                        ready_to_output_delay<=ready_to_output;
+                        end
+
 ///buffer register file 
     localparam buffer_row_length=`WDATA_SIZE*`L1_FILTER_SIZE;
     logic [43:0][87:0] filter_ram;//4*11*11*8 multlayer*row*colunme*8bits data
@@ -98,7 +103,7 @@ module weight_buffer(
         if(rst_n||free_weight_buffer)begin
             filter_ram<='0;
         end
-        else if(mem_data_valid&&mem_req) begin
+        else if(mem_data_valid&&mem_req_delay&&start_load) begin
         case (cur_mode)
             MODE1,MODE2: begin 
              if (cycle_count == 0) begin
@@ -128,7 +133,7 @@ localparam [5:0] idx4 [5:0]={2,1,0,2,1,0};
             output_layer_idx<=0;
             output_cycle_counter<=0;
         end
-        else if(!output_finsih)begin
+        else if(!output_finsih_comb)begin
            if(output_cycle_counter==2) begin
             output_cycle_counter<=0;
             output_layer_idx<=output_layer_idx+1;
@@ -138,20 +143,16 @@ localparam [5:0] idx4 [5:0]={2,1,0,2,1,0};
     end
 assign output_finsih_comb=(output_layer_idx<3)? 0:(output_cycle_counter==2)? 1:0;
     always_ff@(posedge clk) begin
-        if(rst_n||!ready_to_output||!output_filter)begin
-            output_finsih<=0;
-        end
-        else begin
             output_finsih<=output_finsih_comb;
         end
-    end
+
  always_ff@(posedge clk) begin
-        if(rst_n||(!ready_to_output)||!(output_filter))begin
+        if(rst_n||(!ready_to_output)||(!output_filter)||(output_finsih))begin
             for (int i = 0; i < 6; i++) begin
                 packet_out[i]<='{default:0};
             end
         end
-        else if(!output_finsih)  begin
+        else if(!output_finsih_comb)  begin
         case (cur_mode)
             MODE1: begin 
                 if(output_cycle_counter==0)begin
@@ -253,6 +254,15 @@ assign output_finsih_comb=(output_layer_idx<3)? 0:(output_cycle_counter==2)? 1:0
             end
         endcase
         end
+    end
+    always_ff@(posedge clk) begin
+    finish_output_delay<=output_finsih;
+    packet_out_delay[0]<=packet_out[0];
+    packet_out_delay[1]<=packet_out[1];
+    packet_out_delay[2]<=packet_out[2];
+    packet_out_delay[3]<=packet_out[3];
+    packet_out_delay[4]<=packet_out[4];
+    packet_out_delay[5]<=packet_out[5];
     end
 
 endmodule

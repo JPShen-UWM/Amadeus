@@ -22,11 +22,10 @@ all:	simv
 # Modify starting here
 #####
 HEADERS = sv/sys_defs.svh
-
 TESTBENCH = testbench/wb_tb.sv
 SIMFILES = sv/weight_buffer.sv
+SYNFILES = weight_buffer.vg
 
-SYNFILES = pe.vg
 
 export HEADERS
 export SIMFILES
@@ -42,7 +41,7 @@ dve:	$(HEADERS) $(SIMFILES) $(TESTBENCH)
 
 .PHONY: dve
 
-$(SYNFILES): my_waveform_gen.sv tut_synth.tcl
+weight_buffer.vg: sv/weight_buffer.sv tut_synth.tcl
 	dc_shell-t -f tut_synth.tcl | tee synth.out
 
 syn_simv:	$(HEADERS) $(SYNFILES) $(TESTBENCH)
