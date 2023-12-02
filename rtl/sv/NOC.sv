@@ -7,6 +7,7 @@ module NOC(
     input LAYER_TYPE                layer_type_in,
     input OP_MODE                   mode_in,          // mode selection
     input                           conv_complete,
+    //
     input [34:0][256*8-1:0]         ifmap_data_in,
     input                           ifmap_data_valid_in,
     input [5:0][6:0]                pe_full,
@@ -258,7 +259,7 @@ module NOC(
     assign layer1_diagbus_pattern[29] = 12'b100000000000;
 
     // if current calculation is the 8th iteration for layer1, the 7th column of pe should be disable
-    assign layer1_is_last_iteration = complete_count > 5;
+    assign layer1_is_last_iteration = complete_count > 13;
     assign layer1_pe_full[0]  = pe_full[0][0];
     assign layer1_pe_full[1]  = pe_full[1][0];
     assign layer1_pe_full[2]  = pe_full[2][0];
@@ -380,8 +381,7 @@ module NOC(
     end
 
 
-    /*############################################# INPUT FEATURE MAP NOC LOGIC #############################################*/
 
+    /*############################################# PSUM NOC LOGIC #############################################*/
 
-    /*############################################# INPUT FEATURE MAP NOC LOGIC #############################################*/
 endmodule
