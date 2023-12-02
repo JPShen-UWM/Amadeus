@@ -21,6 +21,7 @@ module controller(
     input ifmap_data_change, // ifmap_data ready for doing next convolution
     // from memory
     input [MEM_BANDWIDTH*8-1:0:0] mem_data,
+    input mem_valid,
 
     // to noc, psum, pe
     output mode,
@@ -218,7 +219,8 @@ module controller(
         .clk(clk),
         .rst_n(rst_n & ~start),
         .wen(decompressor_mem_req | compressor_mem_req | weight_buffer_mem_req),
-        .ren()
+        .ren(mem_valid),
+        .data_in()
    );
 
    
