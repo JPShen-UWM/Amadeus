@@ -152,7 +152,7 @@ module controller(
 
     always_comb begin
         case(state)
-            IDLE                        : next_state = start                    ? WEIGHT_LOAD;
+            IDLE_C                      : next_state = start                    ? WEIGHT_LOAD;
             WEIGHT_LOAD                 : next_state = weight_load_finish       ? WEIGHT_OUTPUT : WEIGHT_LOAD;
             WEIGHT_OUTPUT               : next_state = weight_output_finish     ? (complete_count == 0  ? IFMAP_LOAD : WAIT_TO_RESTART_CONV_P4) : WEIGHT_OUTPUT;
             IFMAP_LOAD                  : next_state = ifmap_data_valid         ? conv_mode_state : IFMAP_LOAD;
@@ -165,7 +165,7 @@ module controller(
             WAIT_TO_RESTART_CONV_P2     : next_state = WAIT_TO_RESTART_CONV_P1;
             WAIT_TO_RESTART_CONV_P1     : next_state = WAIT_TO_RESTART_CONV;
             WAIT_TO_RESTART_CONV        : next_state = ifmap_data_valid         ? conv_mode_state : WAIT_TO_RESTART_CONV;
-            COMPLETE                    : next_state = IDLE;
+            COMPLETE                    : next_state = IDLE_C;
         endcase
     end
 
