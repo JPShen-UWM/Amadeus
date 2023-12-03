@@ -8,7 +8,7 @@ module ASSERT_NEVER_IMM #(
 `ifndef ASSERT_NEVER_IMM_DIS
     always@(*) begin
         if(en) begin
-            assert #0 (~expr) else $error("ASSERT_NEVER_IMM: ",MSG);
+            assert (~expr) else $error("ASSERT_NEVER_IMM: ",MSG);
         end
     end
 `endif

@@ -1,0 +1,393 @@
+SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define sv/sys_defs.svh testbench/decompressor_tb.sv sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv  primitive/assert_never_imm.sv primitive/assert_always.sv primitive/assert_cond.sv primitive/assert_never.sv primitive/assert_onehot.sv -o simv | tee simv.log
+                         Chronologic VCS (TM)
+      Version R-2020.12-SP2-1_Full64 -- Sun Dec  3 17:10:05 2023
+
+                    Copyright (c) 1991 - 2021 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+
+Warning-[UNK_COMP_ARG] Unknown compile time plus argument used
+  Unknown compile time plus argument 'define' is ignored.
+
+ + use `+plusarg_save' to bind in runtime plusargs;
+ + use `+plusarg_ignore' to suppress this message.
+Parsing design file 'sv/sys_defs.svh'
+Parsing design file 'testbench/decompressor_tb.sv'
+Parsing included file 'testbench/decompressor_tb_lib.svh'.
+Parsing included file 'sv/sys_defs.svh'.
+Back to file 'testbench/decompressor_tb_lib.svh'.
+Back to file 'testbench/decompressor_tb.sv'.
+Parsing design file 'sv/decompressor.sv'
+Parsing design file 'sv/countones.sv'
+Parsing design file 'sv/priority_encoder.sv'
+Parsing design file 'primitive/assert_never_imm.sv'
+Parsing design file 'primitive/assert_always.sv'
+Parsing design file 'primitive/assert_cond.sv'
+Parsing design file 'primitive/assert_never.sv'
+Parsing design file 'primitive/assert_onehot.sv'
+Top Level Modules:
+       decompressor_tb
+       countones
+       ASSERT_NEVER_IMM
+       ASSERT_ALWAYS
+       ASSERT_COND
+       ASSERT_NEVER
+       ASSERT_ONEHOT
+TimeScale is 1 ns / 100 ps
+Starting vcs inline pass...
+
+7 modules and 0 UDP read.
+recompiling module decompressor_tb
+	However, due to incremental compilation, only 1 module needs to be compiled. 
+make[1]: Entering directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+make[1]: Leaving directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+make[1]: Entering directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+ld -shared  -Bsymbolic --no-relax  -o .//../simv.daidir//_cuarc0.so objs/amcQw_d.o 
+rm -f _cuarc0.so
+if [ -x ../simv ]; then chmod a-x ../simv; fi
+g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/usr/caen/vcs-2020.12-SP2-1/linux64/lib -L/usr/caen/vcs-2020.12-SP2-1/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1     _1815652_archive_1.so _prev_archive_1.so _cuarc0.so  SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o           -lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive        _vcs_pli_stub_.o   /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_save_restore_new.o -ldl  -lc -lm -lpthread -ldl 
+../simv up to date
+make[1]: Leaving directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+CPU time: .548 seconds to compile + .332 seconds to elab + .303 seconds to link
+./simv | tee program.out
+Chronologic VCS simulator copyright 1991-2020
+Contains Synopsys proprietary information.
+Compiler version R-2020.12-SP2-1_Full64; Runtime version R-2020.12-SP2-1_Full64;  Dec  3 17:10 2023
+============================  IFMAP DATA ============================
+108  76 159 151 227   0 121 235 242  25 140   0 130 
+  0 224 225  11   0 103 248 234 175 244 180   0 234 
+ 51   0 236  59  95  91   0  21  80   0 135 110   0 
+174  56  55 199  64 142 244  99   0 250  92 137  24 
+ 55  89  81   0   0 174 208   0   0 212   0  27 236 
+238 130 103   0   0 140   0 186 171 183   0   0  61 
+  0 132   0 218   0  17 102  54  84  76   0 136   0 
+192   0 174 140  21 168 247  51 105   0   0 175  50 
+163   0   0 197   0 196 215 229  88   4 196 171   0 
+105 121   0 253 147   0 222   0 135   0   0   0 153 
+ 89  36 134   0 128 122   0 116   0  64 137  23   0 
+172 216 104  22 204 125   0   0   0   0   6   0  61 
+ 83 247  27  84 104   0   0  23   0   0   0 136   0 
+============================  IFMAP COMPRESSED DATA ============================
+status bits = fe309709f04c06c0
+zero =                    0, val =                  108
+zero =                    0, val =                   76
+zero =                    0, val =                  159
+zero =                    0, val =                  151
+zero =                    0, val =                  227
+status bits = 1111
+status bits = f8c0190f20eb0791
+zero =                    1, val =                  121
+zero =                    0, val =                  235
+zero =                    0, val =                  242
+zero =                    0, val =                   25
+zero =                    0, val =                  140
+status bits = 1111
+status bits = f6710b0e10e01821
+zero =                    1, val =                  130
+zero =                    1, val =                  224
+zero =                    0, val =                  225
+zero =                    0, val =                   11
+zero =                    1, val =                  103
+status bits = 1111
+status bits = fb40f40af0ea0f80
+zero =                    0, val =                  248
+zero =                    0, val =                  234
+zero =                    0, val =                  175
+zero =                    0, val =                  244
+zero =                    0, val =                  180
+status bits = 1111
+status bits = f5f03b0ec1330ea1
+zero =                    1, val =                  234
+zero =                    0, val =                   51
+zero =                    1, val =                  236
+zero =                    0, val =                   59
+zero =                    0, val =                   95
+status bits = 1111
+status bits = f6e08715001515b0
+zero =                    0, val =                   91
+zero =                    1, val =                   21
+zero =                    0, val =                   80
+zero =                    1, val =                  135
+zero =                    0, val =                  110
+status bits = 1111
+status bits = f400c70370380ae1
+zero =                    1, val =                  174
+zero =                    0, val =                   56
+zero =                    0, val =                   55
+zero =                    0, val =                  199
+zero =                    0, val =                   64
+status bits = 1111
+status bits = f5c0fa1630f408e0
+zero =                    0, val =                  142
+zero =                    0, val =                  244
+zero =                    0, val =                   99
+zero =                    1, val =                  250
+zero =                    0, val =                   92
+status bits = 1111
+status bits = f510590370180890
+zero =                    0, val =                  137
+zero =                    0, val =                   24
+zero =                    0, val =                   55
+zero =                    0, val =                   89
+zero =                    0, val =                   81
+status bits = 1111
+status bits = fec01b1d42d00ae2
+zero =                    2, val =                  174
+zero =                    0, val =                  208
+zero =                    2, val =                  212
+zero =                    1, val =                   27
+zero =                    0, val =                  236
+status bits = 1111
+status bits = fba18c2670820ee0
+zero =                    0, val =                  238
+zero =                    0, val =                  130
+zero =                    0, val =                  103
+zero =                    2, val =                  140
+zero =                    1, val =                  186
+status bits = 1111
+status bits = fda18413d2b70ab0
+zero =                    0, val =                  171
+zero =                    0, val =                  183
+zero =                    2, val =                   61
+zero =                    1, val =                  132
+zero =                    1, val =                  218
+status bits = 1111
+status bits = f4c0540360660111
+zero =                    1, val =                   17
+zero =                    0, val =                  102
+zero =                    0, val =                   54
+zero =                    0, val =                   84
+zero =                    0, val =                   76
+status bits = 1111
+status bits = f1508c0ae1c01881
+zero =                    1, val =                  136
+zero =                    1, val =                  192
+zero =                    1, val =                  174
+zero =                    0, val =                  140
+zero =                    0, val =                   21
+status bits = 1111
+status bits = faf2690330f70a80
+zero =                    0, val =                  168
+zero =                    0, val =                  247
+zero =                    0, val =                   51
+zero =                    0, val =                  105
+zero =                    2, val =                  175
+status bits = 1111
+status bits = fd70c41c52a30320
+zero =                    0, val =                   50
+zero =                    0, val =                  163
+zero =                    2, val =                  197
+zero =                    1, val =                  196
+zero =                    0, val =                  215
+status bits = 1111
+status bits = fab0c40040580e50
+zero =                    0, val =                  229
+zero =                    0, val =                   88
+zero =                    0, val =                    4
+zero =                    0, val =                  196
+zero =                    0, val =                  171
+status bits = 1111
+status bits = fde1930fd1790691
+zero =                    1, val =                  105
+zero =                    0, val =                  121
+zero =                    1, val =                  253
+zero =                    0, val =                  147
+zero =                    1, val =                  222
+status bits = 1111
+status bits = f860240590993871
+zero =                    1, val =                  135
+zero =                    3, val =                  153
+zero =                    0, val =                   89
+zero =                    0, val =                   36
+zero =                    0, val =                  134
+status bits = 1111
+status bits = f8904017417a0801
+zero =                    1, val =                  128
+zero =                    0, val =                  122
+zero =                    1, val =                  116
+zero =                    1, val =                   64
+zero =                    0, val =                  137
+status bits = 1111
+status bits = f160680d80ac1170
+zero =                    0, val =                   23
+zero =                    1, val =                  172
+zero =                    0, val =                  216
+zero =                    0, val =                  104
+zero =                    0, val =                   22
+status bits = 1111
+status bits = f5303d10647d0cc0
+zero =                    0, val =                  204
+zero =                    0, val =                  125
+zero =                    4, val =                    6
+zero =                    1, val =                   61
+zero =                    0, val =                   83
+status bits = 1111
+status bits = f1726805401b0f70
+zero =                    0, val =                  247
+zero =                    0, val =                   27
+zero =                    0, val =                   84
+zero =                    0, val =                  104
+zero =                    2, val =                   23
+status bits = 1111
+status bits = 1000000000001883
+zero =                    3, val =                  136
+zero =                    1, val =                    0
+zero =                    0, val =                    0
+zero =                    0, val =                    0
+zero =                    0, val =                    0
+status bits = 0001
+decompressor size is not equal
+data mismatch : ifmap_data_golden[         16] =  11, decompressor_out[         16] =   0
+data mismatch : ifmap_data_golden[         17] =   0, decompressor_out[         17] =  21
+data mismatch : ifmap_data_golden[         18] = 103, decompressor_out[         18] =  80
+data mismatch : ifmap_data_golden[         19] = 248, decompressor_out[         19] =   0
+data mismatch : ifmap_data_golden[         20] = 234, decompressor_out[         20] = 135
+data mismatch : ifmap_data_golden[         21] = 175, decompressor_out[         21] = 110
+data mismatch : ifmap_data_golden[         22] = 244, decompressor_out[         22] =   0
+data mismatch : ifmap_data_golden[         23] = 180, decompressor_out[         23] = 174
+data mismatch : ifmap_data_golden[         24] =   0, decompressor_out[         24] =  56
+data mismatch : ifmap_data_golden[         25] = 234, decompressor_out[         25] =  55
+data mismatch : ifmap_data_golden[         26] =  51, decompressor_out[         26] = 199
+data mismatch : ifmap_data_golden[         27] =   0, decompressor_out[         27] =  64
+data mismatch : ifmap_data_golden[         28] = 236, decompressor_out[         28] = 142
+data mismatch : ifmap_data_golden[         29] =  59, decompressor_out[         29] = 244
+data mismatch : ifmap_data_golden[         30] =  95, decompressor_out[         30] =  99
+data mismatch : ifmap_data_golden[         31] =  91, decompressor_out[         31] =   0
+data mismatch : ifmap_data_golden[         32] =   0, decompressor_out[         32] = 250
+data mismatch : ifmap_data_golden[         33] =  21, decompressor_out[         33] =  92
+data mismatch : ifmap_data_golden[         34] =  80, decompressor_out[         34] = 137
+data mismatch : ifmap_data_golden[         35] =   0, decompressor_out[         35] =  24
+data mismatch : ifmap_data_golden[         36] = 135, decompressor_out[         36] =  55
+data mismatch : ifmap_data_golden[         37] = 110, decompressor_out[         37] =  89
+data mismatch : ifmap_data_golden[         38] =   0, decompressor_out[         38] =  81
+data mismatch : ifmap_data_golden[         39] = 174, decompressor_out[         39] =   0
+data mismatch : ifmap_data_golden[         40] =  56, decompressor_out[         40] =   0
+data mismatch : ifmap_data_golden[         41] =  55, decompressor_out[         41] = 174
+data mismatch : ifmap_data_golden[         42] = 199, decompressor_out[         42] = 208
+data mismatch : ifmap_data_golden[         43] =  64, decompressor_out[         43] =   0
+data mismatch : ifmap_data_golden[         44] = 142, decompressor_out[         44] =   0
+data mismatch : ifmap_data_golden[         45] = 244, decompressor_out[         45] = 212
+data mismatch : ifmap_data_golden[         46] =  99, decompressor_out[         46] =   0
+data mismatch : ifmap_data_golden[         47] =   0, decompressor_out[         47] =  27
+data mismatch : ifmap_data_golden[         48] = 250, decompressor_out[         48] = 236
+data mismatch : ifmap_data_golden[         49] =  92, decompressor_out[         49] = 238
+data mismatch : ifmap_data_golden[         50] = 137, decompressor_out[         50] = 130
+data mismatch : ifmap_data_golden[         51] =  24, decompressor_out[         51] = 103
+data mismatch : ifmap_data_golden[         52] =  55, decompressor_out[         52] =   0
+data mismatch : ifmap_data_golden[         53] =  89, decompressor_out[         53] =   0
+data mismatch : ifmap_data_golden[         54] =  81, decompressor_out[         54] = 140
+data mismatch : ifmap_data_golden[         56] =   0, decompressor_out[         56] = 186
+data mismatch : ifmap_data_golden[         57] = 174, decompressor_out[         57] = 171
+data mismatch : ifmap_data_golden[         58] = 208, decompressor_out[         58] = 183
+data mismatch : ifmap_data_golden[         61] = 212, decompressor_out[         61] =  61
+data mismatch : ifmap_data_golden[         63] =  27, decompressor_out[         63] = 132
+data mismatch : ifmap_data_golden[         64] = 236, decompressor_out[         64] =   0
+data mismatch : ifmap_data_golden[         65] = 238, decompressor_out[         65] = 218
+data mismatch : ifmap_data_golden[         66] = 130, decompressor_out[         66] =   0
+data mismatch : ifmap_data_golden[         67] = 103, decompressor_out[         67] =  17
+data mismatch : ifmap_data_golden[         68] =   0, decompressor_out[         68] = 102
+data mismatch : ifmap_data_golden[         69] =   0, decompressor_out[         69] =  54
+data mismatch : ifmap_data_golden[         70] = 140, decompressor_out[         70] =  84
+data mismatch : ifmap_data_golden[         71] =   0, decompressor_out[         71] =  76
+data mismatch : ifmap_data_golden[         72] = 186, decompressor_out[         72] =   0
+data mismatch : ifmap_data_golden[         73] = 171, decompressor_out[         73] = 136
+data mismatch : ifmap_data_golden[         74] = 183, decompressor_out[         74] =   0
+data mismatch : ifmap_data_golden[         75] =   0, decompressor_out[         75] = 192
+data mismatch : ifmap_data_golden[         77] =  61, decompressor_out[         77] = 174
+data mismatch : ifmap_data_golden[         78] =   0, decompressor_out[         78] = 140
+data mismatch : ifmap_data_golden[         79] = 132, decompressor_out[         79] =  21
+data mismatch : ifmap_data_golden[         80] =   0, decompressor_out[         80] = 168
+data mismatch : ifmap_data_golden[         81] = 218, decompressor_out[         81] = 247
+data mismatch : ifmap_data_golden[         82] =   0, decompressor_out[         82] =  51
+data mismatch : ifmap_data_golden[         83] =  17, decompressor_out[         83] = 105
+data mismatch : ifmap_data_golden[         84] = 102, decompressor_out[         84] =   0
+data mismatch : ifmap_data_golden[         85] =  54, decompressor_out[         85] =   0
+data mismatch : ifmap_data_golden[         86] =  84, decompressor_out[         86] = 175
+data mismatch : ifmap_data_golden[         87] =  76, decompressor_out[         87] =  50
+data mismatch : ifmap_data_golden[         89] = 136, decompressor_out[         89] =   0
+data mismatch : ifmap_data_golden[         91] = 192, decompressor_out[         91] =   0
+data mismatch : ifmap_data_golden[         93] = 174, decompressor_out[         93] =   0
+data mismatch : ifmap_data_golden[         94] = 140, decompressor_out[         94] =   0
+data mismatch : ifmap_data_golden[         95] =  21, decompressor_out[         95] =   0
+data mismatch : ifmap_data_golden[         96] = 168, decompressor_out[         96] =   0
+data mismatch : ifmap_data_golden[         97] = 247, decompressor_out[         97] =   0
+data mismatch : ifmap_data_golden[         98] =  51, decompressor_out[         98] =   0
+data mismatch : ifmap_data_golden[         99] = 105, decompressor_out[         99] =   0
+data mismatch : ifmap_data_golden[        102] = 175, decompressor_out[        102] =   0
+data mismatch : ifmap_data_golden[        103] =  50, decompressor_out[        103] =   0
+data mismatch : ifmap_data_golden[        104] = 163, decompressor_out[        104] =   0
+data mismatch : ifmap_data_golden[        107] = 197, decompressor_out[        107] =   0
+data mismatch : ifmap_data_golden[        109] = 196, decompressor_out[        109] =   0
+data mismatch : ifmap_data_golden[        110] = 215, decompressor_out[        110] =   0
+data mismatch : ifmap_data_golden[        111] = 229, decompressor_out[        111] =   0
+data mismatch : ifmap_data_golden[        112] =  88, decompressor_out[        112] =   0
+data mismatch : ifmap_data_golden[        113] =   4, decompressor_out[        113] =   0
+data mismatch : ifmap_data_golden[        114] = 196, decompressor_out[        114] =   0
+data mismatch : ifmap_data_golden[        115] = 171, decompressor_out[        115] =   0
+data mismatch : ifmap_data_golden[        117] = 105, decompressor_out[        117] =   0
+data mismatch : ifmap_data_golden[        118] = 121, decompressor_out[        118] =   0
+data mismatch : ifmap_data_golden[        120] = 253, decompressor_out[        120] =   0
+data mismatch : ifmap_data_golden[        121] = 147, decompressor_out[        121] =   0
+data mismatch : ifmap_data_golden[        123] = 222, decompressor_out[        123] =   0
+data mismatch : ifmap_data_golden[        125] = 135, decompressor_out[        125] =   0
+data mismatch : ifmap_data_golden[        129] = 153, decompressor_out[        129] =   0
+data mismatch : ifmap_data_golden[        130] =  89, decompressor_out[        130] =   0
+data mismatch : ifmap_data_golden[        131] =  36, decompressor_out[        131] =   0
+data mismatch : ifmap_data_golden[        132] = 134, decompressor_out[        132] =   0
+data mismatch : ifmap_data_golden[        134] = 128, decompressor_out[        134] =   0
+data mismatch : ifmap_data_golden[        135] = 122, decompressor_out[        135] =   0
+data mismatch : ifmap_data_golden[        137] = 116, decompressor_out[        137] =   0
+data mismatch : ifmap_data_golden[        139] =  64, decompressor_out[        139] =   0
+data mismatch : ifmap_data_golden[        140] = 137, decompressor_out[        140] =   0
+data mismatch : ifmap_data_golden[        141] =  23, decompressor_out[        141] =   0
+data mismatch : ifmap_data_golden[        143] = 172, decompressor_out[        143] =   0
+data mismatch : ifmap_data_golden[        144] = 216, decompressor_out[        144] =   0
+data mismatch : ifmap_data_golden[        145] = 104, decompressor_out[        145] =   0
+data mismatch : ifmap_data_golden[        146] =  22, decompressor_out[        146] =   0
+data mismatch : ifmap_data_golden[        147] = 204, decompressor_out[        147] =   0
+data mismatch : ifmap_data_golden[        148] = 125, decompressor_out[        148] =   0
+data mismatch : ifmap_data_golden[        153] =   6, decompressor_out[        153] =   0
+data mismatch : ifmap_data_golden[        155] =  61, decompressor_out[        155] =   0
+data mismatch : ifmap_data_golden[        156] =  83, decompressor_out[        156] =   0
+data mismatch : ifmap_data_golden[        157] = 247, decompressor_out[        157] =   0
+data mismatch : ifmap_data_golden[        158] =  27, decompressor_out[        158] =   0
+data mismatch : ifmap_data_golden[        159] =  84, decompressor_out[        159] =   0
+data mismatch : ifmap_data_golden[        160] = 104, decompressor_out[        160] =   0
+data mismatch : ifmap_data_golden[        163] =  23, decompressor_out[        163] =   0
+data mismatch : ifmap_data_golden[        167] = 136, decompressor_out[        167] =   0
+==================================================
+==================== TEST FAIL ===================
+==================================================
+============================  DECOMPRESSED DATA ============================
+108  76 159 151 227   0 121 235 242  25 140   0 130 
+  0 224 225   0  21  80   0 135 110   0 174  56  55 
+199  64 142 244  99   0 250  92 137  24  55  89  81 
+  0   0 174 208   0   0 212   0  27 236 238 130 103 
+  0   0 140   0 186 171 183   0   0  61   0 132   0 
+218   0  17 102  54  84  76   0 136   0 192   0 174 
+140  21 168 247  51 105   0   0 175  50 
+
+
+108  76 159 151 227   0 121 235 242  25 140   0 130 
+  0 224 225  11   0 103 248 234 175 244 180   0 234 
+ 51   0 236  59  95  91   0  21  80   0 135 110   0 
+174  56  55 199  64 142 244  99   0 250  92 137  24 
+ 55  89  81   0   0 174 208   0   0 212   0  27 236 
+238 130 103   0   0 140   0 186 171 183   0   0  61 
+  0 132   0 218   0  17 102  54  84  76   0 136   0 
+192   0 174 140  21 168 247  51 105   0   0 175  50 
+163   0   0 197   0 196 215 229  88   4 196 171   0 
+105 121   0 253 147   0 222   0 135   0   0   0 153 
+ 89  36 134   0 128 122   0 116   0  64 137  23   0 
+172 216 104  22 204 125   0   0   0   0   6   0  61 
+ 83 247  27  84 104   0   0  23   0   0   0 136   0 
+$finish called from file "testbench/decompressor_tb.sv", line 120.
+$finish at simulation time               201700
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 20170000 ps
+CPU Time:      0.340 seconds;       Data structure size:   0.0Mb
+Sun Dec  3 17:10:09 2023
