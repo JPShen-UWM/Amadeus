@@ -15,17 +15,17 @@ class IFMAP_GENERATION;
     constraint layer2 {
         ifmap_data.size() == 729;
         foreach(ifmap_data[i]){
-            ifmap_data[i] dist {0:/7, [1:255] :/3};
+            ifmap_data[i] dist {0:/6, [1:255] :/3};
         }
     };
     constraint layer3 {
         ifmap_data.size() == 169;
         foreach(ifmap_data[i]){
-            ifmap_data[i] dist {0:/3, [1:255] :/7};
+            ifmap_data[i] dist {0:/8, [1:255] :/2};
         }
     };
     constraint last_num {
-        ifmap_data[ifmap_data.size()-1] dist {0:/1, 1:/1};
+        ifmap_data[ifmap_data.size()-1] dist {0:/1, [1:255]:/1};
     }
 
     function new(LAYER_TYPE layer_type);
@@ -41,7 +41,7 @@ class IFMAP_GENERATION;
         end
     endfunction
 
-    function void compress();
+    function void compress_data_layer23();
         bit [63:0] compressed_data;
         bit [3:0] zero_num;
         int group_num = 0;
@@ -79,6 +79,44 @@ class IFMAP_GENERATION;
             end
             compressed_data_set.push_back(compressed_data);
         end
+        else if(zero_num != 0) begin
+            compressed_data[62:60] = 0;
+            compressed_data[63] = 1'b0;
+            compressed_data[3:0] = zero_num;
+            compressed_data_set.push_back(compressed_data);
+        end
+    endfunction
+
+    function void compress_data_layer1();
+        int col = 0;
+        bit [63:0] data_element = 0;
+        this.compressed_data_set.delete();
+        for(int i = 0; i < ifmap_data.size(); i++) begin
+            data_element = {ifmap_data[i], data_element[63:8]};
+            if(col % 8 == 7) begin
+                compressed_data_set.push_back(data_element);
+                data_element = 0;
+            end
+            else if((col+1) == 227) begin
+                data_element = {40'b0,data_element[63:40]};
+                compressed_data_set.push_back(data_element);
+                data_element = 0;
+                col = 0;
+                continue;
+            end
+            col = col+1;
+        end
+    endfunction
+
+    function void compressed_data_set_gen();
+        if(layer_type == LAYER1) begin
+            compress_data_layer1();
+            //display_decompressed_layer1();
+        end
+        else begin
+            compress_data_layer23();
+            //display_decompressed_layer23();
+        end
     endfunction
 
     function void display_raw();
@@ -91,10 +129,10 @@ class IFMAP_GENERATION;
         end
     endfunction
 
-    function void display_decompressed();
+    function void display_decompressed_layer23();
         $display("============================  IFMAP COMPRESSED DATA ============================");
         for(int i = 0; i < compressed_data_set.size(); i=i+1) begin
-            $display("status bits = %h",compressed_data_set[i]);
+            $display("hex = %h",compressed_data_set[i]);
             for(int j = 0; j < 5; j=j+1) begin
                 $write("zero = %d, val = %d\n",(compressed_data_set[i] >> j*12) & 4'b1111,(compressed_data_set[i] >> (j*12+4)) & 8'b11111111);
             end
@@ -102,8 +140,20 @@ class IFMAP_GENERATION;
         end
     endfunction
 
+    function void display_decompressed_layer1();
+        $display("============================  LAYER1 IFMAP DATA ============================");
+        for(int i = 0; i < compressed_data_set.size(); i=i+1) begin
+            for(int j = 0; j < size+3; j=j+1) begin
+                $write("%h ",compressed_data_set[i]);
+            end
+            $write("\n");
+        end
+    endfunction
+
     function void pre_randomize();
-        this.srandom($urandom);
+        int seed = $urandom;
+        this.srandom(760753352); //-305490073
+        $display(seed);
         if(layer_type == LAYER1) begin
             this.layer2.constraint_mode(0);
             this.layer3.constraint_mode(0);
@@ -121,37 +171,57 @@ endclass
 
 
 class STIMULUS;
-    bit [63:0] compressed_data_set [$];
+    bit [63:0] data_set [$];
     rand bit ifmap_buffer_req;
     rand bit mem_data_valid;
     rand bit mem_ack;
     logic [`MEM_BANDWIDTH*8-1:0] mem_data;
+    bit [6:0] mem_req_count;
 
     bit [30:0] index;
 
-    function new( bit [63:0] compressed_data_set [$]);
-        this.compressed_data_set = compressed_data_set;
+    function new( bit [63:0] data_set [$]);
+        this.data_set = data_set;
         this.index = 0;
         this.mem_data_valid = 0;
         this.mem_ack = 0;
         this.ifmap_buffer_req = 0;
+        this.mem_req_count = 0;
+    endfunction
+
+    function void reset();
+        this.index = 0;
+        this.mem_data_valid = 0;
+        this.mem_ack = 0;
+        this.ifmap_buffer_req = 0;
+        this.mem_req_count = 0;
     endfunction
 
     constraint req_ack{
-        ifmap_buffer_req dist {1:=7, 0:=1};
-        mem_ack dist {1:= 9, 0:=1};
+        ifmap_buffer_req dist {1:=9, 0:=1};
+        mem_ack dist {1:= 8, 0:=1};
     };
 
     constraint mem_valid{
-        mem_data_valid dist {1:=8, 0:=1};
-        (index >= compressed_data_set.size()) -> (mem_data_valid == 0);
+        mem_data_valid dist {1:=9, 0:=1};
+        (index >= data_set.size()) -> (mem_data_valid == 0);
     };
 
+    function void update_mem_count(bit mem_req, bit mem_ack);
+        if(mem_req & mem_ack) begin
+            mem_req_count = mem_req_count + 1;
+        end
+    endfunction
+
     function void post_randomize();
-        mem_data = compressed_data_set[index];
+        mem_data = data_set[index];
+        if(mem_req_count < 2) begin
+            mem_data_valid = 1'b0;
+        end
         if(mem_data_valid == 1'b1) begin
             index = index + 1'b1;
         end
+        mem_req_count = mem_req_count - mem_data_valid;
     endfunction
     
 endclass

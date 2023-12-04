@@ -181,8 +181,8 @@ module NOC(
     PE_IN_PACKET ifmap_packet;
     logic [3:0] ifmap_packet_element_valid; // the valid bit for each data element in input feature map
     assign ifmap_packet_element_valid = ( (layer_type == LAYER1 & (ifmap_data_element_read_ptr == LAYER1_ELEMENT_COUNTER)) |
-                                (layer_type == LAYER2 & (ifmap_data_element_read_ptr == LAYER2_ELEMENT_COUNTER)) |
-                                (layer_type == LAYER3 & (ifmap_data_element_read_ptr == LAYER3_ELEMENT_COUNTER)) )  ? 4'b0111 : 4'b1111;
+                                          (layer_type == LAYER2 & (ifmap_data_element_read_ptr == LAYER2_ELEMENT_COUNTER)) |
+                                          (layer_type == LAYER3 & (ifmap_data_element_read_ptr == LAYER3_ELEMENT_COUNTER)) )  ? 4'b0111 : 4'b1111;
 
     assign ifmap_packet.valid = line_read_valid & ifmap_data_valid;
     for(genvar i = 0; i < 4; i=i+1) begin: ifmap_data
