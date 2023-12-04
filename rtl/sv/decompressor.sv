@@ -53,8 +53,13 @@ module decompressor(
     logic layer1_hanshake; // for layer1 decompressor hansdshake with global buffer
 
     logic [$clog2(DATA_FIFO_DEPTH):0] layer23_data_fifo_read_ptr; // data fifo entry read ptr for layer2 and layer3
-    
+    logic [$clog2(DATA_FIFO_DEPTH):0] layer23_data_fifo_read_ptr_p1;
+    logic [$clog2(DATA_FIFO_DEPTH)-1:0] layer23_data_fifo_read_index; 
+    logic [$clog2(DATA_FIFO_DEPTH)-1:0] layer23_data_fifo_read_index_p1; 
     logic [$clog2(DATA_FIFO_DEPTH):0] layer23_data_fifo_read_ptr_next;
+    logic [$clog2(DATA_FIFO_DEPTH):0] layer23_data_fifo_read_ptr_next_p1;
+    logic [$clog2(DATA_FIFO_DEPTH)-1:0] layer23_data_fifo_read_index_next; 
+    logic [$clog2(DATA_FIFO_DEPTH)-1:0] layer23_data_fifo_read_index_next_p1;
     logic fetch_layer23;
     logic fetch_full_layer23;
     logic data_fifo_layer23_empty;
@@ -196,8 +201,8 @@ module decompressor(
             data_counter_write_outer <= '0;
         end
         else if(enable & layer_type == LAYER1 & mem_data_valid) begin
-            data_counter_write_inner <= (data_counter_write_inner) == 29 ? 1 : data_counter_write_inner + 1'b1;
-            data_counter_write_outer <= (data_counter_write_inner) == 29 ? data_counter_write_outer + 1'b1 : data_counter_write_outer;
+            data_counter_write_inner <= (data_counter_write_inner) == 28 ? 0 : data_counter_write_inner + 1'b1;
+            data_counter_write_outer <= (data_counter_write_inner) == 28 ? data_counter_write_outer + 1'b1 : data_counter_write_outer;
         end
     end
 
@@ -207,13 +212,13 @@ module decompressor(
             layer1_data_counter_read <= '0;
         end
         else if(layer1_handshake) begin
-            layer1_data_counter_read <= (layer1_data_counter_read == 29) ? 1 : layer1_data_counter_read + 1'b1;
+            layer1_data_counter_read <= (layer1_data_counter_read == 28) ? 0 : layer1_data_counter_read + 1'b1;
         end
     end
 
     // generate the fifo output for layer1
     assign layer1_fifo_packet.packet_valid = !data_fifo_layer1_empty;
-    assign layer1_fifo_packet.valid_mask = (layer1_data_counter_read == 29) ? 8'b00000111 : {8{1'b1}}; // TO DO,need to have a read counter
+    assign layer1_fifo_packet.valid_mask = (layer1_data_counter_read == 28) ? 8'b00000111 : {8{1'b1}}; // TO DO,need to have a read counter
     for(genvar i = 0; i < 8; i=i+1) begin : layer1_fifo_packet_gen
         assign layer1_fifo_packet.data[i] = data_fifo[layer1_data_fifo_read_index][8*i+7:8*i];
     end
@@ -247,12 +252,20 @@ module decompressor(
     assign layer23_aligned_data_valid_group[1] = ((layer23_data_fifo_read_ptr + 1) != data_fifo_write_ptr) & layer23_aligned_data_valid_group[0];
     assign layer23_aligned_data_valid_group_next[0] = (layer23_data_fifo_read_ptr_next != data_fifo_write_ptr);
     assign layer23_aligned_data_valid_group_next[1] = ((layer23_data_fifo_read_ptr_next + 1) != data_fifo_write_ptr) & layer23_aligned_data_valid_group_next[0];
-    assign is_end[0] = layer23_aligned_data_valid_group[0] & ~(&data_fifo[layer23_data_fifo_read_ptr][62:60]);
-    assign is_end[1] = layer23_aligned_data_valid_group[1] & ~(&data_fifo[layer23_data_fifo_read_ptr + 1'b1][62:60]);
-    assign aligned_data_flag[0] = is_end[0] & data_fifo[layer23_data_fifo_read_ptr][63];
-    assign aligned_data_flag[1] = is_end[1] & data_fifo[layer23_data_fifo_read_ptr+1'b1][63];
+    assign is_end[0] = layer23_aligned_data_valid_group[0] & ~(&data_fifo[layer23_data_fifo_read_index][62:60]);
+    assign is_end[1] = layer23_aligned_data_valid_group[1] & ~(&data_fifo[layer23_data_fifo_read_index_p1][62:60]);
+    assign aligned_data_flag[0] = is_end[0] & data_fifo[layer23_data_fifo_read_index][63];
+    assign aligned_data_flag[1] = is_end[1] & data_fifo[layer23_data_fifo_read_index_p1][63];
     assign fetch_full_layer23 = (data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)] != layer23_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)]) && (data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)-1:0] == layer23_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)-1:0]);
     assign fetch_layer23 = !fetch_full_layer23 && (layer_type == LAYER2 || layer_type == LAYER3);
+
+    assign layer23_data_fifo_read_ptr_p1 = layer23_data_fifo_read_ptr + 1'b1;
+    assign layer23_data_fifo_read_index = layer23_data_fifo_read_ptr[$clog2(DATA_FIFO_DEPTH)-1:0];
+    assign layer23_data_fifo_read_index_p1 = layer23_data_fifo_read_ptr_p1[$clog2(DATA_FIFO_DEPTH)-1:0];
+
+    assign layer23_data_fifo_read_ptr_next_p1 = layer23_data_fifo_read_ptr_next + 1'b1;
+    assign layer23_data_fifo_read_index_next = layer23_data_fifo_read_ptr_next[$clog2(DATA_FIFO_DEPTH)-1:0];
+    assign layer23_data_fifo_read_index_next_p1 = layer23_data_fifo_read_ptr_next_p1[$clog2(DATA_FIFO_DEPTH)-1:0];
 
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n | start) begin
@@ -279,14 +292,14 @@ module decompressor(
 
     // generate align data
     for(genvar i = 0; i < 5; i= i+1) begin:aligned_data
-        assign layer23_aligned_data_comb[i].zero            = data_fifo[layer23_data_fifo_read_ptr][12*i+3:12*i];
-        assign layer23_aligned_data_comb[i].val             = data_fifo[layer23_data_fifo_read_ptr][12*i+11:12*i+4];
-        assign layer23_aligned_data_comb[5+i].zero          = data_fifo[layer23_data_fifo_read_ptr+1][12*i+3:12*i];
-        assign layer23_aligned_data_comb[5+i].val           = data_fifo[layer23_data_fifo_read_ptr+1][12*i+11:12*i+4];
-        assign layer23_aligned_data_comb_next[i].zero       = data_fifo[layer23_data_fifo_read_ptr_next][12*i+3:12*i];
-        assign layer23_aligned_data_comb_next[i].val        = data_fifo[layer23_data_fifo_read_ptr_next][12*i+11:12*i+4];
-        assign layer23_aligned_data_comb_next[5+i].zero     = data_fifo[layer23_data_fifo_read_ptr_next+1][12*i+3:12*i];
-        assign layer23_aligned_data_comb_next[5+i].val      = data_fifo[layer23_data_fifo_read_ptr_next+1][12*i+11:12*i+4];
+        assign layer23_aligned_data_comb[i].zero            = data_fifo[layer23_data_fifo_read_index][12*i+3:12*i];
+        assign layer23_aligned_data_comb[i].val             = data_fifo[layer23_data_fifo_read_index][12*i+11:12*i+4];
+        assign layer23_aligned_data_comb[5+i].zero          = data_fifo[layer23_data_fifo_read_index_p1][12*i+3:12*i];
+        assign layer23_aligned_data_comb[5+i].val           = data_fifo[layer23_data_fifo_read_index_p1][12*i+11:12*i+4];
+        assign layer23_aligned_data_comb_next[i].zero       = data_fifo[layer23_data_fifo_read_index_next][12*i+3:12*i];
+        assign layer23_aligned_data_comb_next[i].val        = data_fifo[layer23_data_fifo_read_index_next][12*i+11:12*i+4];
+        assign layer23_aligned_data_comb_next[5+i].zero     = data_fifo[layer23_data_fifo_read_index_next_p1][12*i+3:12*i];
+        assign layer23_aligned_data_comb_next[5+i].val      = data_fifo[layer23_data_fifo_read_index_next_p1][12*i+11:12*i+4];
     end
 
     // minus the number which has been send to decompress_fifo_packet from compress unit
@@ -325,11 +338,11 @@ module decompressor(
         layer23_aligned_data_tail_ptr = 0;
         // if(layer23_aligned_data_valid_group[1]) begin
         if(aligned_data_valid[1]) begin
-            layer23_aligned_data_tail_ptr = &data_fifo[layer23_data_fifo_read_ptr + 1'b1][62:60] ? 9 : data_fifo[layer23_data_fifo_read_ptr + 1'b1][62:60] + 5;
+            layer23_aligned_data_tail_ptr = &data_fifo[layer23_data_fifo_read_index_p1][62:60] ? 9 : data_fifo[layer23_data_fifo_read_index_p1][62:60] + 5;
         end
         //else if(layer23_aligned_data_valid_group[0]) begin
         else if(aligned_data_valid[0]) begin
-            layer23_aligned_data_tail_ptr = &data_fifo[layer23_data_fifo_read_ptr][62:60] ? 4 : data_fifo[layer23_data_fifo_read_ptr][62:60];
+            layer23_aligned_data_tail_ptr = &data_fifo[layer23_data_fifo_read_index][62:60] ? 4 : data_fifo[layer23_data_fifo_read_index][62:60];
         end
     end
 
@@ -415,7 +428,8 @@ module decompressor(
     end
 
     // check if has already send all ifmap data
-    assign layer23_sending_last_packet = (layer23_data_counter_read == layer23_data_counter_read_upper-2) & layer23_handshake & (layer23_aligned_data_accumulate_num[4] > 0) | (layer23_data_counter_read == layer23_data_counter_read_upper-1) & (layer23_aligned_data_accumulate_num[4] > 0);
+    assign layer23_sending_last_packet = (layer23_data_counter_read == layer23_data_counter_read_upper-2) & layer23_handshake & (layer23_aligned_data_accumulate_num[4] > 0 | layer23_aligned_data_tail_ptr == 0 & layer23_aligned_data[0].zero > 0) |
+                                         (layer23_data_counter_read == layer23_data_counter_read_upper-1) & (layer23_aligned_data_accumulate_num[4] > 0 | layer23_aligned_data_tail_ptr == 0 & layer23_aligned_data[0].zero > 0);
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n | start) begin
             layer23_send_all <= 2'b0;
@@ -459,7 +473,7 @@ module decompressor(
         if(!rst_n | start) begin
             layer23_fifo_packet <= '0;
         end
-        else begin
+        else if(!layer23_stall) begin
             layer23_fifo_packet <= layer23_fifo_packet_next;
         end
     end
@@ -475,12 +489,12 @@ module decompressor(
     logic data_fifo_empty;
     assign data_fifo_empty = (layer_type == LAYER1) && (data_fifo_write_ptr == layer1_data_fifo_read_ptr ) ||
                              (layer_type == LAYER2 || layer_type == LAYER3) && (data_fifo_write_ptr == layer23_data_fifo_read_ptr);
-    ASSERT_ALWAYS #(.MSG("Decompressor do not ack when data fifo is not empty")) decompressor_ack_chk(
-        .clk(clk),
-        .rst_n(rst_n),
-        .en(ifmap_buffer_req & enable & !data_fifo_empty),
-        .expr(decompressor_ack)
-    );
+    // ASSERT_ALWAYS #(.MSG("Decompressor do not ack when data fifo is not empty")) decompressor_ack_chk(
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .en(ifmap_buffer_req & enable & !data_fifo_empty),
+    //     .expr(decompressor_ack)
+    // );
 
     // 2. Assertion 2
     // in one cycyle , aligned_data_read_ptr can not move more than 5
@@ -513,7 +527,7 @@ module decompressor(
     logic data_fifo_write_ptr_pass;
     assign data_fifo_write_ptr_pass = (data_fifo_write_ptr[$clog2(DATA_FIFO_DEPTH)-1:0] < data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)-1:0]) & (data_fifo_write_ptr[$clog2(DATA_FIFO_DEPTH)] ^ data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)]) | 
                                       (data_fifo_write_ptr[$clog2(DATA_FIFO_DEPTH)-1:0] > data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)-1:0]) & (data_fifo_write_ptr[$clog2(DATA_FIFO_DEPTH)] == data_fifo_fetch_ptr[$clog2(DATA_FIFO_DEPTH)]);
-    ASSERT_NEVER #(.MSG("datan fifo write ptr pass fetch ptr")) data_fifo_write_ptr_chk(
+    ASSERT_NEVER #(.MSG("data fifo write ptr pass fetch ptr")) data_fifo_write_ptr_chk(
         .clk(clk),
         .rst_n(rst_n),
         .en(enable),

@@ -41,17 +41,6 @@ module decompressor_tb;
     STIMULUS stimulus;
     UTILITY utility;
     GOLDEN golden;
-
-    always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
-            mem_req_count <= 0;
-        end
-        else begin
-            mem_req_count <= mem_req_count + mem_req - mem_data_valid;
-        end
-    end
-
-    assign mem_data_valid = mem_req_count != 0 & mem_data_valid_random;
     
 
     task reset();
@@ -62,13 +51,14 @@ module decompressor_tb;
         utility = new();
         ifmap.randomize();
         ifmap.display_raw();
-        ifmap.compress();
-        ifmap.display_decompressed();
+        ifmap.compressed_data_set_gen();
         stimulus = new(ifmap.compressed_data_set);
+        $display(ifmap.compressed_data_set.size());
         golden = new(ifmap.ifmap_data,layer_type_in);
         ifmap_buffer_req = 0;
         mem_ack = 0;
         mem_data = 0;
+        mem_data_valid = 0;
         @(negedge clk)
             rst_n = 1'b0;
         @(negedge clk) begin
@@ -82,27 +72,34 @@ module decompressor_tb;
 
     task send_stimulus();
         @(negedge clk) begin    
+            stimulus.update_mem_count(mem_req,mem_ack);
             stimulus.randomize();
-            mem_data_valid_random = stimulus.mem_data_valid;
+            mem_data_valid= stimulus.mem_data_valid;
+            // mem_data_valid = stimulus.mem_ack & mem_req;
             ifmap_buffer_req = stimulus.ifmap_buffer_req;
             mem_ack = stimulus.mem_ack;
             mem_data = stimulus.mem_data;
         end
     endtask
 
-    initial begin
-        $dumpfile("decompressor.dump");
-        $dumpvars;
-    end
-
-    task run();
-        //while(uut.layer23_send_all != 2'b01) begin
-        for(int i = 0; i < 1000; i=i+1) begin
+    task run_layer1();
+        for(int i = 0; i < 10000; i=i+1) begin
             send_stimulus();
-            @(posedge clk) begin
-                #3;
-                if(decompress_fifo_packet.packet_valid & ifmap_buffer_req)
-                        golden.collect_output(decompress_fifo_packet);
+            #3;
+            if(decompress_fifo_packet.packet_valid & ifmap_buffer_req) begin
+                golden.collect_output(decompress_fifo_packet);
+            end
+        end
+        repeat(5)
+            @(posedge clk);
+    endtask;
+
+    task run_layer23();
+        while(uut.layer23_send_all != 2'b11) begin
+            send_stimulus();
+            #3;
+            if(decompress_fifo_packet.packet_valid & ifmap_buffer_req) begin
+                golden.collect_output(decompress_fifo_packet);
             end
         end
         repeat(5)
@@ -111,10 +108,22 @@ module decompressor_tb;
 
     // Test sequence
     initial begin
-        layer_type_in = LAYER3;
-        repeat(1) begin
+        layer_type_in = LAYER1;
+        reset();
+        run_layer1();
+        golden.check();
+
+        layer_type_in = LAYER2;
+        repeat(1000) begin
             reset();
-            run();
+            run_layer23();
+            golden.check();
+        end
+        
+        layer_type_in = LAYER3;
+        repeat(1000) begin
+            reset();
+            run_layer23();
             golden.check();
         end
         $finish; // Terminate the simulation
