@@ -133,4 +133,18 @@ typedef enum logic[1:0] {
 } MEMORY_SOURCE;
 
 
+typedef enum logic[1:0]{
+    TAKING_OUTPUT = 1'b0,
+    SENDING_OUTPUT = 1'b1
+} OUTPUT_BUFFER_STATE;
+// synthesizable functions
+
+// relu to psum
+function logic [7:0] relu(input [11:0] psum);
+    begin
+        if(!psum[11] & |psum[10:9]) return 8'hFF; // Max satuation
+        else if(psum[11]) return 8'h00; // RELU
+        else return psum[8:1];
+    end
+endfunction
 `endif // __SYS_DEFS_VH__

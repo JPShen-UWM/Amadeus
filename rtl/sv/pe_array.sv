@@ -24,7 +24,7 @@ module pe_array(
     output PSUM_PACKET [6:0]        psum_row4_out,
     input [6:0]                     outbuff_row2_ack_in,
     input [6:0]                     outbuff_row4_ack_in,
-    input [6:0]                     outbuff_row6_ack_in,
+    input [6:0]                     outbuff_row5_ack_in,
     // to tb
     output wor                      error
 );
@@ -36,6 +36,12 @@ PSUM_PACKET psum_in_top_row[7];
 PSUM_PACKET psum_in_mid_row[7];
 logic psum_ack_in[6][7];
 logic psum_ack_out[6][7];
+
+OP_MODE cur_mode;
+always_ff @(posedge clk) begin
+    if(rst) cur_mode <= MODE1;
+    else if(change_mode) cur_mode <= mode_in;
+end
 
 genvar i, j;
 generate
@@ -136,7 +142,7 @@ generate
     // row5 connect to psum buffer at mode1, connect to output buffer at mode3,mode4
     for(j = 0; j < 7; j++) begin
         assign psum_ack_in[5][j] = cur_mode == MODE1? psum_buffer_ack[j]:
-                                   cur_mode == MODE2? 1'b1: outbuff_row6_ack_in[5][j];
+                                   cur_mode == MODE2? 1'b1: outbuff_row5_ack_in[j];
         assign psum_to_buffer[j] = psum_out[5][j];
     end
 
