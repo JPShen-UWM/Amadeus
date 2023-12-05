@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps // Define the time scale for simulation
+`include "testbench/ifmap_buffer_tb_lib.svh"
 
 module ifmap_buffer_tb;
 

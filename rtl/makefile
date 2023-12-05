@@ -22,9 +22,9 @@ all:	simv
 # Modify starting here
 #####
 HEADERS = sv/sys_defs.svh
-
-TESTBENCH = testbench/wb_tb.sv
-SIMFILES = sv/weight_buffer.sv
+PRIMITIVES = $(wildcard primitive/*.sv)
+TESTBENCH = testbench/decompressor_tb.sv
+SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv 
 
 SYNFILES = pe.vg
 
@@ -34,11 +34,11 @@ export SIMFILES
 #####
 # Should be no need to modify after here
 #####
-simv:	$(HEADERS) $(SIMFILES) $(TESTBENCH)
-	$(VCS) $(HEADERS) $(TESTBENCH) $(SIMFILES) -o simv | tee simv.log
+simv:	$(HEADERS) $(SIMFILES) $(PRIMITIVES) $(TESTBENCH)
+	$(VCS) $(HEADERS) $(TESTBENCH) $(SIMFILES) $(PRIMITIVES) -o simv | tee simv.log
 
-dve:	$(HEADERS) $(SIMFILES) $(TESTBENCH) 
-	$(VCS) $(HEADERS) $(TESTBENCH) $(SIMFILES) -o dve -R -gui -debug_acccess+all -kdb | tee dve.log
+dve:	$(HEADERS) $(SIMFILES) $(PRIMITIVES) $(TESTBENCH)
+	$(VCS) $(HEADERS) $(TESTBENCH) $(SIMFILES) $(PRIMITIVES) -o dve -R -gui -debug_acccess+all -kdb | tee dve.log
 
 .PHONY: dve
 
