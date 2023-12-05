@@ -8,7 +8,7 @@ module NOC(
     input OP_MODE                   mode_in,          // mode selection
     input                           conv_complete,
     //
-    input [34:0][256*8-1:0]         ifmap_data_in,
+    input [34:0][255:0][7:0]        ifmap_data_in,
     input                           ifmap_data_valid_in,
     input [5:0][6:0]                pe_full,
     input [4:0]                     complete_count,
@@ -26,7 +26,7 @@ module NOC(
     logic free_change;
     logic enable;
     OP_MODE mode;
-    logic [34:0][256*8-1:0] ifmap_data;
+    logic [34:0][255:0][7:0] ifmap_data;
     logic ifmap_data_valid;
     localparam MODE1_LINE_COUNTER = 29;
     localparam MODE2_LINE_COUNTER = 34;
@@ -103,7 +103,7 @@ module NOC(
                         ifmap_data[i]   <= '0;
                     end
                     else begin
-                        ifmap_data[i+1] <= {ifmap_data_in[i][254*8-1:0]:{16{1'b0}}};
+                        ifmap_data[i+1] <= {ifmap_data_in[i][253:0],{2{8{1'b0}}}};
                     end
                 end
             end
@@ -113,7 +113,7 @@ module NOC(
                         ifmap_data[i]   <= '0;
                     end
                     else begin
-                        ifmap_data[i+1] <= {ifmap_data_in[i][255*8-1:0]:{8{1'b0}}};
+                        ifmap_data[i+1] <= {ifmap_data_in[i][254:0],{8{1'b0}}};
                     end
                 end
             end

@@ -1,0 +1,100 @@
+Magic 271485
+Revision Verdi_R-2020.12-SP2-1
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 3440 1192 408 65
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/inter.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+windowTimeUnit 1ps
+
+; waveform viewport range
+zoom 225554739.389441 226373696.947207 1p
+cursor 226090000.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 0
+; marker line index
+markerPos 38
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/inter.fsdb"
+addSignal -expanded -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/decompressed_fifo_packet.packet_valid
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.valid_mask[7:0]
+addSignal -expanded -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[7][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[6][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[5][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[4][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[3][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[2][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[1][7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/decompressed_fifo_packet.data[0][7:0]
+addSignal -h 15 /ifmap_buffer_tb/uut/decompressor_ack
+addSignal -h 15 /ifmap_buffer_tb/uut/ifmap_buffer_req
+addSignal -h 15 /ifmap_buffer_tb/uut/clk
+addSignal -h 15 /ifmap_buffer_tb/uut/start
+addSignal -h 15 /ifmap_buffer_tb/uut/ifmap_buffer_req
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/chosen_enqueue[1:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/ready[1:0]
+addSignal -h 15 /ifmap_buffer_tb/uut/stop_req
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/free[1:0]
+addSignal -h 15 /ifmap_buffer_tb/uut/mem_batch1_wen
+addSignal -h 15 /ifmap_buffer_tb/uut/mem_batch2_wen
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/memory_batch1[34:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/chosen_dequeue[1:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/memory_batch1_line_write_ptr[5:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/memory_batch1_line_write_ptr_next[5:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/memory_batch_line_write_counter[5:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/memory_batch_element_write_counter[7:0]
+addSignal -h 15 -UNSIGNED /ifmap_buffer_tb/uut/layer_type_in[1:0]
+addSignal -h 15 -UNSIGNED /ifmap_buffer_tb/uut/layer_type[1:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/memory_batch1_free_counter[9:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/memory_batch2_free_counter[9:0]
+addSignal -h 15 /ifmap_buffer_tb/free_ifmap_buffer
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/layer1_counter[3:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/memory_batch1_element_write_ptr[7:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/memory_batch1_element_write_ptr_next[7:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/valid_element_count[3:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/ready_counter[3:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/ready_counter_upper[3:0]
+addSignal -h 15 -UNSIGNED -UDEC /ifmap_buffer_tb/uut/memory_batch2_line_write_ptr[5:0]
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/memory_batch2_element_write_ptr[7:0]
+addSignal -h 15 /ifmap_buffer_tb/uut/ready_pulse
+addSignal -h 15 -UNSIGNED -HEX /ifmap_buffer_tb/uut/memory_batch1_element_write_ptr_cross[7:0]
+addGroup "G2"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+
