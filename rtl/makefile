@@ -23,8 +23,8 @@ all:	simv
 #####
 HEADERS = sv/sys_defs.svh
 PRIMITIVES = $(wildcard primitive/*.sv)
-TESTBENCH = testbench/decompressor_tb.sv
-SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv 
+TESTBENCH = testbench/ifmap_buffer_tb.sv
+SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv
 
 SYNFILES = pe.vg
 

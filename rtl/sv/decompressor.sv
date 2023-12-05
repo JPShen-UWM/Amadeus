@@ -96,6 +96,7 @@ module decompressor(
     logic [6:0] layer23_fifo_packet_enqueue_num; // The number of byte which send from aligned_data to fifo_packet
     logic [1:0] layer23_send_all;
     logic layer23_sending_last_packet; // if layer23 is sendin last packet, 1
+    logic end_with_first_unit; // if the decompress data end with first unit
 
     logic [3:0] layer23_fifo_packet_ptr;
     logic [4:0] compress_unit_val_valid; // The val is choosen to send to fifo_packet in one compress unit; we have total 5 compress unit to handle in one cycle
@@ -354,7 +355,7 @@ module decompressor(
                                                             layer23_aligned_data_read_ptr+i == layer23_aligned_data_tail_ptr                                            ? ( ((~(|is_end)) | (|aligned_data_flag)) ? layer23_aligned_data[layer23_aligned_data_read_ptr+i].zero + 1'b1 : layer23_aligned_data[layer23_aligned_data_read_ptr+i].zero) : 0;
     end
 
-    assign layer23_aligned_data_accumulate_num[0] = layer23_aligned_data_compress_unit_num[0];
+    assign layer23_aligned_data_accumulate_num[0] = end_with_first_unit ? 1'b1 : layer23_aligned_data_compress_unit_num[0];
     assign layer23_aligned_data_accumulate_num[1] = layer23_aligned_data_accumulate_num[0] + layer23_aligned_data_compress_unit_num[1];
     assign layer23_aligned_data_accumulate_num[2] = layer23_aligned_data_accumulate_num[1] + layer23_aligned_data_compress_unit_num[2];
     assign layer23_aligned_data_accumulate_num[3] = layer23_aligned_data_accumulate_num[2] + layer23_aligned_data_compress_unit_num[3];
@@ -427,9 +428,11 @@ module decompressor(
         layer23_fifo_packet_comb.valid_mask = {8{1'b1}} >> (8-layer23_fifo_packet_enqueue_num);
     end
 
+    assign end_with_first_unit = layer23_aligned_data_tail_ptr == 0 & aligned_data_valid[0] & (layer23_aligned_data[0].zero > 0 & ~data_fifo[layer23_data_fifo_read_index][63] | data_fifo[layer23_data_fifo_read_index][63]);
+
     // check if has already send all ifmap data
-    assign layer23_sending_last_packet = (layer23_data_counter_read == layer23_data_counter_read_upper-2) & layer23_handshake & (layer23_aligned_data_accumulate_num[4] > 0 | layer23_aligned_data_tail_ptr == 0 & layer23_aligned_data[0].zero > 0) |
-                                         (layer23_data_counter_read == layer23_data_counter_read_upper-1) & (layer23_aligned_data_accumulate_num[4] > 0 | layer23_aligned_data_tail_ptr == 0 & layer23_aligned_data[0].zero > 0);
+    assign layer23_sending_last_packet = (layer23_data_counter_read == layer23_data_counter_read_upper-2) & layer23_handshake & (layer23_aligned_data_accumulate_num[4] > 0 | end_with_first_unit) |
+                                         (layer23_data_counter_read == layer23_data_counter_read_upper-1) & (layer23_aligned_data_accumulate_num[4] > 0 | end_with_first_unit);
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n | start) begin
             layer23_send_all <= 2'b0;
@@ -452,7 +455,11 @@ module decompressor(
                 layer23_fifo_packet_next.valid_mask[layer23_fifo_packet_ptr + i]     = 1'b1;
             end
         end
-
+        //
+        if((layer23_sending_last_packet | layer23_send_all == 2'b1) & layer23_aligned_data_tail_ptr == 0 & aligned_data_valid[0] & data_fifo[layer23_data_fifo_read_index][63]) begin
+            layer23_fifo_packet_next.data[0] = layer23_aligned_data[0].val;
+        end
+        //
         layer23_fifo_packet_next.packet_valid = ( &layer23_fifo_packet_next.valid_mask |  layer23_sending_last_packet | layer23_send_all == 2'b1) & ~(&layer23_send_all | layer23_send_all == 2'b1 & layer23_handshake); // the conor case for last serval elements can not fill the full fifo_packet, 27 * 27 = 8 * 91 + 1, 13 * 13 = 8 * 21 + 1
 
         layer23_fifo_packet_next.valid_mask =  layer23_sending_last_packet | layer23_send_all == 2'b1  ? 8'b1 : layer23_fifo_packet_next.valid_mask; // the last decompress group, only the the first bit of valid mask should be 1;
@@ -484,6 +491,9 @@ module decompressor(
     assign mem_req = (fetch_layer1 | fetch_layer23) & enable;
     assign decompress_fifo_packet = (layer_type == LAYER1) ? layer1_fifo_packet : layer23_fifo_packet;
 
+
+
+    ////////////////////////////////////// DV SECTION //////////////////////////////////////
     `ifdef DV
     // 1. Assertion 1
     logic data_fifo_empty;

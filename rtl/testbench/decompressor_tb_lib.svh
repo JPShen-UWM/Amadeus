@@ -151,8 +151,8 @@ class IFMAP_GENERATION;
     endfunction
 
     function void pre_randomize();
-        int seed = $urandom;
-        this.srandom(760753352); //-305490073
+        int seed = $random;
+        this.srandom(seed); //-305490073, -1183228314
         $display(seed);
         if(layer_type == LAYER1) begin
             this.layer2.constraint_mode(0);
@@ -281,6 +281,7 @@ class GOLDEN;
         int num = 0;
         if(this.ifmap_data_golden.size() != this.decompressor_output.size()) begin
             $display("decompressor size is not equal");
+            num = 1;
         end
         for(int i = 0; i < this.ifmap_data_golden.size(); i=i+1) begin
             if(this.ifmap_data_golden[i] != this.decompressor_output[i]) begin

@@ -50,10 +50,10 @@ module decompressor_tb;
         ifmap = new(layer_type_in);
         utility = new();
         ifmap.randomize();
-        ifmap.display_raw();
+        //ifmap.display_raw();
         ifmap.compressed_data_set_gen();
         stimulus = new(ifmap.compressed_data_set);
-        $display(ifmap.compressed_data_set.size());
+        //$display(ifmap.compressed_data_set.size());
         golden = new(ifmap.ifmap_data,layer_type_in);
         ifmap_buffer_req = 0;
         mem_ack = 0;
@@ -96,6 +96,7 @@ module decompressor_tb;
 
     task run_layer23();
         while(uut.layer23_send_all != 2'b11) begin
+        //for(int i = 0; i < 100; i=i+1) begin
             send_stimulus();
             #3;
             if(decompress_fifo_packet.packet_valid & ifmap_buffer_req) begin
@@ -114,14 +115,14 @@ module decompressor_tb;
         golden.check();
 
         layer_type_in = LAYER2;
-        repeat(1000) begin
+        repeat(10000) begin
             reset();
             run_layer23();
             golden.check();
         end
         
         layer_type_in = LAYER3;
-        repeat(1000) begin
+        repeat(10000) begin
             reset();
             run_layer23();
             golden.check();
