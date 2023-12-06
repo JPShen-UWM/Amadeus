@@ -174,10 +174,10 @@ generate
 endgenerate
 
     // Determine if we end compression with zero# or val
-    assign nxt_compressed_data[63] = start ? (1'b1) : ((mem_req & (!mem_ack)) ? compressed_data[63] : 
-                                                            (|AND_result ? (&AND_result ? 1'b1 : (|XOR_result ? 1'b0 : 1'b1)) : 1'b0));
+    assign nxt_compressed_data[63] =(mem_req & (!mem_ack)) ? compressed_data[63] :  //TODO: Not correctly update when end with valid data
+                                                            (|AND_result ? (&AND_result[5] ? 1'b1 : (|XOR_result ? 1'b0 : 1'b1)) : 1'b0);
     // Determine the group that we end compression with
-    assign nxt_compressed_data[62:60] = start ? (3'd1) :((mem_req & (!mem_ack)) ? compressed_data[62:60] : update_group_num[15]);
+    assign nxt_compressed_data[62:60] = (mem_req & (!mem_ack)) ? compressed_data[62:60] : ((outmap_data_valid_num==0) ? 'b0 : (&AND_result[5] ? 3'b111 : update_group_num[15]));
     
     // Determine if we want to send mem req: 1. no space in compress_group 2. some space in compress_group but outmap_valid_data<16 (no more outmap_data input for this compression)
     assign nxt_mem_req = (mem_req & (!mem_ack)) ? mem_req : (&AND_result[5] || (!(&AND_result[5]) && (|OR_result) && (outmap_data_valid_num<16)));
