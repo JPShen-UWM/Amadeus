@@ -88,7 +88,7 @@ generate
       2. or if last group is 7(which is invalid), group stay the same, we will only use group 1-5
       3. else handling non-0 value, increment group[i-1] 
     */
-    assign group[0] = (mem_req_accepted) ? 3'd1 : (compressed_data[63] ? (compressed_data[62:60] + 1) : compressed_data[62:60]);
+    assign group[0] = (start || mem_req_accepted) ? 3'd1 : (compressed_data[63] ? (compressed_data[62:60] + 1) : compressed_data[62:60]);
     for(i=1;i<16;i++) begin
        //assign group[i] = ((|zero_num[i])||(group[i-1]==3'b111)) ? group[i-1] : group[i-1] + 1;
        assign group[i] = (|zero_num[i-1]) ? group[i-1] : group[i-1] + 1;
@@ -141,8 +141,8 @@ generate
     // Update nxt_compress_group zero and val
 
     for(i=1;i<6;i++) begin
-      assign nxt_compress_group[i].zero = |group_zero_update[i]  ? group_zero_update_value[i][15]  : compress_group[i].zero;
-      assign nxt_compress_group[i].val  = |group_value_update[i] ? group_value_update_value[i][15] : compress_group[i].val;
+      assign nxt_compress_group[i].zero = |group_zero_update[i]  ? group_zero_update_value[i][15]  : (start ? 4'd0 : compress_group[i].zero);
+      assign nxt_compress_group[i].val  = |group_value_update[i] ? group_value_update_value[i][15] : (start ? 8'd0 : compress_group[i].val);
     end
 
     // Update nxt_compressed_data
