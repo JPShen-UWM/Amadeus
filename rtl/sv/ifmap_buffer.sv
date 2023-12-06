@@ -387,7 +387,7 @@ module ifmap_buffer(
     ASSERT_ALWAYS #(.MSG("batch2_write_line_ptr do not point at correct position when ready")) batch2_write_line_ptr_ready_position_chk (
         .clk(clk),
         .rst_n(rst_n),
-        .en(enable_assert & ready[1]),
+        .en(enable_assert & ready[1] & ~layer1_last_iteration),
         .expr(write_line_ptr_ready_position_batch2)
     );
 

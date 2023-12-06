@@ -43,7 +43,7 @@ module psum_buffer(
     end
 
     for(genvar i = 0; i < 7; i=i+1) begin:psum_set
-        for(genvar i = 0; i < 4; i=i+1) begin : psum_buffer
+        for(genvar j = 0; j < 4; j=j+1) begin : psum_buffer
             fifo #(.DEPTH(55),.WIDTH(`PSUM_DATA_SIZE),.DTYPE(logic [`PSUM_DATA_SIZE-1:0])) queue(
                 .clk(clk),
                 .rst_n(rst_n & psum_buffer_reset),
