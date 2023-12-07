@@ -27,9 +27,9 @@ module controller(
     output start_conv,
     // to decompressor
     output start_decompressor,
-    output decompressor_mem_ack,
     output [`MEM_BANDWIDTH*8-1:0] decompressor_mem_data,
     output decompressor_mem_data_valid,
+    output decompressor_mem_ack,
     // to NOC
     output [4:0] complete_count, // if one pe array calculation complete
     // to pe
@@ -172,6 +172,7 @@ module controller(
     /// WEIGHT_LOAD
     // to weight buffer
     assign start_weight_buffer_load = state == WEIGHT_LOAD;
+    assign start_weight_buffer_output = state == WEIGHT_OUTPUT;
 
     /// WEIGHT_OUTPUT
     /// | conv_done | WEIGHT_LOAD | WEIGHT_LOAD
