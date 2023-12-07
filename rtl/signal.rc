@@ -2,7 +2,11 @@ Magic 271485
 Revision Verdi_R-2020.12-SP2-1
 
 ; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+<<<<<<< HEAD
+viewPort 0 25 3440 1192 517 131
+=======
 viewPort 0 25 1701 616 517 131
+>>>>>>> xinchaoz
 
 ; File list:
 ; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
@@ -23,9 +27,15 @@ marker 0.000000
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
+<<<<<<< HEAD
+top 16
+; marker line index
+markerPos 60
+=======
 top 39
 ; marker line index
 markerPos 63
+>>>>>>> xinchaoz
 
 ; event list
 ; addEvent event_name event_expression
@@ -107,9 +117,12 @@ addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data_next[9
 addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data_comb[9:0]
 addSignal -h 15 /decompressor_tb/uut/layer23_aligned_data_comb_next[9:0]
 addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/aligned_data_valid[1:0]
+<<<<<<< HEAD
+=======
 addSignal -h 15 /decompressor_tb/uut/end_with_first_unit
 addSignal -h 15 /decompressor_tb/uut/layer23_sending_last_packet
 addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_send_all[1:0]
+>>>>>>> xinchaoz
 addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_valid_group[1:0]
 addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_valid_group_next[1:0]
 addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/is_end[1:0]

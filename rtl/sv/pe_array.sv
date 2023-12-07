@@ -14,7 +14,7 @@ module pe_array(
     output PSUM_PACKET  [6:0]       psum_to_buffer,
     input logic         [6:0]       psum_buffer_ack,
     // To controller
-    input OP_MODE                   mode,
+    input OP_MODE                   mode_in,
     input                           change_mode,
     input                           conv_continue,
     input OP_STAGE                  op_stage_in,
@@ -24,7 +24,7 @@ module pe_array(
     output PSUM_PACKET [6:0]        psum_row4_out,
     input [6:0]                     outbuff_row2_ack_in,
     input [6:0]                     outbuff_row4_ack_in,
-    input [6:0]                     outbuff_row6_ack_in,
+    input [6:0]                     outbuff_row5_ack_in,
     // to tb
     output wor                      error
 );
@@ -37,6 +37,12 @@ PSUM_PACKET psum_in_mid_row[7];
 logic psum_ack_in[6][7];
 logic psum_ack_out[6][7];
 
+OP_MODE cur_mode;
+always_ff @(posedge clk) begin
+    if(rst) cur_mode <= MODE1;
+    else if(change_mode) cur_mode <= mode_in;
+end
+
 genvar i, j;
 generate
     // PE array 6x7
@@ -45,7 +51,7 @@ generate
             pe #(.ROW_IDX(i), .COL_IDX(j)) PE_ARRAY (
                 .clk(clk),
                 .rst(rst),
-                .mode_in(mode),           // mode selection
+                .mode_in(mode_in),           // mode selection
                 .change_mode(change_mode),
                 .ifmap_packet(ifmap_packet[i][j]),      // PE packet broadcasted from buffer
                 .filter_packet(weight_in_array[i]),
@@ -67,7 +73,7 @@ generate
             .clk(clk),
             .rst(rst),
             .psum_ack(psum_ack_out[0][i]),
-            .mode_in(mode),
+            .mode_in(mode_in),
             .change_mode(change_mode),
             .conv_continue(conv_continue),
             .op_stage_in(op_stage_in),
@@ -80,7 +86,7 @@ generate
             .clk(clk),
             .rst(rst),
             .psum_ack(psum_ack_out[3][j]),
-            .mode_in(mode),
+            .mode_in(mode_in),
             .change_mode(change_mode),
             .conv_continue(conv_continue),
             .op_stage_in(op_stage_in),
@@ -136,7 +142,7 @@ generate
     // row5 connect to psum buffer at mode1, connect to output buffer at mode3,mode4
     for(j = 0; j < 7; j++) begin
         assign psum_ack_in[5][j] = cur_mode == MODE1? psum_buffer_ack[j]:
-                                   cur_mode == MODE2? 1'b1: outbuff_row6_ack_in[5][j];
+                                   cur_mode == MODE2? 1'b1: outbuff_row5_ack_in[j];
         assign psum_to_buffer[j] = psum_out[5][j];
     end
 
@@ -155,7 +161,7 @@ generate
     */
     for(i = 0; i < 6; i++) begin
         for(j = 0; j < 7; j++) begin
-            ifmap_packet[i][j] = diagonal_bus_packet.diagonal_bus[i+j];
+            assign ifmap_packet[i][j] = diagonal_bus_packet.diagonal_bus[i+j];
         end
     end
     // ********************** ifmap connection end **********************//

@@ -276,7 +276,6 @@ mult_fixed MULT(.inA(mult_inA), .inB(mult_inB), .out(mult_out));
 // Not zero skipping or zero skipping
 
 `ifndef ZERO_SKIPPING
-`define
 always_ff @(posedge clk) begin
     if(!rst_n) begin
         mult_inA <= '0;
@@ -291,7 +290,6 @@ always_ff @(posedge clk) begin
 end
 
 `else
-`define
 
 logic skip_zero;
 logic skip_zero_ff;

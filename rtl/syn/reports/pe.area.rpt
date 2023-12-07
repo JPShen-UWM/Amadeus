@@ -1,0 +1,32 @@
+ 
+****************************************
+Report : area
+Design : pe
+Version: T-2022.03-SP3
+Date   : Thu Dec  7 14:22:46 2023
+****************************************
+
+Library(s) Used:
+
+    gtech (File: /usr/caen/synopsys-synth-2022.03-SP3/libraries/syn/gtech.db)
+
+Number of ports:                         1012
+Number of nets:                          3679
+Number of cells:                         2094
+Number of combinational cells:           1236
+Number of sequential cells:               765
+Number of macros/black boxes:               0
+Number of buf/inv:                        340
+Number of references:                      53
+
+Combinational area:                  0.000000
+Buf/Inv area:                        0.000000
+Noncombinational area:               0.000000
+Macro/Black Box area:                0.000000
+Net Interconnect area:            2486.418115
+
+Total cell area:                     0.000000
+Total area:                       2486.418115
+
+Information: This design contains unmapped logic. (RPT-7)
+1

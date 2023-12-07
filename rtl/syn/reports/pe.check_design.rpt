@@ -1,0 +1,39 @@
+ 
+****************************************
+check_design summary:
+Version:     T-2022.03-SP3
+Date:        Thu Dec  7 14:22:42 2023
+****************************************
+
+                   Name                                            Total
+--------------------------------------------------------------------------------
+Cells                                                               4
+    Cells do not drive (LINT-1)                                     3
+    Nets connected to multiple pins on same cell (LINT-33)          1
+
+Nets                                                               16
+    Unloaded nets (LINT-2)                                         16
+--------------------------------------------------------------------------------
+
+Warning: In design 'pe', cell 'B_82' does not drive any nets. (LINT-1)
+Warning: In design 'pe', cell 'B_83' does not drive any nets. (LINT-1)
+Warning: In design 'pe', cell 'B_84' does not drive any nets. (LINT-1)
+Warning: In design 'pe', net 'net282' driven by pin 'C3247/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net281' driven by pin 'C3252/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net280' driven by pin 'C3182/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net279' driven by pin 'C3177/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net278' driven by pin 'C3176/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net277' driven by pin 'C3082/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net276' driven by pin 'C3069/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'net275' driven by pin 'C3072/Z' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net709' driven by pin 'MULT/mult_11/Z_0' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net708' driven by pin 'MULT/mult_11/Z_1' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net707' driven by pin 'MULT/mult_11/Z_2' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net706' driven by pin 'MULT/mult_11/Z_3' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net705' driven by pin 'MULT/mult_11/Z_4' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net704' driven by pin 'MULT/mult_11/Z_5' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net703' driven by pin 'MULT/mult_11/Z_6' has no loads. (LINT-2)
+Warning: In design 'pe', net 'MULT/net702' driven by pin 'MULT/mult_11/Z_7' has no loads. (LINT-2)
+Warning: In design 'pe', the same net is connected to more than one pin on submodule 'MAC_ADDER'. (LINT-33)
+   Net 'mult_out_ff[7]' is connected to pins 'inA[11]', 'inA[10]'', 'inA[9]', 'inA[8]', 'inA[7]'.
+1

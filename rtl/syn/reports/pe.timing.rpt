@@ -1,0 +1,126 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -nets
+        -max_paths 1
+        -transition_time
+Design : pe
+Version: T-2022.03-SP3
+Date   : Thu Dec  7 14:22:45 2023
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: tt1p05v25c   Library: saed32rvt_tt1p05v25c
+Wire Load Model Mode: enclosed
+
+  Startpoint: conv_cnt_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: ifmap_ram_reg_0__0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe                 ForQA                 saed32rvt_tt1p05v25c
+  DW01_cmp2_width5   ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  conv_cnt_reg_0_/clocked_on (**SEQGEN**)                 0.08      0.00       0.20 r
+  conv_cnt_reg_0_/Q (**SEQGEN**)                          0.00      0.00       0.20 r
+  conv_cnt[0] (net)                            24                   0.00       0.20 r
+  add_263/B_0 (*ADD_UNS_OP_4_4_5)                                   0.00       0.20 r
+  add_263/net1109 (net)                                             0.00       0.20 r
+  add_263/*cell*150/B[0] (DW01_add_width5)                          0.00       0.20 r
+  add_263/*cell*150/B[0] (net)                                      0.00       0.20 r
+  ...
+  add_263/*cell*150/SUM[0] (DW01_add_width5)                        0.02       0.22 r
+  add_263/net1114 (net)                                             0.00       0.22 r
+  add_263/Z_0 (*ADD_UNS_OP_4_4_5)                                   0.00       0.22 r
+  N676 (net)                                                        0.00       0.22 r
+  gte_263/A_0 (*GEQ_UNS_OP_5_4_1)                                   0.00       0.22 r
+  gte_263/net1121 (net)                                             0.00       0.22 r
+  gte_263/*cell*153/B[0] (DW01_cmp2_width5)                         0.00       0.22 r
+  gte_263/*cell*153/B[0] (net)                                      0.00       0.22 r
+  ...
+  gte_263/*cell*153/LT_LE (DW01_cmp2_width5)                        0.04       0.27 f
+  gte_263/net1125 (net)                                             0.00       0.27 f
+  gte_263/Z_0 (*GEQ_UNS_OP_5_4_1)                                   0.00       0.27 f
+  N681 (net)                                                        0.00       0.27 f
+  I_138/Z (GTECH_NOT)                                     0.00      0.01       0.27 r    d 
+  N682 (net)                                    2                   0.00       0.27 r
+  C2960/Z_3 (*SELECT_OP_2.4_2.1_4)                        0.00      0.00       0.28 r
+  read_ptr[3] (net)                            15                   0.00       0.28 r
+  I_3/Z (GTECH_NOT)                                       0.00      0.01       0.29 f
+  N1051 (net)                                   3                   0.00       0.29 f
+  C2842/Z (GTECH_OR2)                                     0.00      0.01       0.29 f
+  N1144 (net)                                   1                   0.00       0.29 f
+  C2843/Z (GTECH_OR2)                                     0.00      0.00       0.30 f
+  N1145 (net)                                   1                   0.00       0.30 f
+  C2844/Z (GTECH_OR2)                                     0.00      0.00       0.30 f
+  N1146 (net)                                   1                   0.00       0.30 f
+  I_36/Z (GTECH_NOT)                                      0.00      0.00       0.31 r
+  N1147 (net)                                   1                   0.00       0.31 r
+  C3110/Z (GTECH_AND2)                                    0.00      0.00       0.31 r
+  N460 (net)                                    1                   0.00       0.31 r
+  C2944/Z_1 (*SELECT_OP_2.3_2.1_3)                        0.00      0.00       0.31 r
+  section_to_free[1] (net)                      1                   0.00       0.31 r
+  I_119/Z (GTECH_NOT)                                     0.00      0.00       0.32 f
+  N1162 (net)                                   1                   0.00       0.32 f
+  C3125/Z (GTECH_AND2)                                    0.00      0.00       0.32 f
+  N469 (net)                                    6                   0.00       0.32 f
+  I_123/Z (GTECH_NOT)                                     0.00      0.01       0.33 r
+  N473 (net)                                    3                   0.00       0.33 r
+  C1687/Z (GTECH_OR2)                                     0.00      0.01       0.33 r
+  N480 (net)                                    2                   0.00       0.33 r
+  C1688/Z (GTECH_OR2)                                     0.00      0.00       0.34 r    d 
+  N481 (net)                                    1                   0.00       0.34 r
+  I_126/Z (GTECH_NOT)                                     0.00      0.00       0.34 f
+  N482 (net)                                    1                   0.00       0.34 f
+  B_17/Z (GTECH_BUF)                                      0.00      0.00       0.34 f    d 
+  N78 (net)                                     3                   0.00       0.34 f
+  C2946/Z_0 (*SELECT_OP_8.3_8.1_3)                        0.00      0.01       0.35 f
+  N495 (net)                                    1                   0.00       0.35 f
+  C2950/Z_0 (*SELECT_OP_2.3_2.1_3)                        0.00      0.00       0.35 f
+  section_write[0] (net)                        3                   0.00       0.35 f
+  I_132/Z (GTECH_NOT)                                     0.00      0.01       0.36 r    d 
+  N609 (net)                                    1                   0.00       0.36 r
+  C3163/Z (GTECH_AND2)                                    0.00      0.00       0.36 r    d 
+  N610 (net)                                    2                   0.00       0.36 r
+  C3166/Z (GTECH_AND2)                                    0.00      0.00       0.37 r    d 
+  N613 (net)                                    1                   0.00       0.37 r
+  C3167/Z (GTECH_AND2)                                    0.00      0.00       0.37 r    d 
+  N614 (net)                                    2                   0.00       0.37 r
+  C2952/Z_0 (*SELECT_OP_6.3_6.1_3)                        0.00      0.00       0.38 r
+  N507 (net)                                   32                   0.00       0.38 r
+  ifmap_ram_reg_0__0_/synch_enable (**SEQGEN**)           0.00      0.03       0.41 r
+  data arrival time                                                            0.41
+
+  clock core_clk (rise edge)                                        5.00       5.00
+  clock network delay (ideal)                                       0.20       5.20
+  clock uncertainty                                                -0.50       4.70
+  ifmap_ram_reg_0__0_/clocked_on (**SEQGEN**)                       0.00       4.70 r
+  library setup time                                                0.00       4.70
+  data required time                                                           4.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           4.70
+  data arrival time                                                           -0.41
+  ---------------------------------------------------------------------------------------------------------
+  slack (MET)                                                                  4.29
+
+
+1
