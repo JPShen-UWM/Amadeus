@@ -55,7 +55,7 @@ module weight_buffer(
 
         case (cur_mode)
                 MODE1,MODE2: begin                 
-                    if (row_idx==43&&cycle_count==1) begin
+                    if (row_idx==43) begin
                         mem_req=0;
                         ready_to_output=1;
                     end
