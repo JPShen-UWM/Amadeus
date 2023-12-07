@@ -5,7 +5,7 @@ module psum_buffer(
     input OP_MODE mode_in,
     input PSUM_PACKET[6:0] psum_in,
     input [6:0] pe_psum_ack, // if pe receive the psum from psum buffer
-    output [6:0] psum_buffer_ack, // sen to pe to tell that the psum packet has been accepted by psum buffer
+    output [6:0] psum_buffer_ack, // send to pe to tell that the psum packet has been accepted by psum buffer
     output PSUM_PACKET[6:0] psum_out
 );
 
@@ -34,7 +34,7 @@ module psum_buffer(
         if(!rst_n) begin
             psum_buffer_reset <= 1'b1;
         end
-        else if(mode == MODE1 & start_conv) begin
+        else if(mode_in == MODE1 & start_conv) begin
             psum_buffer_reset <= 1'b0;
         end
         else begin
@@ -43,8 +43,8 @@ module psum_buffer(
     end
 
     for(genvar i = 0; i < 7; i=i+1) begin:psum_set
-        for(genvar i = 0; i < 4; i=i+1) begin : psum_buffer
-            fifo #(.DEPTH(55),.WIDTH(`PSUM_DATA_SIZE),.DTYPE(logic [`PSUM_DATA_SIZE-1:0])) queue(
+        for(genvar j = 0; j < 4; j=j+1) begin : psum_buffer
+            fifo #(.DEPTH(55),.WIDTH(`PSUM_DATA_SIZE),.DTYPE(logic signed [`PSUM_DATA_SIZE-1:0])) queue(
                 .clk(clk),
                 .rst_n(rst_n & psum_buffer_reset),
                 .wen(psum_buffer_wen[i][j]),
@@ -70,7 +70,7 @@ module psum_buffer(
         if(!rst_n) begin
             read_enable <= 1'b0;
         end
-        else if(start_conv && mode == MODE2) begin
+        else if(start_conv && mode_in == MODE2) begin
             read_enable <= 1'b1;
         end
         else if(&psum_fifo_empty) begin
@@ -82,14 +82,14 @@ module psum_buffer(
         if(!rst_n) begin
             psum_filter_idx_onehot <= '0;
         end
-        else if(start_conv && mode == MODE2) begin
+        else if(start_conv && mode_in == MODE2) begin
             for(integer i = 0; i < 7; i=i+1) begin
                 psum_filter_idx_onehot[i] <= 1'b1;
             end
         end
         else begin
             for(integer i = 0; i < 7; i=i+1) begin
-                psum_filter_idx_onehot[i] <= pe_psum_ack[i] ? {psum_filter_idx_onehot[2:0],psum_filter_idx_onehot[3]} : psum_filter_idx_onehot;
+                psum_filter_idx_onehot[i] <= pe_psum_ack[i] ? {psum_filter_idx_onehot[i][2:0],psum_filter_idx_onehot[i][3]} : psum_filter_idx_onehot[i];
             end
         end
     end
@@ -103,7 +103,7 @@ module psum_buffer(
         for(int i = 0; i < 7; i=i+1) begin
             psum_filter_idx[i] = 0;
             for(int j = 0; j < 4; j=j+1) begin
-                if(psum_filter_idx_onehot[i]) begin
+                if(psum_filter_idx_onehot[i][j]) begin
                     psum_filter_idx[i] = j;
                 end
             end
@@ -115,5 +115,40 @@ module psum_buffer(
         assign psum_out[i].filter_idx = psum_filter_idx[i];
         assign psum_out[i].psum = psum_fifo_data[i][psum_filter_idx[i]];
     end
+
+    /*############################################# DV SECTION #############################################*/
+    `ifdef DV
+    // 1. Assertion 1
+    // psum buffer wen should be at most one hot
+    for(genvar i = 0; i < 7; i=i+1) begin:psum_wen_checker
+        ASSERT_ONEHOT #(
+            .MSG("psum buffer wen should be at most one hot"),
+            .ALLOW_ZERO(1'b1),
+            .WIDTH(4)
+        ) psum_wen_chk(
+            .clk(clk),
+            .rst_n(rst_n),
+            .en(1'b1),
+            .expr(psum_buffer_wen[i])
+        );
+    end
+
+    // 2. Assertion 2
+    // psum_filter_idx_onehot should be one hot
+    for(genvar i = 0; i < 7; i=i+1) begin:psum_filter_idx_onehot_chk
+        ASSERT_ONEHOT #(
+            .MSG("psum_filter_idx_onehot is not one hot"),
+            .ALLOW_ZERO(1'b1),
+            .WIDTH(4) 
+        ) psum_filter_idx_onehot_chk (
+            .clk(clk),
+            .rst_n(rst_n),
+            .en(1'b1),
+            .expr(psum_filter_idx_onehot[i])
+        );
+    end
+    
+
+    `endif
 
 endmodule

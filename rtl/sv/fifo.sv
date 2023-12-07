@@ -14,8 +14,8 @@ module fifo
     output empty
 );
     logic [$clog2(DEPTH):0] counter;
-    logic [$clog2(DEPTH):0] rptr_next;
-    logic [$clog2(DEPTH):0] wptr_next;
+    logic [$clog2(DEPTH):0] rptr;
+    logic [$clog2(DEPTH):0] wptr;
     logic [$clog2(DEPTH):0] rptr_next;
     logic [$clog2(DEPTH):0] wptr_next;
 

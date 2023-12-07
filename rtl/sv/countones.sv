@@ -1,6 +1,6 @@
 module countones #(parameter WIDTH = 6)(
     input [WIDTH-1:0] in,
-    output [$clog2(WIDTH):0] count
+    output logic [$clog2(WIDTH):0] count
 );
 
     always_comb begin

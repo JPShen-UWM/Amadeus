@@ -1,0 +1,104 @@
+SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define+ sv/sys_defs.svh testbench/psum_buffer_tb.sv sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv sv/NOC.sv sv/psum_buffer.sv sv/fifo.sv primitive/assert_never_imm.sv primitive/assert_always.sv primitive/assert_cond.sv primitive/assert_never.sv primitive/assert_onehot.sv -o simv | tee simv.log
+                         Chronologic VCS (TM)
+      Version R-2020.12-SP2-1_Full64 -- Wed Dec  6 19:17:32 2023
+
+                    Copyright (c) 1991 - 2021 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+Parsing design file 'sv/sys_defs.svh'
+Parsing design file 'testbench/psum_buffer_tb.sv'
+Parsing included file 'testbench/psum_buffer_tb_lib.svh'.
+Parsing included file 'sv/sys_defs.svh'.
+Back to file 'testbench/psum_buffer_tb_lib.svh'.
+Back to file 'testbench/psum_buffer_tb.sv'.
+Parsing design file 'sv/decompressor.sv'
+Parsing design file 'sv/countones.sv'
+Parsing design file 'sv/priority_encoder.sv'
+Parsing design file 'sv/ifmap_buffer.sv'
+Parsing design file 'sv/NOC.sv'
+Parsing design file 'sv/psum_buffer.sv'
+Parsing design file 'sv/fifo.sv'
+Parsing design file 'primitive/assert_never_imm.sv'
+Parsing design file 'primitive/assert_always.sv'
+Parsing design file 'primitive/assert_cond.sv'
+Parsing design file 'primitive/assert_never.sv'
+Parsing design file 'primitive/assert_onehot.sv'
+Top Level Modules:
+       psum_buffer_tb
+       decompressor
+       ifmap_buffer
+       NOC
+       ASSERT_NEVER_IMM
+       ASSERT_ALWAYS
+       ASSERT_COND
+       ASSERT_NEVER
+       ASSERT_ONEHOT
+TimeScale is 1 ns / 100 ps
+Starting vcs inline pass...
+
+10 modules and 0 UDP read.
+recompiling module psum_buffer_tb
+	However, due to incremental compilation, only 1 module needs to be compiled. 
+make[1]: Entering directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+make[1]: Leaving directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+make[1]: Entering directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+ld -shared  -Bsymbolic --no-relax  -o .//../simv.daidir//_cuarc0.so objs/amcQw_d.o 
+rm -f _cuarc0.so
+if [ -x ../simv ]; then chmod a-x ../simv; fi
+g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/usr/caen/vcs-2020.12-SP2-1/linux64/lib -L/usr/caen/vcs-2020.12-SP2-1/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1     _211344_archive_1.so _prev_archive_1.so _cuarc0.so  SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o           -lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive        _vcs_pli_stub_.o   /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_save_restore_new.o -ldl  -lc -lm -lpthread -ldl 
+../simv up to date
+make[1]: Leaving directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
+CPU time: .295 seconds to compile + .180 seconds to elab + .134 seconds to link
+./simv | tee program.out
+Chronologic VCS simulator copyright 1991-2020
+Contains Synopsys proprietary information.
+Compiler version R-2020.12-SP2-1_Full64; Runtime version R-2020.12-SP2-1_Full64;  Dec  6 19:17 2023
+         56
+         56
+         56
+group :           0, filter_index :           3, index :          54
+actual data: 12288, golden data: 32464
+         56
+         56
+         56
+group :           1, filter_index :           3, index :          54
+actual data: 12288, golden data: 31152
+         56
+         56
+         56
+group :           2, filter_index :           3, index :          54
+actual data: 12288, golden data: 28963
+         56
+         56
+         56
+group :           3, filter_index :           3, index :          54
+actual data: 12288, golden data: 29528
+         56
+         56
+         56
+group :           4, filter_index :           3, index :          54
+actual data: 12288, golden data: 31992
+         56
+         56
+         56
+group :           5, filter_index :           3, index :          54
+actual data: 12288, golden data: 32436
+         56
+         56
+         56
+group :           6, filter_index :           3, index :          54
+actual data: 12288, golden data: 29249
+==================================================
+==================== TEST FAIL ===================
+==================================================
+ERROR NUM :           7
+$finish called from file "testbench/psum_buffer_tb.sv", line 129.
+$finish at simulation time                89800
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 8980000 ps
+CPU Time:      0.170 seconds;       Data structure size:   0.4Mb
+Wed Dec  6 19:17:36 2023

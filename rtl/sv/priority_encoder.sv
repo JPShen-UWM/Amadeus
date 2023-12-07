@@ -1,6 +1,6 @@
 module priority_encoder #(parameter WIDTH = 6) (
     input [WIDTH-1:0] req,
-    output [$clog2(WIDTH)-1:0] gnt,
+    output logic [$clog2(WIDTH)-1:0] gnt,
     output valid
 );
 
@@ -8,7 +8,7 @@ module priority_encoder #(parameter WIDTH = 6) (
     logic [WIDTH-1:0] gnt_one_hot;
     assign mask[0] = req[0];
     for(genvar i = 1; i < WIDTH; i=i+1) begin
-        assign mask = mask[i-1] | req;
+        assign mask[i] = mask[i-1] | req[i];
     end
     assign gnt_one_hot = mask & ~(mask << 1'b1);
     assign valid = |gnt_one_hot;

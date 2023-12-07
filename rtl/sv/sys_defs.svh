@@ -47,6 +47,51 @@
 `define MEM_ADDR_SIZE       16
 
 
+// enum
+typedef enum logic [1:0] {
+    MODE1 = 2'b00,      // Layer 1 up part
+    MODE2 = 2'b01,      // Layer 1 down part
+    MODE3 = 2'b10,      // Layer 2
+    MODE4 = 2'b11       // Layer 3 and rest
+} OP_MODE;
+
+typedef enum logic [1:0] {
+    IDLE            = 2'b00,
+    LOAD_FILTER     = 2'b01,
+    CONV            = 2'b10
+} OP_STAGE;
+
+typedef enum logic [1:0] {
+    LAYER1,
+    LAYER2,
+    LAYER3,
+    NULL
+} LAYER_TYPE;
+
+typedef enum logic[3:0] {
+    IDLE_C,
+    WEIGHT_LOAD,
+    WEIGHT_OUTPUT,
+    IFMAP_LOAD,
+    WAIT_TO_RESTART_CONV_P4, // if pe array just finish all conv, ifmap need to change to ifmap
+    WAIT_TO_RESTART_CONV_P3,
+    WAIT_TO_RESTART_CONV_P2,
+    WAIT_TO_RESTART_CONV_P1,
+    WAIT_TO_RESTART_CONV,
+    PE_CONV_MODE1,
+    PE_CONV_MODE2,
+    PE_CONV_MODE3,
+    PE_CONV_MODE4,
+    COMPLETE
+} CONTROL_STATE;
+
+typedef enum logic[1:0] {
+    IFMAP_BUFFER  = 2'b00,
+    WEIGHT_BUFFER = 2'b01,
+    COMPRESSOR    = 2'b10,
+    NONE          = 2'b11
+} MEMORY_SOURCE;
+
 // struct
 typedef struct packed {
     logic valid;
@@ -82,55 +127,10 @@ typedef struct packed {
     PE_IN_PACKET [11:0] diagonal_bus;
 } DIAGONAL_BUS_PACKET;
 
-typedef struct packer {
+typedef struct packed {
     MEMORY_SOURCE mem_req_src;
     logic [`MEM_ADDR_SIZE-1:0] addr;
 } MEM_REQ_PACKET;
-
-
-// enum
-typedef enum logic [1:0] {
-    MODE1 = 2'b00,      // Layer 1 up part
-    MODE2 = 2'b01,      // Layer 1 down part
-    MODE3 = 2'b10,      // Layer 2
-    MODE4 = 2'b11       // Layer 3 and rest
-} OP_MODE;
-
-typedef enum logic [1:0] {
-    IDLE            = 2'b00,
-    LOAD_FILTER     = 2'b01,
-    CONV            = 2'b10
-} OP_STAGE;
-
-typedef enum logic [1:0] {
-    LAYER1,
-    LAYER2,
-    LAYER3,
-    NULL
-} LAYER_TYPE;
-
-typedef enum logic[3:0] {
-    IDLE,
-    WEIGHT_LOAD,
-    WEIGHT_OUTPUT,
-    IFMAP_LOAD,
-    WAIT_TO_RESTART_CONV_P4, // if pe array just finish all conv, ifmap need to change to ifmap
-    WAIT_TO_RESTART_CONV_P3,
-    WAIT_TO_RESTART_CONV_P2,
-    WAIT_TO_RESTART_CONV_P1,
-    WAIT_TO_RESTART_CONV;
-    PE_CONV_MODE1,
-    PE_CONV_MODE2,
-    PE_CONV_MODE3,
-    PE_CONV_MODE4,
-    COMPLETE
-} CONTROL_STATE;
-
-typedef enum logic[1:0] {
-    DECOMPRESSOR  = 2'b00,
-    WEIGHT_BUFFER = 2'b01,
-    COMPRESSOR    = 2'b10
-} MEMORY_SOURCE;
 
 
 `endif // __SYS_DEFS_VH__

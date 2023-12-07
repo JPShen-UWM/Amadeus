@@ -5,7 +5,7 @@ module pe
     #(parameter ROW_IDX = 0,
     parameter COL_IDX = 0)(
     input                       clk,
-    input                       rst,
+    input                       rst_n,
     input OP_MODE               mode_in,           // mode selection
     input                       change_mode,
     input PE_IN_PACKET          ifmap_packet,      // PE packet broadcasted from buffer
@@ -66,23 +66,24 @@ logic stall_mult, stall_accum, stall_wb;
 logic [5:0] psum_idx_mult, psum_idx_accum, psum_idx_wb;
 logic [1:0] filter_ptr_mult, filter_ptr_accum, filter_ptr_wb;
 logic [3:0] conv_cnt_mult, conv_cnt_accum, conv_cnt_wb;
+logic data_valid, data_valid_mult, data_valid_accum, data_valid_wb;
 
 logic [5:0] psum_idx; // psum index in ofmap
 logic [5:0] psum_idx_max; // Maximum psum_idx
 
-logic [3:0] psum_ready, psum_ready_comb; // status of psum output buffer
+logic [3:0] psum_ready, psum_post_free_comb, psum_ready_comb; // status of psum output buffer
 logic [11:0] accum_adder_out;
 logic conv_done_soon; // All data has been feed in pipeline, conv will done soon
 
 
 always_ff @(posedge clk) begin
-    if(rst) cur_mode <= MODE1;
+    if(!rst_n) cur_mode <= MODE1;
     else if(change_mode) cur_mode <= mode_in;
 end
 
 // Weight fifo act as a circular fifo
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         filter_ram <= '0;
     end
     else if(op_stage_in == LOAD_FILTER && filter_packet.valid) begin
@@ -106,7 +107,7 @@ assign conv_cnt_inc = filter_ptr == 2'b11 & !stall; // Increment filter pointer 
 
 // conv_cnt count from 0 to max_conv_cnt represent MAC iteration for a single output
 always_ff @(posedge clk) begin
-    if(rst) conv_cnt <= '0;
+    if(!rst_n) conv_cnt <= '0;
     if(change_mode | conv_continue) conv_cnt <= '0;
     else if(op_stage_in == CONV & conv_cnt_inc) begin
         if(conv_cnt == max_conv_cnt) conv_cnt <= '0;
@@ -117,7 +118,7 @@ end
 
 // Filter pointer, each ifmap should mult with all the filters before proceed to next one
 always_ff @(posedge clk) begin
-    if(rst) filter_ptr <= '0;
+    if(!rst_n) filter_ptr <= '0;
     if(change_mode) filter_ptr <= '0;
     else if(op_stage_in == CONV & !stall) begin
         filter_ptr <= filter_ptr + 1;
@@ -127,7 +128,7 @@ end
 assign weight_next = filter_ram[filter_ptr][conv_cnt];
 
 always_ff @(posedge clk) begin
-    if(rst) conv_done_soon <= 1'b0;
+    if(!rst_n) conv_done_soon <= 1'b0;
     else if(conv_continue) conv_done_soon <= 1'b0;
     else if(psum_idx == psum_idx_max && conv_cnt == max_conv_cnt && conv_cnt_inc) conv_done_soon <= 1'b1;
 end
@@ -168,7 +169,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) section_valid <= 3'b0;
+    if(!rst_n) section_valid <= 3'b0;
     else if(conv_continue) section_valid <= 3'b0;
     else section_valid <= section_valid_comb;
 end
@@ -221,7 +222,7 @@ end
 
 // ifmap ram
 always_ff @(posedge clk) begin
-    if(rst) ifmap_ram <= '0;
+    if(!rst_n) ifmap_ram <= '0;
     else if(conv_continue) ifmap_ram <= '0;
     else if(section_write[0]) ifmap_ram[ 3:0] <= ifmap_packet.data;
     else if(section_write[1]) ifmap_ram[ 7:4] <= ifmap_packet.data;
@@ -243,7 +244,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) start_ptr <= '0;
+    if(!rst_n) start_ptr <= '0;
     else if(conv_continue) start_ptr <= '0;
     else if(!stall && conv_cnt == max_conv_cnt && filter_ptr == 2'b11) begin
         start_ptr <= next_start_ptr;
@@ -253,7 +254,7 @@ end
 /*
 // Start_ptr_ff use to trackstart_ptr change
 always_ff @(posedge clk) begin
-    if(rst) start_ptr_ff <= '0;
+    if(!rst_n) start_ptr_ff <= '0;
     else start_ptr_ff <= start_ptr;
 end
 */
@@ -264,6 +265,7 @@ assign read_ptr = (start_ptr + conv_cnt >= 12)?(start_ptr + conv_cnt - 12):start
 // Check stall status
 // Stall is asserted when read_ptr try to read invalid section
 assign stall = (!section_valid[0] && read_ptr == 0) | (!section_valid[1] && read_ptr == 4) | (!section_valid[2] && read_ptr == 8) | accum_stall | conv_done_soon;
+assign data_valid = !((!section_valid[0] && read_ptr == 0) | (!section_valid[1] && read_ptr == 4) | (!section_valid[2] && read_ptr == 8));
 
 // next input feature data going into mac
 assign ifdata_next = ifmap_ram[read_ptr];
@@ -276,7 +278,7 @@ mult_fixed MULT(.inA(mult_inA), .inB(mult_inB), .out(mult_out));
 `ifndef ZERO_SKIPPING
 `define
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         mult_inA <= '0;
         mult_inB <= '0;
         mult_out_ff <= '0;
@@ -297,7 +299,7 @@ logic skip_zero_ff;
 assign skip_zero = ~|ifdata_next | ~|weight_next | stall;
 
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
 		mult_out_ff <= '0;
         mult_inA <= '0;
         mult_inB <= '0;
@@ -316,7 +318,7 @@ always_ff @(posedge clk) begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) skip_zero_ff <= 0;
+    if(!rst_n) skip_zero_ff <= 0;
     else if(!accum_stall) skip_zero_ff <= skip_zero;
 end
 `endif // ZERO SKIPPING END
@@ -328,7 +330,7 @@ assign adder_inB = psum_ram_out;
 adder_fixed MAC_ADDER(.inA(adder_inA), .inB(adder_inB), .out(adder_out));
 
 always_ff @(posedge clk) begin
-    if(rst) adder_out_ff <= '0;
+    if(!rst_n) adder_out_ff <= '0;
     else if(!accum_stall) adder_out_ff <= adder_out;
 end
 
@@ -339,7 +341,7 @@ assign psum_idx_max = (cur_mode == MODE1)? `L1_OFMAP_SIZE - 1:
                       (cur_mode == MODE3)? `L2_OFMAP_SIZE - 1:
                                            `L3_OFMAP_SIZE - 1;
 always_ff @(posedge clk) begin
-    if(rst) psum_idx <= '0;
+    if(!rst_n) psum_idx <= '0;
     else if(conv_continue) psum_idx <= '0;
     else if(!accum_stall && (conv_cnt == max_conv_cnt && filter_ptr == 3)) begin
         if(psum_idx == psum_idx_max) psum_idx <= '0;
@@ -349,7 +351,7 @@ end
 
 // Pipeline for conv cnt, stall, filter_ptr
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         stall_mult          <= '0;
         stall_accum         <= '0;
         stall_wb            <= '0;
@@ -362,6 +364,9 @@ always_ff @(posedge clk) begin
         conv_cnt_mult       <= '0;
         conv_cnt_accum      <= '0;
         conv_cnt_wb         <= '0;
+        data_valid_mult <= '0;
+        data_valid_accum<= '0;
+        data_valid_wb   <= '0;
     end
     else if(!accum_stall) begin
         stall_mult          <= stall;
@@ -376,25 +381,32 @@ always_ff @(posedge clk) begin
         conv_cnt_mult       <= conv_cnt;
         conv_cnt_accum      <= conv_cnt_mult;
         conv_cnt_wb         <= conv_cnt_accum;
+        data_valid_mult     <= data_valid;
+        data_valid_accum    <= data_valid_mult;
+        data_valid_wb       <= data_valid_accum;
+    end
+    else if(stall) begin
+
     end
 end
 
 // Psum scratch pad sram
 always_ff @(posedge clk) begin
-    if(rst) psum_ram <= '0;
-    else if(conv_cnt_wb == max_conv_cnt) psum_ram[filter_ptr_wb] <= 12'b0;
-    else psum_ram[filter_ptr_wb] <= adder_out_ff;
+    if(!rst_n) psum_ram <= '0;
+    else if(conv_cnt_wb == max_conv_cnt && data_valid_wb) psum_ram[filter_ptr_wb] <= 12'b0;
+    else if(data_valid_wb) psum_ram[filter_ptr_wb] <= adder_out_ff;
 end
 assign psum_ram_out = psum_ram[filter_ptr_accum];
 
 // Psum output buffer
 always_ff @(posedge clk) begin
-    if(rst) psum_output_buffer <= '0;
-    else if(!accum_stall & conv_cnt_wb == max_conv_cnt) psum_output_buffer[filter_ptr_wb] <= adder_out_ff;
+    if(!rst_n) psum_output_buffer <= '0;
+    else if(!accum_stall & conv_cnt_wb == max_conv_cnt & data_valid_wb) psum_output_buffer[filter_ptr_wb] <= adder_out_ff;
 end
 
 // psum output buffer status
 always_comb begin
+    psum_post_free_comb = psum_ready;
     psum_ready_comb = psum_ready;
     psum_ack_out = 0;
     accum_stall = 0;
@@ -402,17 +414,18 @@ always_comb begin
     if(!psum_out.valid | psum_ack_in) begin
         if(psum_in.valid && psum_ready[psum_in.filter_idx]) begin
             psum_ack_out = 1;
-            psum_ready_comb[psum_in.filter_idx] = 1'b0;
+            psum_post_free_comb[psum_in.filter_idx] = 1'b0;
         end
     end
+    psum_ready_comb = psum_post_free_comb;
     if (conv_cnt_wb == max_conv_cnt) begin
-        if(psum_ready_comb[filter_ptr_wb]) accum_stall = 1; // Accumulation stall when try to write in unfree buffer slot
-        else psum_ready_comb[filter_ptr_wb] = 1'b1;
+        if(psum_ready_comb[filter_ptr_wb] & data_valid_wb) accum_stall = 1; // Accumulation stall when try to write in unfree buffer slot
+        else if(data_valid_wb) psum_ready_comb[filter_ptr_wb] = 1'b1;
     end
 end
 
 always_ff @(posedge clk) begin
-    if(rst) psum_ready <= '0;
+    if(!rst_n) psum_ready <= '0;
     else psum_ready <= psum_ready_comb;
 end
 
@@ -421,7 +434,7 @@ adder_fixed ACCUM_ADDER(.inA(psum_in.psum), .inB(psum_output_buffer[psum_in.filt
 
 // Psum out packet
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         psum_out.valid <= 0;
         psum_out.psum <= '0;
         psum_out.filter_idx <= '0;
@@ -438,7 +451,7 @@ end
 
 // convolution state: done/running
 always_ff @(posedge clk) begin
-    if(rst) conv_done <= 1'b1;
+    if(!rst_n) conv_done <= 1'b1;
     else if(conv_continue) conv_done <= '0;
     else if(psum_idx_wb == '0 && filter_ptr_wb == 2'b00 && conv_cnt_wb == '0 && psum_ready == 4'b0 && conv_done_soon) conv_done <= 1;
 end
