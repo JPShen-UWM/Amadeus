@@ -1,0 +1,340 @@
+Information: Checking out the license 'DesignWare'. (SEC-104)
+Information: Changed wire load model for 'adder_fixed' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'adder_fixed' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'mult_fixed' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'alt1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'apparch' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width6' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_6_1_6' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width2' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_2_1_2' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_3_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_3_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_3_5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_1_5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_4_4_5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width13' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_TC_OP_12_12_13' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width6' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_6_6_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_add_width13' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*ADD_TC_OP_12_12_13' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*MULT_TC_OP_9_8_16' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*GEQ_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*GT_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*GT_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width6' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_6_6_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
+Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
+Information: Updating design information... (UID-85)
+Warning: Design 'pe' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+
+Information: Checking generated_clocks...
+
+Information: Checking loops...
+
+Information: Checking no_input_delay...
+Warning: The following input ports have no clock_relative delay specified, the command set_input_delay without -clock option will be ignored. (TIM-216)
+--------------------
+rst
+mode_in[1]
+mode_in[0]
+change_mode
+ifmap_packet[valid]
+ifmap_packet[packet_idx][4]
+ifmap_packet[packet_idx][3]
+ifmap_packet[packet_idx][2]
+ifmap_packet[packet_idx][1]
+ifmap_packet[packet_idx][0]
+ifmap_packet[data][3][7]
+ifmap_packet[data][3][6]
+ifmap_packet[data][3][5]
+ifmap_packet[data][3][4]
+ifmap_packet[data][3][3]
+ifmap_packet[data][3][2]
+ifmap_packet[data][3][1]
+ifmap_packet[data][3][0]
+ifmap_packet[data][2][7]
+ifmap_packet[data][2][6]
+ifmap_packet[data][2][5]
+ifmap_packet[data][2][4]
+ifmap_packet[data][2][3]
+ifmap_packet[data][2][2]
+ifmap_packet[data][2][1]
+ifmap_packet[data][2][0]
+ifmap_packet[data][1][7]
+ifmap_packet[data][1][6]
+ifmap_packet[data][1][5]
+ifmap_packet[data][1][4]
+ifmap_packet[data][1][3]
+ifmap_packet[data][1][2]
+ifmap_packet[data][1][1]
+ifmap_packet[data][1][0]
+ifmap_packet[data][0][7]
+ifmap_packet[data][0][6]
+ifmap_packet[data][0][5]
+ifmap_packet[data][0][4]
+ifmap_packet[data][0][3]
+ifmap_packet[data][0][2]
+ifmap_packet[data][0][1]
+ifmap_packet[data][0][0]
+filter_packet[valid]
+filter_packet[packet_idx][4]
+filter_packet[packet_idx][3]
+filter_packet[packet_idx][2]
+filter_packet[packet_idx][1]
+filter_packet[packet_idx][0]
+filter_packet[data][3][7]
+filter_packet[data][3][6]
+filter_packet[data][3][5]
+filter_packet[data][3][4]
+filter_packet[data][3][3]
+filter_packet[data][3][2]
+filter_packet[data][3][1]
+filter_packet[data][3][0]
+filter_packet[data][2][7]
+filter_packet[data][2][6]
+filter_packet[data][2][5]
+filter_packet[data][2][4]
+filter_packet[data][2][3]
+filter_packet[data][2][2]
+filter_packet[data][2][1]
+filter_packet[data][2][0]
+filter_packet[data][1][7]
+filter_packet[data][1][6]
+filter_packet[data][1][5]
+filter_packet[data][1][4]
+filter_packet[data][1][3]
+filter_packet[data][1][2]
+filter_packet[data][1][1]
+filter_packet[data][1][0]
+filter_packet[data][0][7]
+filter_packet[data][0][6]
+filter_packet[data][0][5]
+filter_packet[data][0][4]
+filter_packet[data][0][3]
+filter_packet[data][0][2]
+filter_packet[data][0][1]
+filter_packet[data][0][0]
+op_stage_in[1]
+op_stage_in[0]
+psum_in[valid]
+psum_in[filter_idx][1]
+psum_in[filter_idx][0]
+psum_in[psum][11]
+psum_in[psum][10]
+psum_in[psum][9]
+psum_in[psum][8]
+psum_in[psum][7]
+psum_in[psum][6]
+psum_in[psum][5]
+psum_in[psum][4]
+psum_in[psum][3]
+psum_in[psum][2]
+psum_in[psum][1]
+psum_in[psum][0]
+psum_ack_in
+conv_continue
+
+Information: Checking unconstrained_endpoints...
+
+Warning: The following end-points are not constrained for maximum delay.
+
+End point
+---------------
+conv_done
+cur_mode_reg[0]/next_state
+cur_mode_reg[0]/synch_enable
+cur_mode_reg[1]/next_state
+cur_mode_reg[1]/synch_enable
+error
+filter_ram_reg[0][0][0]/next_state
+filter_ram_reg[0][0][1]/next_state
+filter_ram_reg[0][0][2]/next_state
+filter_ram_reg[0][0][3]/next_state
+filter_ram_reg[0][0][4]/next_state
+filter_ram_reg[0][0][5]/next_state
+filter_ram_reg[0][0][6]/next_state
+filter_ram_reg[0][0][7]/next_state
+filter_ram_reg[0][1][0]/next_state
+filter_ram_reg[0][1][1]/next_state
+filter_ram_reg[0][1][2]/next_state
+filter_ram_reg[0][1][3]/next_state
+filter_ram_reg[0][1][4]/next_state
+filter_ram_reg[0][1][5]/next_state
+filter_ram_reg[0][1][6]/next_state
+filter_ram_reg[0][1][7]/next_state
+filter_ram_reg[0][2][0]/next_state
+filter_ram_reg[0][2][1]/next_state
+filter_ram_reg[0][2][2]/next_state
+filter_ram_reg[0][2][3]/next_state
+filter_ram_reg[0][2][4]/next_state
+filter_ram_reg[0][2][5]/next_state
+filter_ram_reg[0][2][6]/next_state
+filter_ram_reg[0][2][7]/next_state
+filter_ram_reg[0][3][0]/next_state
+filter_ram_reg[0][3][1]/next_state
+filter_ram_reg[0][3][2]/next_state
+filter_ram_reg[0][3][3]/next_state
+filter_ram_reg[0][3][4]/next_state
+filter_ram_reg[0][3][5]/next_state
+filter_ram_reg[0][3][6]/next_state
+filter_ram_reg[0][3][7]/next_state
+filter_ram_reg[1][0][0]/next_state
+filter_ram_reg[1][0][1]/next_state
+filter_ram_reg[1][0][2]/next_state
+filter_ram_reg[1][0][3]/next_state
+filter_ram_reg[1][0][4]/next_state
+filter_ram_reg[1][0][5]/next_state
+filter_ram_reg[1][0][6]/next_state
+filter_ram_reg[1][0][7]/next_state
+filter_ram_reg[1][1][0]/next_state
+filter_ram_reg[1][1][1]/next_state
+filter_ram_reg[1][1][2]/next_state
+filter_ram_reg[1][1][3]/next_state
+filter_ram_reg[1][1][4]/next_state
+filter_ram_reg[1][1][5]/next_state
+filter_ram_reg[1][1][6]/next_state
+filter_ram_reg[1][1][7]/next_state
+filter_ram_reg[1][2][0]/next_state
+filter_ram_reg[1][2][1]/next_state
+filter_ram_reg[1][2][2]/next_state
+filter_ram_reg[1][2][3]/next_state
+filter_ram_reg[1][2][4]/next_state
+filter_ram_reg[1][2][5]/next_state
+filter_ram_reg[1][2][6]/next_state
+filter_ram_reg[1][2][7]/next_state
+filter_ram_reg[1][3][0]/next_state
+filter_ram_reg[1][3][1]/next_state
+filter_ram_reg[1][3][2]/next_state
+filter_ram_reg[1][3][3]/next_state
+filter_ram_reg[1][3][4]/next_state
+filter_ram_reg[1][3][5]/next_state
+filter_ram_reg[1][3][6]/next_state
+filter_ram_reg[1][3][7]/next_state
+filter_ram_reg[2][0][0]/next_state
+filter_ram_reg[2][0][1]/next_state
+filter_ram_reg[2][0][2]/next_state
+filter_ram_reg[2][0][3]/next_state
+filter_ram_reg[2][0][4]/next_state
+filter_ram_reg[2][0][5]/next_state
+filter_ram_reg[2][0][6]/next_state
+filter_ram_reg[2][0][7]/next_state
+filter_ram_reg[2][1][0]/next_state
+filter_ram_reg[2][1][1]/next_state
+filter_ram_reg[2][1][2]/next_state
+filter_ram_reg[2][1][3]/next_state
+filter_ram_reg[2][1][4]/next_state
+filter_ram_reg[2][1][5]/next_state
+filter_ram_reg[2][1][6]/next_state
+filter_ram_reg[2][1][7]/next_state
+filter_ram_reg[2][2][0]/next_state
+filter_ram_reg[2][2][1]/next_state
+filter_ram_reg[2][2][2]/next_state
+filter_ram_reg[2][2][3]/next_state
+filter_ram_reg[2][2][4]/next_state
+filter_ram_reg[2][2][5]/next_state
+filter_ram_reg[2][2][6]/next_state
+filter_ram_reg[2][2][7]/next_state
+filter_ram_reg[2][3][0]/next_state
+filter_ram_reg[2][3][1]/next_state
+filter_ram_reg[2][3][2]/next_state
+filter_ram_reg[2][3][3]/next_state
+filter_ram_reg[2][3][4]/next_state
+filter_ram_reg[2][3][5]/next_state
+filter_ram_reg[2][3][6]/next_state
+filter_ram_reg[2][3][7]/next_state
+filter_ram_reg[3][0][0]/next_state
+filter_ram_reg[3][0][1]/next_state
+filter_ram_reg[3][0][2]/next_state
+filter_ram_reg[3][0][3]/next_state
+filter_ram_reg[3][0][4]/next_state
+filter_ram_reg[3][0][5]/next_state
+filter_ram_reg[3][0][6]/next_state
+filter_ram_reg[3][0][7]/next_state
+filter_ram_reg[3][1][0]/next_state
+filter_ram_reg[3][1][1]/next_state
+filter_ram_reg[3][1][2]/next_state
+filter_ram_reg[3][1][3]/next_state
+filter_ram_reg[3][1][4]/next_state
+filter_ram_reg[3][1][5]/next_state
+filter_ram_reg[3][1][6]/next_state
+filter_ram_reg[3][1][7]/next_state
+filter_ram_reg[3][2][0]/next_state
+filter_ram_reg[3][2][1]/next_state
+filter_ram_reg[3][2][2]/next_state
+filter_ram_reg[3][2][3]/next_state
+filter_ram_reg[3][2][4]/next_state
+filter_ram_reg[3][2][5]/next_state
+filter_ram_reg[3][2][6]/next_state
+filter_ram_reg[3][2][7]/next_state
+filter_ram_reg[3][3][0]/next_state
+filter_ram_reg[3][3][1]/next_state
+filter_ram_reg[3][3][2]/next_state
+filter_ram_reg[3][3][3]/next_state
+filter_ram_reg[3][3][4]/next_state
+filter_ram_reg[3][3][5]/next_state
+filter_ram_reg[3][3][6]/next_state
+filter_ram_reg[3][3][7]/next_state
+full
+psum_ack_out
+psum_out[filter_idx][0]
+psum_out[filter_idx][1]
+psum_out[psum][0]
+psum_out[psum][1]
+psum_out[psum][2]
+psum_out[psum][3]
+psum_out[psum][4]
+psum_out[psum][5]
+psum_out[psum][6]
+psum_out[psum][7]
+psum_out[psum][8]
+psum_out[psum][9]
+psum_out[psum][10]
+psum_out[psum][11]
+psum_out[valid]
+
+Information: Checking pulse_clock_cell_type...
+
+Information: Checking no_driving_cell...
+
+Information: Checking partial_input_delay...
+1

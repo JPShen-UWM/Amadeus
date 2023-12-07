@@ -1,0 +1,30 @@
+`ifndef SYNTHESIS
+
+//
+// This is an automatically generated file from 
+// dc_shell Version T-2022.03-SP3 -- Jul 12, 2022
+//
+
+// For simulation only. Do not modify.
+
+module pe_svsim
+    #(parameter ROW_IDX = 0,
+    parameter COL_IDX = 0)(
+    input                       clk,
+    input                       rst,
+    input OP_MODE               mode_in,               input                       change_mode,
+    input PE_IN_PACKET          ifmap_packet,          input PE_IN_PACKET          filter_packet,          input OP_STAGE              op_stage_in,
+    input PSUM_PACKET           psum_in,
+    input                       psum_ack_in,        input                       conv_continue,  
+    output PSUM_PACKET          psum_out,
+    output logic                psum_ack_out,       output logic                conv_done,          output logic                error,              output logic                full            );
+
+
+
+  pe pe( {>>{ clk }}, {>>{ rst }}, {>>{ mode_in }}, {>>{ change_mode }}, 
+        {>>{ ifmap_packet }}, {>>{ filter_packet }}, {>>{ op_stage_in }}, 
+        {>>{ psum_in }}, {>>{ psum_ack_in }}, {>>{ conv_continue }}, 
+        {>>{ psum_out }}, {>>{ psum_ack_out }}, {>>{ conv_done }}, 
+        {>>{ error }}, {>>{ full }} );
+endmodule
+`endif

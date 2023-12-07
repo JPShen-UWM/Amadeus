@@ -1,0 +1,44 @@
+`ifndef SYNTHESIS
+
+//
+// This is an automatically generated file from 
+// dc_shell Version T-2022.03-SP3 -- Jul 12, 2022
+//
+
+// For simulation only. Do not modify.
+
+module pe_array_svsim(
+    input                           clk,
+    input                           rst,
+        output logic [5:0][6:0]         pe_full,
+    input DIAGONAL_BUS_PACKET       diagonal_bus_packet,
+        input PE_IN_PACKET              weight_in_array[0:5],
+        input PSUM_PACKET   [6:0]       psum_to_pe,
+    output logic        [6:0]       pe_psum_ack,
+    output PSUM_PACKET  [6:0]       psum_to_buffer,
+    input logic         [6:0]       psum_buffer_ack,
+        input OP_MODE                   mode_in,
+    input                           change_mode,
+    input                           conv_continue,
+    input OP_STAGE                  op_stage_in,
+    output [5:0][6:0]               pe_conv_done,
+        output PSUM_PACKET [6:0]        psum_row2_out,
+    output PSUM_PACKET [6:0]        psum_row4_out,
+    input [6:0]                     outbuff_row2_ack_in,
+    input [6:0]                     outbuff_row4_ack_in,
+    input [6:0]                     outbuff_row5_ack_in,
+        output wor                      error
+);
+
+
+
+  pe_array pe_array( {>>{ clk }}, {>>{ rst }}, {>>{ pe_full }}, 
+        {>>{ diagonal_bus_packet }}, {>>{ weight_in_array }}, 
+        {>>{ psum_to_pe }}, {>>{ pe_psum_ack }}, {>>{ psum_to_buffer }}, 
+        {>>{ psum_buffer_ack }}, {>>{ mode_in }}, {>>{ change_mode }}, 
+        {>>{ conv_continue }}, {>>{ op_stage_in }}, {>>{ pe_conv_done }}, 
+        {>>{ psum_row2_out }}, {>>{ psum_row4_out }}, 
+        {>>{ outbuff_row2_ack_in }}, {>>{ outbuff_row4_ack_in }}, 
+        {>>{ outbuff_row5_ack_in }}, {>>{ error }} );
+endmodule
+`endif

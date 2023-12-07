@@ -1,0 +1,1339 @@
+ 
+****************************************
+Report : timing
+        -path full_clock
+        -delay min
+        -nets
+        -max_paths 30
+        -transition_time
+Design : pe_array
+Version: T-2022.03-SP3
+Date   : Thu Dec  7 14:14:34 2023
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: tt1p05v25c   Library: saed32rvt_tt1p05v25c
+Wire Load Model Mode: enclosed
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_data_valid_mult_reg
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum_reg
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_mult_reg/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_mult_reg/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_mult (net)     1        0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3084/Z_0 (*SELECT_OP_2.1_2.1_1)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N854 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum_reg/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum_reg/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum[0] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3082/Z_0 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N849 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum[1] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3082/Z_1 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N850 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_2_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_2_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_2_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_2_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum[2] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3082/Z_2 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N851 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_2_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_2_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_3_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_3_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_3_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_3_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum[3] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3082/Z_3 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N852 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_3_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_wb_reg_3_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult[0] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3081/Z_0 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N845 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult[1] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3081/Z_1 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N846 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_2_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_2_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_2_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_2_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult[2] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3081/Z_2 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N847 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_2_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_2_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_3_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_3_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_3_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult_reg_3_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_mult[3] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3081/Z_3 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N848 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_3_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_conv_cnt_accum_reg_3_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_accum_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult[0] (net)     1     0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3078/Z_0 (*SELECT_OP_2.2_2.1_2)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N837 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_accum_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_accum_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_accum_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_mult[1] (net)     1     0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3078/Z_1 (*SELECT_OP_2.2_2.1_2)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N838 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_accum_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_filter_ptr_accum_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum[0] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3076/Z_0 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N829 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum[1] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3076/Z_1 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N830 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_2_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_2_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_2_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_2_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum[2] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3076/Z_2 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N831 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_2_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_2_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_3_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_3_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_3_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_3_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum[3] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3076/Z_3 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N832 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_3_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_3_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_4_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_4_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_4_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_4_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum[4] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3076/Z_4 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N833 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_4_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_4_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_5_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_5_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_5_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_5_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum[5] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3076/Z_5 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N834 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_5_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_wb_reg_5_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult[0] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3075/Z_0 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N823 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult[1] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3075/Z_1 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N824 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_2_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_2_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_2_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_2_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult[2] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3075/Z_2 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N825 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_2_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_2_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_3_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_3_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_3_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_3_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult[3] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3075/Z_3 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N826 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_3_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_3_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_4_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_4_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_4_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_4_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult[4] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3075/Z_4 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N827 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_4_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_4_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_5_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_5_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_5_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult_reg_5_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_mult[5] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3075/Z_5 (*SELECT_OP_2.6_2.1_6)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N828 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_5_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_psum_idx_accum_reg_5_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum_reg
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_0__PE_ARRAY_data_valid_wb_reg
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum_reg/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum_reg/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_accum (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_C3085/Z_0 (*SELECT_OP_2.1_2.1_1)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_N855 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_wb_reg/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_0__PE_ARRAY_data_valid_wb_reg/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_wb_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum[0] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_C3086/Z_0 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_N849 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_wb_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_wb_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_wb_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum[1] (net)     1      0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_C3086/Z_1 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_N850 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_wb_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_wb_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_0_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_0_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_0_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_0_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult[0] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_C3085/Z_0 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_N845 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_0_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_0_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_1_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_1_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_1_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_1_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult[1] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_C3085/Z_1 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_N846 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_1_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_1_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_2_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_2_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_2_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_2_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult[2] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_C3085/Z_2 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_N847 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_2_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_2_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+  Startpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_3_
+              (rising edge-triggered flip-flop clocked by core_clk)
+  Endpoint: genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_3_
+            (rising edge-triggered flip-flop clocked by core_clk)
+  Path Group: core_clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  pe_array           ForQA                 saed32rvt_tt1p05v25c
+
+Attributes:
+    d - dont_touch
+    u - dont_use
+   mo - map_only
+   so - size_only
+    i - ideal_net or ideal_network
+  inf - infeasible path
+
+  Point                                       Fanout     Trans      Incr       Path      Attributes
+  ---------------------------------------------------------------------------------------------------------
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_3_/clocked_on (**SEQGEN**)     0.08     0.00 #     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult_reg_3_/Q (**SEQGEN**)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_mult[3] (net)     1       0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_C3085/Z_3 (*SELECT_OP_2.4_2.1_4)     0.00     0.00     0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_N848 (net)     1                   0.00       0.20 r
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_3_/next_state (**SEQGEN**)     0.00     0.00     0.21 r
+  data arrival time                                                            0.21
+
+  clock core_clk (rise edge)                                        0.00       0.00
+  clock network delay (ideal)                                       0.20       0.20
+  clock uncertainty                                                 0.50       0.70
+  genblk1_0__genblk1_1__PE_ARRAY_conv_cnt_accum_reg_3_/clocked_on (**SEQGEN**)     0.00     0.70 r
+  library hold time                                                 0.00       0.70
+  data required time                                                           0.70
+  ---------------------------------------------------------------------------------------------------------
+  data required time                                                           0.70
+  data arrival time                                                           -0.21
+  ---------------------------------------------------------------------------------------------------------
+  slack (VIOLATED)                                                            -0.49
+
+
+1

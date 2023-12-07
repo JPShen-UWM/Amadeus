@@ -44,7 +44,7 @@ always_ff @(posedge clk) begin
 end
 
 assign psum_out.psum = 'b0;
-assign psum_out.valid = opstage_in == CONV & ~send_done;
+assign psum_out.valid = op_stage_in == CONV & ~send_done;
 assign psum_out.filter_idx = filter_idx;
 
 endmodule
