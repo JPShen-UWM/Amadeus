@@ -140,8 +140,8 @@ generate
     // Update nxt_compress_group zero and val
 
     for(i=1;i<6;i++) begin
-      assign nxt_compress_group[i].zero = |group_zero_update[i]  ? group_zero_update_value[i][15]  : (start ? 4'd0 : compress_group[i].zero);
-      assign nxt_compress_group[i].val  = |group_value_update[i] ? group_value_update_value[i][15] : (start ? 8'd0 : compress_group[i].val);
+      assign nxt_compress_group[i].zero = |group_zero_update[i]  ? group_zero_update_value[i][15]  : ((start || mem_req_accepted) ? 4'd0 : compress_group[i].zero);
+      assign nxt_compress_group[i].val  = |group_value_update[i] ? group_value_update_value[i][15] : ((start || mem_req_accepted) ? 8'd0 : compress_group[i].val);
     end
 
     // Update nxt_compressed_data
