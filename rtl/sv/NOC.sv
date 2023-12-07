@@ -9,12 +9,10 @@ module NOC(
     input                           conv_complete,
     //
     input [34:0][255:0][7:0]        ifmap_data_in,
-    input                           ifmap_data_valid_in,
     input [5:0][6:0]                pe_full,
-    input [4:0]                     complete_count,
+    input [4:0]                     complete_count, // level signal
     //
-    output                          pe_calculation_complete, // to controller
-    output                          free_ifmap_buffer,
+    output logic                    free_ifmap_buffer,
     output DIAGONAL_BUS_PACKET      diagonal_bus_packet
 );
 
@@ -30,11 +28,19 @@ module NOC(
     logic ifmap_data_valid;
     localparam MODE1_LINE_COUNTER = 29;
     localparam MODE2_LINE_COUNTER = 34;
-    localparam MODE3_LINE_COUNTER = 10;
+    localparam MODE1_LINE_COUNTER_LAST_ITERATION = 25;
+    localparam MODE2_LINE_COUNTER_LAST_ITERATION = 30;
+
+    localparam MODE3_LINE_COUNTER_ITERATION_ONE = 10;
+    localparam MODE3_LINE_COUNTER_ITERATION_TWO = 17;
+    localparam MODE3_LINE_COUNTER_ITERATION_THREE = 24;
+    localparam MODE3_LINE_COUNTER_ITERATION_FOUR = 30;
+
     localparam MODE4_LINE_COUNTER = 14;
+
     localparam LAYER1_ELEMENT_COUNTER = 56;
     localparam LAYER2_ELEMENT_COUNTER = 7;
-    localparam LAYER2_ELEMENT_COUNTER = 3;
+    localparam LAYER3_ELEMENT_COUNTER = 3;
     // when there is one conv_complete from PEs, COUNT++
     localparam LAYER1_COMPLETE_COUNT = 16;
     localparam LAYER2_COMPLETE_COUNT = 4;
@@ -43,18 +49,33 @@ module NOC(
     logic [5:0] ifmap_data_line_read_ptr_counter;
     logic [5:0] ifmap_data_element_read_ptr_counter;
 
+    logic [5:0] layer2_ifmap_data_line_read_ptr_counter;
+
     logic [5:0] ifmap_data_line_read_ptr;
     logic [5:0] ifmap_data_line_read_ptr_next;
     logic [5:0] ifmap_data_element_read_ptr;
     logic [5:0] ifmap_data_element_read_ptr_next;
 
+    logic [5:0] ifmap_data_line_packet_idx;
+
     logic [5:0] layer1_line_read_ptr_start;
     logic [5:0] layer2_line_read_ptr_start;
     logic [5:0] line_read_ptr_start;
 
+    logic start_conv_p1;
+
     logic line_read_valid; // line_read_ptr move valid
 
+    logic [29:0][11:0] layer1_diagbus_pattern;
+    logic [29:0] layer1_pe_full; // the full signal for input feature map in layer1
+    logic layer1_is_last_iteration;
+    logic [29:0][11:0] layer2_diagbus_pattern; // actually only 11 width
+    logic [29:0] layer2_pe_full;
+    logic layer2_is_last_iteration;
+    logic [29:0][11:0] layer3_diagbus_pattern; // actually only 14 width
+    logic [29:0] layer3_pe_full;
 
+    logic [29:0][11:0] diagbus_pattern;
 
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
@@ -75,35 +96,46 @@ module NOC(
     end
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start) begin
+        if(!rst_n | start) begin
             enable <= 1'b0;
         end
-        else if(free_change) begin
+        else if(ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter && ifmap_data_element_read_ptr == ifmap_data_element_read_ptr_counter && line_read_valid) begin
             enable <= 1'b0;
         end
-        else(start_conv)begin
+        else if(start_conv)begin
             enable <= 1'b1;
         end
     end
 
+    always_ff@(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            start_conv_p1 <= 0;
+        end
+        else begin
+            start_conv_p1 <= start_conv;
+        end
+    end
+
+
+
     /// zero pad the ifmap data ///
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start) begin
+        if(!rst_n | start) begin
             ifmap_data <= '0;
             ifmap_data_valid <= 0;
         end
-        else if(start_conv) begin
+        else if(start_conv_p1) begin
             // update data
             if(mode == MODE1 || mode == MODE2) begin
                 ifmap_data <= ifmap_data_in;
             end
             else if(mode == MODE3) begin
                 for(integer i = 0; i < `MEM_BATCH_SIZE; i=i+1) begin
-                    if(i == 0) begin
+                    if(i < 2) begin
                         ifmap_data[i]   <= '0;
                     end
                     else begin
-                        ifmap_data[i+1] <= {ifmap_data_in[i][253:0],{2{8{1'b0}}}};
+                        ifmap_data[i] <= {ifmap_data_in[i-2][253:0],{16{1'b0}}};
                     end
                 end
             end
@@ -113,7 +145,7 @@ module NOC(
                         ifmap_data[i]   <= '0;
                     end
                     else begin
-                        ifmap_data[i+1] <= {ifmap_data_in[i][254:0],{8{1'b0}}};
+                        ifmap_data[i] <= {ifmap_data_in[i-1][254:0],{8{1'b0}}};
                     end
                 end
             end
@@ -128,9 +160,19 @@ module NOC(
 
     /// ifmap_read_ptr update logic ///
     // will not update the read_ptr until all pe need the same ifmap line is ready
-    assign ifmap_data_line_read_ptr_counter = mode == MODE1 ? MODE1_LINE_COUNTER :
-                                              mode == MODE2 ? MODE2_LINE_COUNTER :
-                                              mode == MODE3 ? MODE3_LINE_COUNTER :
+    always_comb begin
+        unique case(complete_count)
+            0:layer2_ifmap_data_line_read_ptr_counter = MODE3_LINE_COUNTER_ITERATION_ONE;
+            1:layer2_ifmap_data_line_read_ptr_counter = MODE3_LINE_COUNTER_ITERATION_TWO;
+            2:layer2_ifmap_data_line_read_ptr_counter = MODE3_LINE_COUNTER_ITERATION_THREE;
+            3:layer2_ifmap_data_line_read_ptr_counter = MODE3_LINE_COUNTER_ITERATION_FOUR;
+            default:layer2_ifmap_data_line_read_ptr_counter = 0;
+        endcase
+    end
+
+    assign ifmap_data_line_read_ptr_counter = mode == MODE1 ? (~layer1_is_last_iteration ? MODE1_LINE_COUNTER : MODE1_LINE_COUNTER_LAST_ITERATION) :
+                                              mode == MODE2 ? (~layer1_is_last_iteration ? MODE2_LINE_COUNTER : MODE2_LINE_COUNTER_LAST_ITERATION) :
+                                              mode == MODE3 ? layer2_ifmap_data_line_read_ptr_counter :
                                               mode == MODE4 ? MODE4_LINE_COUNTER : 0;
 
     assign ifmap_data_element_read_ptr_counter = layer_type == LAYER1 ? LAYER1_ELEMENT_COUNTER :
@@ -143,23 +185,25 @@ module NOC(
     assign layer2_line_read_ptr_start = complete_count == 1 ? 7  :
                                         complete_count == 2 ? 14 :
                                         complete_count == 3 ? 21 : 0;
+
     assign line_read_ptr_start = layer_type == LAYER1 ? layer1_line_read_ptr_start :
                                  layer_type == LAYER2 ? layer2_line_read_ptr_start : 0;
 
+    assign ifmap_data_line_packet_idx = ifmap_data_line_read_ptr - line_read_ptr_start;
 
-    assign line_read_valid = (  (layer_type == LAYER1 & ~(|layer1_diagbus_pattern[ifmap_data_line_read_ptr])) |
-                                (layer_type == LAYER2 & ~(|layer2_diagbus_pattern[ifmap_data_line_read_ptr])) |
-                                (layer_type == LAYER3 & ~(|layer3_diagbus_pattern[ifmap_data_line_read_ptr])) ) & enable;
+    assign line_read_valid = (  (layer_type == LAYER1 & ~(|layer1_pe_full[ifmap_data_line_packet_idx])) |
+                                (layer_type == LAYER2 & ~(|layer2_pe_full[ifmap_data_line_packet_idx])) |
+                                (layer_type == LAYER3 & ~(|layer3_pe_full[ifmap_data_line_packet_idx])) ) & enable;
 
-    assign ifmap_data_line_read_ptr_next = line_read_valid ? (ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter ? line_read_ptr_start : ifmao_data_line_read_ptr + 1'b1) :
+    assign ifmap_data_line_read_ptr_next = line_read_valid ? (ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter ? line_read_ptr_start : ifmap_data_line_read_ptr + 1'b1) :
                                                              ifmap_data_line_read_ptr;
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start) begin
+        if(!rst_n | start) begin
             ifmap_data_line_read_ptr <= 0;
         end
-        else if(start_conv) begin
-            ifmap_data_line_read_ptr <= line_read_ptr;
+        else if(start_conv_p1) begin
+            ifmap_data_line_read_ptr <= line_read_ptr_start;
         end
         else if(enable) begin
             ifmap_data_line_read_ptr <= ifmap_data_line_read_ptr_next;
@@ -167,9 +211,9 @@ module NOC(
     end
 
     // update the ifmap_data_element_read_ptr
-    assign ifmap_data_element_read_ptr_next = (ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter) & line_read_valid ? ifmap_data_element_read_ptr : ifmap_data_element_read_ptr + 1'b1;
+    assign ifmap_data_element_read_ptr_next = (ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter) & line_read_valid ? ifmap_data_element_read_ptr + 1'b1 : ifmap_data_element_read_ptr;
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start or start_conv) begin
+        if(!rst_n | start | start_conv_p1) begin
             ifmap_data_element_read_ptr <= 0;
         end
         else if(enable) begin
@@ -184,9 +228,9 @@ module NOC(
                                           (layer_type == LAYER2 & (ifmap_data_element_read_ptr == LAYER2_ELEMENT_COUNTER)) |
                                           (layer_type == LAYER3 & (ifmap_data_element_read_ptr == LAYER3_ELEMENT_COUNTER)) )  ? 4'b0111 : 4'b1111;
 
-    assign ifmap_packet.valid = line_read_valid & ifmap_data_valid;
-    for(genvar i = 0; i < 4; i=i+1) begin: ifmap_data
-        assign ifmap_packet.data[i] = ifmap_packet_element_valid[i] & ifmap_packet.valid ? ifmap_data[ifmap_data_line_read_ptr][ifmap_data_element_read_ptr*32+8*i+7:ifmap_data_element_read_ptr*32+8*i] : 0;
+    assign ifmap_packet.valid = line_read_valid & ifmap_data_valid & (ifmap_data_element_read_ptr <= ifmap_data_element_read_ptr_counter) & enable;
+    for(genvar i = 0; i < 4; i=i+1) begin: ifmap_data_gen
+        assign ifmap_packet.data[i] = ifmap_packet_element_valid[i] & ifmap_packet.valid ? ifmap_data[ifmap_data_line_read_ptr][ifmap_data_element_read_ptr*4+i] : 0;
     end
     assign ifmap_packet.packet_idx = ifmap_data_line_read_ptr - line_read_ptr_start;
 
@@ -195,7 +239,7 @@ module NOC(
     // if in layer1, you need to receive 2 conv_complete signal
     assign free_change = ((layer_type == LAYER1 && complete_count[0] == 1) || (layer_type == LAYER2 && complete_count == LAYER2_COMPLETE_COUNT-1) || layer_type == LAYER3) && conv_complete;
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start) begin
+        if(!rst_n | start) begin
             free_ifmap_buffer <= 0;
         end
         else if(free_change) begin
@@ -207,16 +251,6 @@ module NOC(
     end
 
     /// diagnal bus configuration
-    logic [29:0][11:0] layer1_diagbus_pattern;
-    logic [29:0] layer1_pe_full; // the full signal for input feature map in layer1
-    logic layer1_is_last_iteration;
-    logic [29:0][11:0] layer2_diagbus_pattern; // actually only 11 width
-    logic [29:0] layer2_pe_full;
-    logic layer2_is_last_iteration;
-    logic [29:0][11:0] layer3_diagbus_pattern; // actually only 14 width
-    logic [29:0] layer3_pe_full;
-
-    logic [29:0][11:0] diagbus_pattern;
 
     /* layer 1
     diagonal bus    d0      0	4	8	12	16	20	24
@@ -259,7 +293,7 @@ module NOC(
     assign layer1_diagbus_pattern[29] = 12'b100000000000;
 
     // if current calculation is the 8th iteration for layer1, the 7th column of pe should be disable
-    assign layer1_is_last_iteration = complete_count > 13;
+    assign layer1_is_last_iteration = (complete_count > 13) & (layer_type == LAYER1);
     assign layer1_pe_full[0]  = pe_full[0][0];
     assign layer1_pe_full[1]  = pe_full[1][0];
     assign layer1_pe_full[2]  = pe_full[2][0];
@@ -313,7 +347,7 @@ module NOC(
     assign layer2_diagbus_pattern[10]    = 12'b10000000000;
     assign layer2_diagbus_pattern[29:11] = '0;
 
-    assign layer2_is_last_iteration = complete_count > 2;
+    assign layer2_is_last_iteration = (complete_count > 2) & (layer_type == LAYER2);
 
     assign layer2_pe_full[0]     = pe_full[0][0];
     assign layer2_pe_full[1]     = pe_full[0][1] | pe_full[0][1];
@@ -377,11 +411,104 @@ module NOC(
 
     // send ifmap_packet to specific diagonal bus
     for(genvar i = 0; i < 12; i=i+1) begin: diagbus_gen
-        assign diagonal_bus_packet[i] = diagbus_pattern[ifmap_data_line_read_ptr][i] & ifmap_packet.valid & enable ? ifmap_packet : '0;
+        assign diagonal_bus_packet[i] = diagbus_pattern[ifmap_data_line_packet_idx][i] & ifmap_packet.valid & enable ? ifmap_packet : '0;
     end
 
 
 
-    /*############################################# PSUM NOC LOGIC #############################################*/
+    /*############################################# DV SECTION #############################################*/
+    `ifdef DV
+    // Assertion 1
+    // zero padding check
+    logic [30:0] layer2_zero_padding;
+    assign layer2_zero_padding[0] = |ifmap_data[0];
+    assign layer2_zero_padding[1] = |ifmap_data[1];
+    for(genvar i = 2; i < 29; i=i+1) begin
+        assign layer2_zero_padding[i] = (|ifmap_data[i][1:0]) | (|ifmap_data[i][30:29]);
+    end 
+    assign layer2_zero_padding[29] = |ifmap_data[29];
+    assign layer2_zero_padding[30] = |ifmap_data[30];
+
+    ASSERT_NEVER #(.MSG("layer2 ifmap data zero mapping is not correct")) layer2_zero_padding_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(enable & (layer_type == LAYER2) & ifmap_data_valid),
+        .expr(|layer2_zero_padding)
+    );
+
+    logic [14:0] layer3_zero_padding;
+    assign layer3_zero_padding[0] = |ifmap_data[0];
+    for(genvar i = 1; i < 14; i=i+1) begin
+        assign layer3_zero_padding[i] = (|ifmap_data[i][0]) | (|ifmap_data[i][14]);
+    end 
+    assign layer3_zero_padding[14] = |ifmap_data[14];
+
+    ASSERT_NEVER #(.MSG("layer3 ifmap data zero mapping is not correct")) layer3_zero_padding_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(enable & (layer_type == LAYER3) & ifmap_data_valid),
+        .expr(|layer3_zero_padding)
+    );
+
+    // Assertion 2
+    // conv complete upper limit check
+    logic conv_complete_limit;
+    assign conv_complete_limit =    ((layer_type == LAYER1) & (complete_count >=  LAYER1_COMPLETE_COUNT)) | 
+                                    ((layer_type == LAYER2) & (complete_count >=  LAYER2_COMPLETE_COUNT)) |
+                                    ((layer_type == LAYER3) & (complete_count >=  LAYER3_COMPLETE_COUNT));
+    ASSERT_NEVER #(.MSG("conv_complete is larger than complete limit")) conv_compelete_count_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(enable),
+        .expr(conv_complete_limit)
+    );
+
+    // // Assertion 3
+    // // complete count_check
+    // // for layer1, in last iteration, the pe full of final column should always be 0
+    // ASSERT_NEVER #(.MSG("layer 1, in last iteration, the pe full of final column should always be 0")) layer1_last_iteration_chk(
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .en(enable & layer1_is_last_iteration),
+    //     .expr(layer1_pe_full[0][6] | layer1_pe_full[1][6] | layer1_pe_full[2][6] | layer1_pe_full[3][6] | layer1_pe_full[4][6] | layer1_pe_full[5][6])
+    // );
+
+    // ASSERT_NEVER #(.MSG("layer 2, in last iteration, the pe full of final column should always be 0")) layer2_last_iteration_chk(
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .en(enable & layer2_is_last_iteration),
+    //     .expr(layer2_pe_full[0][6] | layer2_pe_full[1][6] | layer2_pe_full[2][6] | layer2_pe_full[3][6] | layer2_pe_full[4][6] | layer2_pe_full[5][6])
+    // );
+
+    // Assertion 4
+    // ifmap_data_line_packet_idx range check
+    logic layer1_ifmap_data_line_packet_idx_range;
+    assign layer1_ifmap_data_line_packet_idx_range = (ifmap_data_line_packet_idx >= 0) & (ifmap_data_line_packet_idx <= 29);
+    ASSERT_ALWAYS #(.MSG("layer 1 ifmap_data_line_packet_idx out of range")) layer1_ifmap_data_line_packet_idx_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(enable & layer_type == LAYER1 & ~start_conv_p1),
+        .expr(layer1_ifmap_data_line_packet_idx_range)
+    );
+
+    logic layer2_ifmap_data_line_packet_idx_range;
+    assign layer2_ifmap_data_line_packet_idx_range = (ifmap_data_line_packet_idx >= 0) & (ifmap_data_line_packet_idx <= 10);
+    ASSERT_ALWAYS #(.MSG("layer 2 ifmap_data_line_packet_idx out of range")) layer2_ifmap_data_line_packet_idx_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(enable & layer_type == LAYER2 & ~start_conv_p1),
+        .expr(layer2_ifmap_data_line_packet_idx_range)
+    );
+
+    logic layer3_ifmap_data_line_packet_idx_range;
+    assign layer3_ifmap_data_line_packet_idx_range = (ifmap_data_line_packet_idx >= 0) & (ifmap_data_line_packet_idx <= 14);
+    ASSERT_ALWAYS #(.MSG("layer 3 ifmap_data_line_packet_idx out of range")) layer3_ifmap_data_line_packet_idx_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(enable & layer_type == LAYER3 & ~start_conv_p1),
+        .expr(layer3_ifmap_data_line_packet_idx_range)
+    );
+
+    `endif
 
 endmodule

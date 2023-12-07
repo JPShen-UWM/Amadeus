@@ -7,13 +7,14 @@ module weight_buffer_tb;
 
     reg clk;
     reg rst_n;
+    reg start_load;
     OP_MODE mode_in;
     reg mem_data_valid;
     reg [63:0] weight_data;
     reg free_weight_buffer;
-    PE_IN_PACKET packet_out[0:5];
+    wire PE_IN_PACKET  packet_out[0:5] ;
     reg output_filter;
-
+    wire finish_output_delay;
     wire mem_req;
     wire ready_to_output;
 
@@ -22,12 +23,14 @@ module weight_buffer_tb;
         .rst_n(rst_n),
         .mode_in(mode_in),
         .mem_data_valid(mem_data_valid),
+        .start_load(start_load),
         .weight_data(weight_data),
         .free_weight_buffer(free_weight_buffer),
         .output_filter,
-        .packet_out(packet_out),
-        .mem_req(mem_req),
-        .ready_to_output(ready_to_output)
+        .packet_out_delay(packet_out),
+        .mem_req_delay(mem_req),
+        .finish_output_delay(finish_output_delay),
+        .ready_to_output_delay(ready_to_output)
     );
 
     always #(CYCLE/2) clk = ~clk;
@@ -40,13 +43,14 @@ module weight_buffer_tb;
         weight_data = 0;
         free_weight_buffer = 0;
         output_filter=0;
+        start_load=0;
         #10;
 
-       
+       start_load=1;
         rst_n = 0;
         repeat_data_task;
-        // weight_data = 1;
-        // #10;
+        weight_data = 1;
+        #10;
         // weight_data = 2;
         // #10;
         // free_weight_buffer=1;
@@ -55,7 +59,7 @@ module weight_buffer_tb;
         // mode_in = MODE3;
         // repeat_data_mode3_task;
         output_filter=1;
-        #120;
+        #200;
         $display("Test Completed");
         $finish;
     end
@@ -66,7 +70,7 @@ module weight_buffer_tb;
             for (i = 0; i < 88; i = i + 1) begin
                 mem_data_valid = 1;
                 for (j = 0; j < 64; j = j + 8) begin
-                    weight_data[j+:8] = i;
+                    weight_data[j+:8] = i+1;
                 end
                 $display("Iteration %d: Data = %h", i, weight_data);
                 #10; // 

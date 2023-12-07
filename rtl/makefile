@@ -20,13 +20,15 @@ all:	simv
 
 ##### 
 # Modify starting here
-#####
-HEADERS = sv/sys_defs.svh
-PRIMITIVES = $(wildcard primitive/*.sv)
-TESTBENCH = testbench/ifmap_buffer_tb.sv
-SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv
 
-SYNFILES = pe.vg
+HEADERS = sv/sys_defs.svh
+
+
+PRIMITIVES = $(wildcard primitive/*.sv)
+TESTBENCH = testbench/psum_buffer_tb.sv
+SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv sv/NOC.sv sv/psum_buffer.sv sv/fifo.sv
+
+
 
 export HEADERS
 export SIMFILES
@@ -42,7 +44,7 @@ dve:	$(HEADERS) $(SIMFILES) $(PRIMITIVES) $(TESTBENCH)
 
 .PHONY: dve
 
-$(SYNFILES): my_waveform_gen.sv tut_synth.tcl
+weight_buffer.vg: sv/weight_buffer.sv tut_synth.tcl
 	dc_shell-t -f tut_synth.tcl | tee synth.out
 
 syn_simv:	$(HEADERS) $(SYNFILES) $(TESTBENCH)

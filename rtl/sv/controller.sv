@@ -4,33 +4,32 @@ module controller(
     input rst_n,
     input start,
     input layer_type_in,
-    input [`MEM_ADDR_SIZE-1:0] start_address_in,
+    input [`MEM_ADDR_SIZE-1:0] ifmap_buffer_start_addr,
+    input [`MEM_ADDR_SIZE-1:0] weight_buffer_start_addr,
+    input [`MEM_ADDR_SIZE-1:0] compressor_start_addr,
     // from pe
     input [5:0][6:0] pe_conv_done, // directly connected from PEs
     // from decompressor
     input decompressor_mem_req,
     // from compressor
     input compressor_mem_req,
+    input [`MEM_BANDWIDTH*8-1:0] compressed_data, 
     // from weight buffer
     input weight_buffer_mem_req,
     input weight_output_finish,
     input weight_load_finish,
     // from ifmap buffer
     input ifmap_data_valid,  // ifmap_data complete load for batch 1, ready for first convolution
-    // need ifmap_data_change is becuase in layer1, output memory batch need to be changed before start conv
-    input ifmap_data_change, // ifmap_data ready for doing next convolution
     // from memory
-    input [MEM_BANDWIDTH*8-1:0:0] mem_data,
+    input [`MEM_BANDWIDTH*8-1:0] mem_data,
     input mem_valid,
-
-    // to noc, psum, pe
-    output mode,
+    
     output start_conv,
     // to decompressor
     output start_decompressor,
-    output decompressor_mem_ack,
-    output [MEM_BANDWIDTH*8-1:0] decompressor_mem_data,
+    output [`MEM_BANDWIDTH*8-1:0] decompressor_mem_data,
     output decompressor_mem_data_valid,
+    output decompressor_mem_ack,
     // to NOC
     output [4:0] complete_count, // if one pe array calculation complete
     // to pe
@@ -42,14 +41,14 @@ module controller(
     output start_weight_buffer_load,
     output start_weight_buffer_output,
     output weight_buffer_mem_ack,
-    output [MEM_BANDWIDTH*8-1:0:0] weight_buffer_mem_data,
-    output weight_buffer_mem_data,
+    output [`MEM_BANDWIDTH*8-1:0] weight_buffer_mem_data,
+    output weight_buffer_mem_data_valid,
     // to compressor
     output compressor_mem_ack,
-    output [MEM_BANDWIDTH*8-1:0:0] compressor_mem_data,
-    output compressor_mem_data_valid,
     // to TB
     output [`MEM_ADDR_SIZE-1:0] mem_addr,
+    output [`MEM_BANDWIDTH*8-1:0] mem_write_data,
+    output mem_write_valid,
     output layer_complete
 );
     CONTROL_STATE state;
@@ -57,6 +56,7 @@ module controller(
     // logic for layer type
     LAYER_TYPE layer_type;
     logic [`MEM_ADDR_SIZE-1:0] start_address;
+    MEM_REQ_PACKET
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
             layer_type <= NULL;
@@ -172,21 +172,14 @@ module controller(
     /// WEIGHT_LOAD
     // to weight buffer
     assign start_weight_buffer_load = state == WEIGHT_LOAD;
+    assign start_weight_buffer_output = state == WEIGHT_OUTPUT;
 
     /// WEIGHT_OUTPUT
     /// | conv_done | WEIGHT_LOAD | WEIGHT_LOAD
     ///             | change_mode | mode_changed
     ///             | wake up wb  | wb send first_data
     pulse change_mode_pulse(
-        .clk(clk),
-        .rst_n(rst_n),
-        .level(state == WEIGHT_OUTPUT),
-        .pulse(change_mode)
-    );
-    assign start_weight_buffer_output = state == WEIGHT_OUTPUT;
-
-    /// IFMAP_LOAD
-    // start decompressor and ifmap in ifmap_load
+        .clk(clk),ifmap_buffer_addr; and ifmap in ifmap_load
     pulse start_decompressor_pulse(
         .clk(clk),
         .rst_n(rst_n),
@@ -214,15 +207,110 @@ module controller(
 
 
     //######################################## MEMORY CONTROL ########################################///
+    logic [`MEM_ADDR_SIZE-1:0] ifmap_buffer_addr;
+    logic [`MEM_ADDR_SIZE-1:0] weight_buffer_addr;
+    logic [`MEM_ADDR_SIZE-1:0] compressor_addr;
 
-   fifo #(.DEPTH(16), WIDTH(32), .DTYPE(MEM_REQ_PACKET)) mem_req_fifo(
+    logic [2:0] mem_req_mask;
+    logic [2:0] mem_req_gnt;
+    MEMORY_SOURCE mem_req_src;
+    MEMORY_SOURCE mem_gnt_src;
+    logic mem_fifo_data_valid;
+    logic mem_fifo_full;
+    logic mem_fifo_empty;
+
+    assign mem_req_mask = {compressor_mem_req, weight_buffer_mem_req, decompressor_mem_req};
+
+    round_robin_arbitor #(.WIDTH(3)) rra(
+        .clk(clk),
+        .rst_n(rst_n),
+        .req(mem_req_mask),
+        .gnt(mem_req_gnt)
+    );
+
+    always_ff@(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            ifmap_buffer_addr <= ifmap_buffer_start_addr;
+        end
+        else if(mem_req_gnt[0]) begin
+            ifmap_buffer_addr <= ifmap_buffer_addr + 1'b1;
+        end
+    end
+
+    always_ff@(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            weight_buffer_addr <= weight_buffer_start_addr;
+        end
+        else if(mem_req_gnt[0]) begin
+            weight_buffer_addr <= weight_buffer_addr + 1'b1;
+        end
+    end
+
+    always_ff@(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            compressor_addr <= compressor_start_addr;
+        end
+        else if(mem_req_gnt[0]) begin
+            compressor_addr <= compressor_addr + 1'b1;
+        end
+    end
+
+    assign mem_req_src =    mem_req_gnt[0] ? IFMAP_BUFFER  : 
+                            mem_req_gnt[1] ? WEIGHT_BUFFER :
+                            mem_req_gnt[2] ? COMPRESSOR    : NONE;
+
+    assign mem_addr =   mem_req_gnt[0] ? ifmap_buffer_addr  : 
+                        mem_req_gnt[1] ? weight_buffer_addr :
+                        mem_req_gnt[2] ? compressor_addr    : NONE;
+
+    
+    assign decompressor_mem_ack     = mem_req_gnt[0] & ~mem_fifo_empty;
+    assign weight_buffer_mem_ack    = mem_req_gnt[1] & ~mem_fifo_empty;
+    assign compressor_mem_ack       = mem_req_gnt[2];
+
+    assign decompressor_mem_data = mem_data;
+    assign weight_buffer_mem_data = mem_data;
+
+    assign decompressor_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == IFMAP_BUFFER);
+    assign weight_buffer_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == WEIGHT_BUFFER);
+
+    assign mem_write_data = compressed_data;
+    assign mem_write_valid = mem_gnt_req[2];
+
+    fifo #(.DEPTH(16), WIDTH(32), .DTYPE(MEMORY_SOURCE)) mem_req_fifo(
         .clk(clk),
         .rst_n(rst_n & ~start),
-        .wen(decompressor_mem_req | compressor_mem_req | weight_buffer_mem_req),
+        .wen(|mem_req_gnt[1:0]),
         .ren(mem_valid),
-        .data_in()
-   );
+        .data_in(mem_req_src),
+        .data_out(mem_gnt_src),
+        .data_valid(mem_fifo_data_valid),
+        .full(mem_fifo_full),
+        .empty(mem_fifo_empty)
+    );
 
-   
+
+    ////////////////////////////////////// DV SECTION //////////////////////////////////////
+    `ifdef DV
+    // Assertion 1
+    ASSERT_NEVER #(.MSG("mem_req_fifo can not enqueue NONE as mem_req_src")) mem_req_fifo_chk(
+        .clk(clk),
+        .rst_n(rst_n),
+        .en(|mem_req_mask[1:0]),
+        .expr(mem_req_src == NONE | mem_req_src == COMPRESSOR)
+    );
+
+    // Assertion 2
+    ASSERT_ONEHOT #(
+            .MSG("mem_req_gnt can most be one hot"),
+            .ALLOW_ZERO(1'b1),
+            .WIDTH(4)
+        ) psum_wen_chk(
+            .clk(clk),
+            .rst_n(rst_n),
+            .en(1'b1),
+            .expr(mem_req_gnt)
+        );
+    `endif
 
 endmodule

@@ -5,7 +5,7 @@ module pe
     #(parameter ROW_IDX = 0,
     parameter COL_IDX = 0)(
     input                       clk,
-    input                       rst,
+    input                       rst_n,
     input OP_MODE               mode_in,           // mode selection
     input                       change_mode,
     input PE_IN_PACKET          ifmap_packet,      // PE packet broadcasted from buffer
@@ -77,13 +77,13 @@ logic conv_done_soon; // All data has been feed in pipeline, conv will done soon
 
 
 always_ff @(posedge clk) begin
-    if(rst) cur_mode <= MODE1;
+    if(!rst_n) cur_mode <= MODE1;
     else if(change_mode) cur_mode <= mode_in;
 end
 
 // Weight fifo act as a circular fifo
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         filter_ram <= '0;
     end
     else if(op_stage_in == LOAD_FILTER && filter_packet.valid) begin
@@ -107,7 +107,7 @@ assign conv_cnt_inc = filter_ptr == 2'b11 & !stall; // Increment filter pointer 
 
 // conv_cnt count from 0 to max_conv_cnt represent MAC iteration for a single output
 always_ff @(posedge clk) begin
-    if(rst) conv_cnt <= '0;
+    if(!rst_n) conv_cnt <= '0;
     if(change_mode | conv_continue) conv_cnt <= '0;
     else if(op_stage_in == CONV & conv_cnt_inc) begin
         if(conv_cnt == max_conv_cnt) conv_cnt <= '0;
@@ -118,7 +118,7 @@ end
 
 // Filter pointer, each ifmap should mult with all the filters before proceed to next one
 always_ff @(posedge clk) begin
-    if(rst) filter_ptr <= '0;
+    if(!rst_n) filter_ptr <= '0;
     if(change_mode) filter_ptr <= '0;
     else if(op_stage_in == CONV & !stall) begin
         filter_ptr <= filter_ptr + 1;
@@ -128,7 +128,7 @@ end
 assign weight_next = filter_ram[filter_ptr][conv_cnt];
 
 always_ff @(posedge clk) begin
-    if(rst) conv_done_soon <= 1'b0;
+    if(!rst_n) conv_done_soon <= 1'b0;
     else if(conv_continue) conv_done_soon <= 1'b0;
     else if(psum_idx == psum_idx_max && conv_cnt == max_conv_cnt && conv_cnt_inc) conv_done_soon <= 1'b1;
 end
@@ -169,7 +169,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) section_valid <= 3'b0;
+    if(!rst_n) section_valid <= 3'b0;
     else if(conv_continue) section_valid <= 3'b0;
     else section_valid <= section_valid_comb;
 end
@@ -222,7 +222,7 @@ end
 
 // ifmap ram
 always_ff @(posedge clk) begin
-    if(rst) ifmap_ram <= '0;
+    if(!rst_n) ifmap_ram <= '0;
     else if(conv_continue) ifmap_ram <= '0;
     else if(section_write[0]) ifmap_ram[ 3:0] <= ifmap_packet.data;
     else if(section_write[1]) ifmap_ram[ 7:4] <= ifmap_packet.data;
@@ -244,7 +244,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) start_ptr <= '0;
+    if(!rst_n) start_ptr <= '0;
     else if(conv_continue) start_ptr <= '0;
     else if(!stall && conv_cnt == max_conv_cnt && filter_ptr == 2'b11) begin
         start_ptr <= next_start_ptr;
@@ -254,7 +254,7 @@ end
 /*
 // Start_ptr_ff use to trackstart_ptr change
 always_ff @(posedge clk) begin
-    if(rst) start_ptr_ff <= '0;
+    if(!rst_n) start_ptr_ff <= '0;
     else start_ptr_ff <= start_ptr;
 end
 */
@@ -277,7 +277,7 @@ mult_fixed MULT(.inA(mult_inA), .inB(mult_inB), .out(mult_out));
 
 `ifndef ZERO_SKIPPING
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         mult_inA <= '0;
         mult_inB <= '0;
         mult_out_ff <= '0;
@@ -297,7 +297,7 @@ logic skip_zero_ff;
 assign skip_zero = ~|ifdata_next | ~|weight_next | stall;
 
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
 		mult_out_ff <= '0;
         mult_inA <= '0;
         mult_inB <= '0;
@@ -316,7 +316,7 @@ always_ff @(posedge clk) begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) skip_zero_ff <= 0;
+    if(!rst_n) skip_zero_ff <= 0;
     else if(!accum_stall) skip_zero_ff <= skip_zero;
 end
 `endif // ZERO SKIPPING END
@@ -328,7 +328,7 @@ assign adder_inB = psum_ram_out;
 adder_fixed MAC_ADDER(.inA(adder_inA), .inB(adder_inB), .out(adder_out));
 
 always_ff @(posedge clk) begin
-    if(rst) adder_out_ff <= '0;
+    if(!rst_n) adder_out_ff <= '0;
     else if(!accum_stall) adder_out_ff <= adder_out;
 end
 
@@ -339,7 +339,7 @@ assign psum_idx_max = (cur_mode == MODE1)? `L1_OFMAP_SIZE - 1:
                       (cur_mode == MODE3)? `L2_OFMAP_SIZE - 1:
                                            `L3_OFMAP_SIZE - 1;
 always_ff @(posedge clk) begin
-    if(rst) psum_idx <= '0;
+    if(!rst_n) psum_idx <= '0;
     else if(conv_continue) psum_idx <= '0;
     else if(!accum_stall && (conv_cnt == max_conv_cnt && filter_ptr == 3)) begin
         if(psum_idx == psum_idx_max) psum_idx <= '0;
@@ -349,7 +349,7 @@ end
 
 // Pipeline for conv cnt, stall, filter_ptr
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         stall_mult          <= '0;
         stall_accum         <= '0;
         stall_wb            <= '0;
@@ -390,7 +390,7 @@ end
 
 // Psum scratch pad sram
 always_ff @(posedge clk) begin
-    if(rst) psum_ram <= '0;
+    if(!rst_n) psum_ram <= '0;
     else if(conv_cnt_wb == max_conv_cnt && data_valid_wb) psum_ram[filter_ptr_wb] <= 12'b0;
     else if(data_valid_wb) psum_ram[filter_ptr_wb] <= adder_out_ff;
 end
@@ -398,7 +398,7 @@ assign psum_ram_out = psum_ram[filter_ptr_accum];
 
 // Psum output buffer
 always_ff @(posedge clk) begin
-    if(rst) psum_output_buffer <= '0;
+    if(!rst_n) psum_output_buffer <= '0;
     else if(!accum_stall & conv_cnt_wb == max_conv_cnt & data_valid_wb) psum_output_buffer[filter_ptr_wb] <= adder_out_ff;
 end
 
@@ -423,7 +423,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk) begin
-    if(rst) psum_ready <= '0;
+    if(!rst_n) psum_ready <= '0;
     else psum_ready <= psum_ready_comb;
 end
 
@@ -432,7 +432,7 @@ adder_fixed ACCUM_ADDER(.inA(psum_in.psum), .inB(psum_output_buffer[psum_in.filt
 
 // Psum out packet
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         psum_out.valid <= 0;
         psum_out.psum <= '0;
         psum_out.filter_idx <= '0;
@@ -449,7 +449,7 @@ end
 
 // convolution state: done/running
 always_ff @(posedge clk) begin
-    if(rst) conv_done <= 1'b1;
+    if(!rst_n) conv_done <= 1'b1;
     else if(conv_continue) conv_done <= '0;
     else if(psum_idx_wb == '0 && filter_ptr_wb == 2'b00 && conv_cnt_wb == '0 && psum_ready == 4'b0 && conv_done_soon) conv_done <= 1;
 end

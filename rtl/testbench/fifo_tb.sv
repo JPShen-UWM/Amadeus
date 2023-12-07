@@ -41,29 +41,29 @@ module fifo_tb;
         wen = 0;
         ren = 0;
         data_in = 0;
-
-        // Reset sequence
-        #100;
+        #20;
         rst_n = 1;
-        #100;
-
-        // Begin test scenarios
-        // Example: Write data into the FIFO
-        wen = 1;
-        data_in = 8'hAA; // Test data
+        repeat_data_task();
+        data_in=66;
+         #20;
+         ren=1;
         #20;
-        wen = 0;
+        ren=1;
+        // assert (full) else $error("full is not right");
+        repeat_data_task();
 
-        // Example: Read data from the FIFO
-        #100;
-        ren = 1;
-        #20;
-        ren = 0;
-
-        // ... Add more test scenarios as needed
-
-        // End of test
         $finish; // Terminate the simulation
     end
-
+    task repeat_data_task();
+        integer i;
+        begin
+            for (i = 0; i < 8; i = i + 1) begin
+                wen=1;
+                data_in = i+1;
+                
+                $display("Iteration %d: Data = %h", i, data_in);
+             #20; // 
+            end
+        end
+    endtask
 endmodule
