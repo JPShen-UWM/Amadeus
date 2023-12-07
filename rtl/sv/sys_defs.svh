@@ -86,9 +86,10 @@ typedef enum logic[3:0] {
 } CONTROL_STATE;
 
 typedef enum logic[1:0] {
-    DECOMPRESSOR  = 2'b00,
+    IFMAP_BUFFER  = 2'b00,
     WEIGHT_BUFFER = 2'b01,
-    COMPRESSOR    = 2'b10
+    COMPRESSOR    = 2'b10,
+    NONE          = 2'b11
 } MEMORY_SOURCE;
 
 // struct
