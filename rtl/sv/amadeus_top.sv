@@ -72,6 +72,8 @@ module amadeus(
     logic weight_output_finish;
     logic weight_buffer_mem_ack;
 
+    CONTROL_STATE control_state;
+
     decompressor Decompressor(
         .clk(clk),
         .rst_n(rst_n),
@@ -170,7 +172,7 @@ module amadeus(
         // to controller
         .mode_in(mode),
         .change_mode(change_mode),
-        .control_state(),
+        .control_state(control_state),
         .send_done(send_done)
     );
 
@@ -242,7 +244,8 @@ module amadeus(
         .mem_write_data(mem_write_data),
         .mem_read_valid(mem_read),
         .mem_write_valid(mem_write),
-        .layer_complete(layer_complete)
+        .layer_complete(layer_complete),
+        .control_state(control_state)
     );
 
 endmodule

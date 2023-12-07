@@ -1,7 +1,8 @@
 module fifo
 #(parameter DEPTH = 8,
   parameter WIDTH = 8,
-  parameter type DTYPE = logic[WIDTH-1:0]
+  parameter type DTYPE = logic[WIDTH-1:0],
+  parameter INITIAL = '0
  )(
     input clk,
     input rst_n,
@@ -54,7 +55,7 @@ module fifo
     // update fifo data
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            fifo_data <= '0;
+            fifo_data <= INITIAL;
         end
         else if(!full & wen) begin
             fifo_data[wptr] <= data_in;

@@ -86,10 +86,10 @@ typedef enum logic[3:0] {
 } CONTROL_STATE;
 
 typedef enum logic[1:0] {
-    IFMAP_BUFFER  = 2'b00,
-    WEIGHT_BUFFER = 2'b01,
-    COMPRESSOR    = 2'b10,
-    NONE          = 2'b11
+    IFMAP_BUFFER  = 2'b01,
+    WEIGHT_BUFFER = 2'b10,
+    COMPRESSOR    = 2'b11,
+    NONE          = 2'b00
 } MEMORY_SOURCE;
 
 // struct
@@ -134,8 +134,8 @@ typedef struct packed {
 
 
 typedef enum logic[1:0]{
-    TAKING_OUTPUT = 1'b0,
-    SENDING_OUTPUT = 1'b1
+    TAKING_OUTPUT = 2'b0,
+    SENDING_OUTPUT = 2'b1
 } OUTPUT_BUFFER_STATE;
 // synthesizable functions
 

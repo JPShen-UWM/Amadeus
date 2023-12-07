@@ -59,14 +59,15 @@ always_ff @(posedge clk) begin
 end
 
 
-genvar i;
-generate
+// genvar i;
+// generate
+int i;
 always_ff @(posedge clk) begin
     if(!rst_n) ob_ram <= '0;
     else begin
         // Taking data from row 4 at mode2
         if(cur_mode == MODE2) begin
-            for(i = 0; i < 7; i++) begin
+            for(i = 0; i < 7; i = i+1) begin
                 if(i + row_start_ptr < 55) begin
                     if(psum_row4_out[i].valid) begin
                         // Right shift the required line
@@ -103,7 +104,7 @@ always_ff @(posedge clk) begin
         end
     end
 end
-endgenerate
+// endgenerate
 
 always_ff @(posedge clk) begin
     if(!rst_n) begin
@@ -132,11 +133,11 @@ assign next_outmap_data_valid_num = (state != SENDING_OUTPUT)? 'b0:
                                 (psum_size - next_rd_col_ptr) > 16? 16:
                                 (psum_size - next_rd_col_ptr);
 
-generate
-    for(i = 0; i < 16; i++) begin
-        assign outmap_data_next[i] = (rd_col_ptr + i < 55)? ob_ram[next_rd_filter_idx][next_rd_row_ptr][next_rd_col_ptr + i]: 'b0;
+
+    for(genvar j = 0; j < 16; j++) begin
+        assign outmap_data_next[j] = (rd_col_ptr + j < 55)? ob_ram[next_rd_filter_idx][next_rd_row_ptr][next_rd_col_ptr + j]: 'b0;
     end
-endgenerate
+
 
 always_ff @(posedge clk) begin
     if(!rst_n) outmap_data <= '0;
@@ -148,13 +149,13 @@ always_ff @(posedge clk) begin
     else outmap_data_valid_num <= next_outmap_data_valid_num;
 end
 
-generate
-    for(i = 0; i < 6; i++) begin
-        assign outbuff_row2_ack_in[i] = (cur_mode == MODE4) & psum_row2_out[i].valid;
-        assign outbuff_row4_ack_in[i] = (cur_mode == MODE2 | cur_mode == MODE3) & psum_row4_out[i].valid;
-        assign outbuff_row5_ack_in[i] = (cur_mode == MODE4) & psum_to_buffer[i].valid;
+
+    for(genvar j = 0; j < 6; j++) begin
+        assign outbuff_row2_ack_in[j] = (cur_mode == MODE4) & psum_row2_out[j].valid;
+        assign outbuff_row4_ack_in[j] = (cur_mode == MODE2 | cur_mode == MODE3) & psum_row4_out[j].valid;
+        assign outbuff_row5_ack_in[j] = (cur_mode == MODE4) & psum_to_buffer[j].valid;
     end
-endgenerate
+
 
 assert property(@(posedge clk) next_rd_col_ptr + valid_taken_num <= psum_size);
 assert property(@(posedge clk) valid_taken_num <= outmap_data_valid_num);

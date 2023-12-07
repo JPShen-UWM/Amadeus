@@ -32,7 +32,7 @@ module controller(
     output decompressor_mem_data_valid,
     output decompressor_mem_ack,
     // to NOC
-    output [4:0] complete_count, // if one pe array calculation complete
+    output logic [4:0] complete_count, // if one pe array calculation complete
     // to pe
     output OP_STAGE op_stage,
     output change_mode,
@@ -51,10 +51,9 @@ module controller(
     output [`MEM_BANDWIDTH*8-1:0] mem_write_data,
     output mem_read_valid,
     output mem_write_valid,
-    output layer_complete
+    output layer_complete,
+    CONTROL_STATE control_state
 );
-    CONTROL_STATE state;
-    CONTROL_STATE next_state;
     // logic for layer type
     LAYER_TYPE layer_type;
 
@@ -111,7 +110,7 @@ module controller(
     //                       |   wait_to_start  | ... | running conv
     //                                                | start_conv pulse
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n or start) begin
+        if(!rst_n | start) begin
             complete_count <= 0;
         end
         else if(conv_complete) begin
@@ -134,12 +133,12 @@ module controller(
     logic running_conv;
     assign conv_mode_state = mode == MODE1 ? PE_CONV_MODE1 :
                              mode == MODE2 ? PE_CONV_MODE2 :
-                             mode == MODE3 ? PE_CONV_MODE3 : MODE4;
+                             mode == MODE3 ? PE_CONV_MODE3 : PE_CONV_MODE4;
     assign running_conv = (state == PE_CONV_MODE1) | (state == PE_CONV_MODE2) | (state == PE_CONV_MODE3) | (state == PE_CONV_MODE4);
 
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            state <= IDLE;
+            state <= IDLE_C;
         end
         else if(start) begin
             state <= WEIGHT_LOAD;
@@ -151,13 +150,13 @@ module controller(
 
     always_comb begin
         case(state)
-            IDLE_C                      : next_state = start                    ? WEIGHT_LOAD;
+            IDLE_C                      : next_state = start                    ? WEIGHT_LOAD : IDLE_C;
             WEIGHT_LOAD                 : next_state = weight_load_finish       ? WEIGHT_OUTPUT : WEIGHT_LOAD;
             WEIGHT_OUTPUT               : next_state = weight_output_finish     ? (complete_count == 0  ? IFMAP_LOAD : WAIT_TO_RESTART_CONV_P4) : WEIGHT_OUTPUT;
             IFMAP_LOAD                  : next_state = ifmap_data_valid         ? conv_mode_state : IFMAP_LOAD;
             PE_CONV_MODE1               : next_state = conv_done                ? WEIGHT_OUTPUT   : PE_CONV_MODE1;
             PE_CONV_MODE2               : next_state = conv_done                ? (complete_count == 15 ? COMPLETE   : WEIGHT_OUTPUT)           : PE_CONV_MODE2;
-            PE_CONV_MODE3               : next_state = conv_done                ? (complete_count == 3  ? COMPLETE   : WAIT_TO_RESTART_CONVP4)  : PE_CONV_MODE3;
+            PE_CONV_MODE3               : next_state = conv_done                ? (complete_count == 3  ? COMPLETE   : WAIT_TO_RESTART_CONV_P4)  : PE_CONV_MODE3;
             PE_CONV_MODE4               : next_state = conv_done                ? COMPLETE        : PE_CONV_MODE4;
             WAIT_TO_RESTART_CONV_P4     : next_state = WAIT_TO_RESTART_CONV_P3;
             WAIT_TO_RESTART_CONV_P3     : next_state = WAIT_TO_RESTART_CONV_P2;
@@ -272,10 +271,10 @@ module controller(
     assign weight_buffer_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == WEIGHT_BUFFER);
 
     assign mem_write_data = compressed_data;
-    assign mem_write_valid = mem_gnt_req[2];
+    assign mem_write_valid = mem_req_gnt[2];
     assign mem_read_valid = |mem_req_gnt[1:0];
 
-    fifo #(.DEPTH(16), WIDTH(32), .DTYPE(MEMORY_SOURCE)) mem_req_fifo(
+    fifo #(.DEPTH(16), .WIDTH($size(MEMORY_SOURCE)), .DTYPE(MEMORY_SOURCE), .INITIAL(NONE)) mem_req_fifo(
         .clk(clk),
         .rst_n(rst_n & ~start),
         .wen(|mem_req_gnt[1:0]),
