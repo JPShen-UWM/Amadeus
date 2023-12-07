@@ -97,7 +97,7 @@ module ifmap_buffer_tb;
         end
         ifmap_data_base.randomize();
         ifmap_data_base.payload_generation();
-        ifmap_data_base.display_payload(); 
+        //ifmap_data_base.display_payload(); 
         ifmap_data_golden = ifmap_data_base.ifmap_data;
         stimulus = new(ifmap_data_base.ifmap_buffer_payload_set);
 
@@ -160,7 +160,7 @@ module ifmap_buffer_tb;
         for(int i = 0; i < line; i= i+1) begin
             for(int j = 0; j < element; j=j+1) begin
                 ifmap_buffer_data.push_back(uut.memory_batch1[i][j]);
-                $write("%d ",uut.memory_batch1[i][j]);
+                //$write("%d ",uut.memory_batch1[i][j]);
             end
         end
     endfunction
@@ -170,7 +170,7 @@ module ifmap_buffer_tb;
         for(int i = 0; i < line; i= i+1) begin
             for(int j = 0; j < element; j=j+1) begin
                 ifmap_buffer_data.push_back(uut.memory_batch2[i][j]);
-                $write("%d ",uut.memory_batch2[i][j]);
+                //$write("%d ",uut.memory_batch2[i][j]);
             end
         end
     endfunction
@@ -241,19 +241,21 @@ module ifmap_buffer_tb;
 
     // Test sequence
     initial begin
-        $srandom($urandom);
-        layer1_ifmap_data = new();
-        layer2_ifmap_data = new(LAYER2);
-        layer3_ifmap_data = new(LAYER3);
-        reset(LAYER1);
-        run_check_layer1();
-        @(negedge clk);
-        reset(LAYER2);
-        run_check_layer2();
-        @(negedge clk);
-        reset(LAYER3);
-        run_check_layer3();
-        @(negedge clk);
+        repeat(100) begin
+            $srandom($urandom);
+            layer1_ifmap_data = new();
+            layer2_ifmap_data = new(LAYER2);
+            layer3_ifmap_data = new(LAYER3);
+            reset(LAYER1);
+            run_check_layer1();
+            @(negedge clk);
+            reset(LAYER2);
+            run_check_layer2();
+            @(negedge clk);
+            reset(LAYER3);
+            run_check_layer3();
+            @(negedge clk);
+        end
         $finish;
     end
 

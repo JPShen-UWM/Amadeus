@@ -25,7 +25,7 @@ HEADERS = sv/sys_defs.svh
 
 
 PRIMITIVES = $(wildcard primitive/*.sv)
-TESTBENCH = testbench/psum_buffer_tb.sv
+TESTBENCH = testbench/ifmap_buffer_tb.sv
 SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv sv/NOC.sv sv/psum_buffer.sv sv/fifo.sv
 
 

@@ -25,6 +25,7 @@ module controller(
     input mem_valid,
     
     output start_conv,
+    output OP_MODE mode,
     // to decompressor
     output start_decompressor,
     output [`MEM_BANDWIDTH*8-1:0] decompressor_mem_data,
@@ -55,16 +56,13 @@ module controller(
     CONTROL_STATE next_state;
     // logic for layer type
     LAYER_TYPE layer_type;
-    logic [`MEM_ADDR_SIZE-1:0] start_address;
-    MEM_REQ_PACKET
+
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
             layer_type <= NULL;
-            start_address <= '0;
         end
         else if(start) begin
             layer_type <= layer_type_in;
-            start_address <= start_address_in;
         end
     end
 
