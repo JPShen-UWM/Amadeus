@@ -90,8 +90,7 @@ generate
     */
     assign group[0] = (start || mem_req_accepted) ? 3'd1 : (compressed_data[63] ? (compressed_data[62:60] + 1) : compressed_data[62:60]);
     for(i=1;i<16;i++) begin
-       //assign group[i] = ((|zero_num[i])||(group[i-1]==3'b111)) ? group[i-1] : group[i-1] + 1;
-       assign group[i] = (|zero_num[i-1]) ? group[i-1] : group[i-1] + 1;
+       assign group[i] = (|zero_num[i-1] || (group[i-1]==3'b111)) ? group[i-1] : (group[i-1] + 1);
     end  
 
     // Check if each outmap_data is valid
@@ -160,12 +159,6 @@ generate
     end
     
     // Total updated group num will appear at the update_group_num[15]
-    /*
-    assign update_group_num[1] = start ? OR_result[1] : ;
-    for(i=2;i<6;i++) begin
-       assign update_group_num[i] = update_group_num[i-1] + OR_result[i];
-    end
-    */
     assign update_group_num[0] = group[0];
     for(i=1;i<16;i++) begin
        assign update_group_num[i] = (group[i] < 6) && (outmap_data_valid[i]) ? group[i-1] : group[i];
@@ -174,12 +167,12 @@ generate
 endgenerate
 
     // Determine if we end compression with zero# or val
-    assign nxt_compressed_data[63] =(mem_req & (!mem_ack)) ? compressed_data[63] :  //TODO: Not correctly update when end with valid data
-                                                            (|AND_result ? (&AND_result[5] ? 1'b1 : (|XOR_result ? 1'b0 : 1'b1)) : 1'b0);
+    assign nxt_compressed_data[63] =(mem_req & (!mem_ack)) ? compressed_data[63] : 
+                                                            (|valid_taken_num ? ~(|zero_num[valid_taken_num-1]) : 1'b0);
     // Determine the group that we end compression with
     assign nxt_compressed_data[62:60] = (mem_req & (!mem_ack)) ? compressed_data[62:60] : ((outmap_data_valid_num==0) ? 'b0 : (&AND_result[5] ? 3'b111 : update_group_num[15]));
     
     // Determine if we want to send mem req: 1. no space in compress_group 2. some space in compress_group but outmap_valid_data<16 (no more outmap_data input for this compression)
-    assign nxt_mem_req = (mem_req & (!mem_ack)) ? mem_req : (&AND_result[5] || (!(&AND_result[5]) && (|OR_result) && (outmap_data_valid_num<16)));
+    assign nxt_mem_req = (mem_req & (!mem_ack)) ? mem_req : ((|group_value_update[5]) || ((|OR_result) && (outmap_data_valid_num<16)));
 
 endmodule

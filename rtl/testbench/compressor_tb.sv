@@ -153,6 +153,12 @@ module compressor_tb;
         outmap_data_valid_num = 5'd16;
         mem_ack = 1'b1;
 
+        repeat(5) begin
+           @(negedge clk)
+           start = 1'b0;
+           outmap_data_valid_num = 5'd0;
+        end
+
         //#1000;
         $finish;
     end
