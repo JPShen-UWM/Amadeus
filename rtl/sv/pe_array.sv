@@ -14,7 +14,7 @@ module pe_array(
     output PSUM_PACKET  [6:0]       psum_to_buffer,
     input logic         [6:0]       psum_buffer_ack,
     // To controller
-    input OP_MODE                   mode,
+    input OP_MODE                   mode_in,
     input                           change_mode,
     input                           conv_continue,
     input OP_STAGE                  op_stage_in,
@@ -51,7 +51,7 @@ generate
             pe #(.ROW_IDX(i), .COL_IDX(j)) PE_ARRAY (
                 .clk(clk),
                 .rst(rst),
-                .mode_in(mode),           // mode selection
+                .mode_in(mode_in),           // mode selection
                 .change_mode(change_mode),
                 .ifmap_packet(ifmap_packet[i][j]),      // PE packet broadcasted from buffer
                 .filter_packet(weight_in_array[i]),
@@ -73,7 +73,7 @@ generate
             .clk(clk),
             .rst(rst),
             .psum_ack(psum_ack_out[0][i]),
-            .mode_in(mode),
+            .mode_in(mode_in),
             .change_mode(change_mode),
             .conv_continue(conv_continue),
             .op_stage_in(op_stage_in),
@@ -86,7 +86,7 @@ generate
             .clk(clk),
             .rst(rst),
             .psum_ack(psum_ack_out[3][j]),
-            .mode_in(mode),
+            .mode_in(mode_in),
             .change_mode(change_mode),
             .conv_continue(conv_continue),
             .op_stage_in(op_stage_in),
@@ -161,7 +161,7 @@ generate
     */
     for(i = 0; i < 6; i++) begin
         for(j = 0; j < 7; j++) begin
-            ifmap_packet[i][j] = diagonal_bus_packet.diagonal_bus[i+j];
+            assign ifmap_packet[i][j] = diagonal_bus_packet.diagonal_bus[i+j];
         end
     end
     // ********************** ifmap connection end **********************//

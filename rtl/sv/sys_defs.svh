@@ -20,7 +20,7 @@
 `endif
 
 // Configuration
-`define ZERO_SKIPPING       1   // Perform zero skip on multiplier
+//`define ZERO_SKIPPING           // Perform zero skip on multiplier
 
 // Data size
 `define IFDATA_SIZE         8   // Input feature map data size   unsigned fixed point (8,7)
@@ -139,7 +139,7 @@ typedef enum logic[1:0]{
 // synthesizable functions
 
 // relu to psum
-function logic [7:0] relu(input [11:0] psum);
+function automatic logic [7:0] relu(input [11:0] psum);
     begin
         if(!psum[11] & |psum[10:9]) return 8'hFF; // Max satuation
         else if(psum[11]) return 8'h00; // RELU
