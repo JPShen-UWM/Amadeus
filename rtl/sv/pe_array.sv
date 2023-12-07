@@ -7,7 +7,7 @@ module pe_array(
     output logic [5:0][6:0]         pe_full,
     input DIAGONAL_BUS_PACKET       diagonal_bus_packet,
     // weight buffer
-    input PE_IN_PACKET              weight_in_array[0:5],
+    input PE_IN_PACKET              weight_in_array [5:0],
     // to psum buffer
     input PSUM_PACKET   [6:0]       psum_to_pe,
     output logic        [6:0]       pe_psum_ack,

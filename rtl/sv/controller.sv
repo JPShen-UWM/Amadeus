@@ -3,7 +3,7 @@ module controller(
     input clk,
     input rst_n,
     input start,
-    input layer_type_in,
+    input LAYER_TYPE layer_type_in,
     input [`MEM_ADDR_SIZE-1:0] ifmap_buffer_start_addr,
     input [`MEM_ADDR_SIZE-1:0] weight_buffer_start_addr,
     input [`MEM_ADDR_SIZE-1:0] compressor_start_addr,
@@ -49,6 +49,7 @@ module controller(
     // to TB
     output [`MEM_ADDR_SIZE-1:0] mem_addr,
     output [`MEM_BANDWIDTH*8-1:0] mem_write_data,
+    output mem_read_valid,
     output mem_write_valid,
     output layer_complete
 );
@@ -177,8 +178,6 @@ module controller(
     ///             | change_mode | mode_changed
     ///             | wake up wb  | wb send first_data
     pulse change_mode_pulse(
-        .clk(clk),ifmap_buffer_addr; and ifmap in ifmap_load
-    pulse start_decompressor_pulse(
         .clk(clk),
         .rst_n(rst_n),
         .level(state == IFMAP_LOAD),
@@ -274,6 +273,7 @@ module controller(
 
     assign mem_write_data = compressed_data;
     assign mem_write_valid = mem_gnt_req[2];
+    assign mem_read_valid = |mem_req_gnt[1:0];
 
     fifo #(.DEPTH(16), WIDTH(32), .DTYPE(MEMORY_SOURCE)) mem_req_fifo(
         .clk(clk),

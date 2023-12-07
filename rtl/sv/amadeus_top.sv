@@ -11,7 +11,8 @@ module amadeus(
     output [`MEM_ADDR_SIZE-1:0] mem_addr,
     output [`MEM_BANDWIDTH*8-1:0] mem_write_data,
     output mem_read,
-    output mem_write
+    output mem_write,
+    output layer_complete
 );
 
 
@@ -21,19 +22,21 @@ module amadeus(
     logic decompressor_mem_data_valid;
     logic decompressor_mem_ack;
     logic decompressor_ack;
+    logic start_decompressor;
     DECOMRPESS_FIFO_PACKET decompressed_fifo_packet;
     logic free_ifmap_buffer;
     logic [`MEM_BATCH_SIZE-1:0][256-1:0][7:0] ifmap_data;
     logic ifmap_data_valid;
     logic ifmap_data_change;
 
+    logic start_ifmap_buffer_load;
     logic start_conv;
     logic mode;
     logic conv_complete;
     logic [5:0][6:0] pe_full;
     logic [4:0] complete_count;
     DIAGONAL_BUS_PACKET diagonal_bus_packet;
-    PE_IN_PACKET [0:5] weight_in_array;
+    PE_IN_PACKET [5:0] weight_in_array;
     PSUM_PACKET [6:0] psum_to_pe;
     logic [6:0] pe_psum_ack;
     PSUM_PACKET [6:0] psum_to_buffer;
@@ -56,10 +59,23 @@ module amadeus(
 
     logic send_done;
 
+    logic compressor_mem_ack;
+    logic [`MEM_BANDWIDTH*8-1:0] compressed_data;
+    logic compressor_mem_req;
+
+    logic start_weight_buffer_load;
+    logic start_weight_buffer_output;
+    logic weight_buffer_mem_data_valid;
+    logic [`MEM_BANDWIDTH*8-1:0] weight_buffer_mem_data;
+    logic weight_buffer_mem_req;
+    logic weight_load_finish;
+    logic weight_output_finish;
+    logic weight_buffer_mem_ack;
+
     decompressor Decompressor(
         .clk(clk),
         .rst_n(rst_n),
-        .start(start_layer),
+        .start(start_decompressor),
         .ifmap_buffer_req(ifmap_buffer_req),
         .mem_data(decompressor_mem_data),
         .mem_data_valid(decompressor_mem_data_valid),
@@ -74,7 +90,7 @@ module amadeus(
     ifmap_buffer Ifmap_buffer(
         .clk(clk),
         .rst_n(rst_n),
-        .start(start_layer),
+        .start(start_ifmap_buffer_load),
         .layer_type_in(layer_type_in),
         .decompressed_fifo_packet(decompressed_fifo_packet),
         .decompressor_ack(decompressor_ack),
@@ -159,37 +175,74 @@ module amadeus(
     );
 
 
-    output_buffer Output_buffer(
-        input clk,
-        input rst,
-        // To pe array
-        input PSUM_PACKET [6:0]         psum_row2_out,
-        input PSUM_PACKET [6:0]         psum_row4_out,
-        input PSUM_PACKET  [6:0]        psum_to_buffer,
-        output [6:0]                    outbuff_row2_ack_in,
-        output [6:0]                    outbuff_row4_ack_in,
-        output [6:0]                    outbuff_row5_ack_in,
-        // to compressor
-        output logic [15:0][7:0]        outmap_data,
-        output logic [4:0]              outmap_data_valid_num,
-        input  [4:0]                    valid_taken_num,
-        // to controller
-        input OP_MODE                   mode_in,
-        input                           change_mode,
-        input CONTROL_STATE             control_state, // TO DO
-        output                          send_done
+    compressor Compressor(
+        .clk(clk),
+        .rst_n(rst_n),
+        .outmap_data(outmap_data),
+        .start(start_layer),
+        .outmap_data_valid_num(outmap_data_valid_num),
+        .mem_ack(compressor_mem_ack),
+
+        .valid_taken_num(valid_taken_num),
+        .compressed_data(compressed_data),
+        .mem_req(compressor_mem_req)
     );
 
-    compressor Compressor(
-        input                   clk,
-        input                   rst_n,
-        input  [15:0][7:0]      outmap_data,           // will start from the first valid data
-        input                   start,
-        input  [4:0]            outmap_data_valid_num, // from 0-16
-        input                   mem_ack,               // will not compress new data if memack is not ready
-        output [4:0]            valid_taken_num,       // the element which has been taken by compressor
-        output [63:0]           compressed_data,       // // [63]=? [62:60]=***
-        output                  mem_req                // mem_req will only be assert when compressed data is ready
+    weight_buffer Weight_buffer(
+        .clk(clk),
+        .rst_n(rst_n),
+        .cur_mode(mode),// mode selection
+        .start_load(start_weight_buffer_load),
+        .mem_data_valid(weight_buffer_mem_data_valid),
+        .weight_data(weight_buffer_mem_data),
+        .output_filter(start_weight_buffer_output),
+        .free_weight_buffer(start_layer),
+
+        .mem_req(weight_buffer_mem_req),
+        .ready_to_output(weight_load_finish),
+        .finish_output_delay(weight_output_finish),
+        .packet_out_delay(weight_in_array)
+    );
+
+    controller Controller(
+        .clk(clk),
+        .rst_n(rat_n),
+        .layer_type_in(layer_type_in),
+        .ifmap_buffer_start_addr(ifmap_buffer_start_addr),
+        .weight_buffer_start_addr(weight_buffer_start_addr),
+        .compressor_start_addr(compressor_start_addr),
+        .pe_conv_done(pe_conv_done),
+        .decompressor_mem_req(ifmap_buffer_req),
+        .compressor_mem_req(compressor_mem_req),
+        .compressed_data(compressed_data),
+        .weight_buffer_mem_req(weight_buffer_mem_req),
+        .weight_output_finish(weight_output_finish),
+        .weight_load_finish(weight_load_finish),
+        .ifmap_data_valid(ifmap_data_valid),
+        .mem_data(mem_read_data),
+        .mem_valid(mem_valid),
+        .start_conv(start_conv),
+        .mode(mode),
+        .start_decompressor(start_decompressor),
+        .decompressor_mem_data(decompressor_mem_data),
+        .decompressor_mem_data_valid(decompressor_mem_data_valid),
+        .decompressor_mem_ack(decompressor_mem_ack),
+        .complete_count(complete_count),
+        .op_stage(op_stage_in),
+        .change_mode(change_mode),
+        .start_ifmap_buffer_load(start_ifmap_buffer_load),
+        .start_weight_buffer_load(start_weight_buffer_load),
+        .start_weight_buffer_output(start_weight_buffer_output),
+        .weight_buffer_mem_ack(weight_buffer_mem_ack), //
+        .weight_buffer_mem_data(weight_buffer_mem_data),
+        .weight_buffer_mem_data_valid(weight_buffer_mem_data_valid),
+        .compressor_mem_ack(compressor_mem_ack),
+
+        .mem_addr(mem_addr),
+        .mem_write_data(mem_write_data),
+        .mem_read_valid(mem_read),
+        .mem_write_valid(mem_write),
+        .layer_complete(layer_complete)
     );
 
 endmodule
