@@ -41,20 +41,21 @@ always #10 clk = ~clk;
 
 task initialize_mem();
 $readmemh("program.mem", MEM.ram);
-ifmap_buffer_start_addr = MEM.ram[0];
-weight_buffer_start_addr = MEM.ram[1];
-compressor_start_addr = MEM.ram[2];
-$display("Loading MEM done");
+@(negedge clk) begin
+    // ifmap_buffer_start_addr = MEM.ram[0];
+    // weight_buffer_start_addr = MEM.ram[1];
+    // compressor_start_addr = MEM.ram[2];
+    $display("Loading MEM done");
+end
 endtask
 
 task reset();
-    clk = 0;
     rst_n = 0;
     start = 0;
     layer_type_in = LAYER1;
-    ifmap_buffer_start_addr = 0;
-    weight_buffer_start_addr = 0;
-    compressor_start_addr = 0;
+    ifmap_buffer_start_addr = 3;
+    weight_buffer_start_addr = 16'h19ba;
+    compressor_start_addr = 16'h1a12;
     @(negedge clk);
     @(negedge clk);
     rst_n = 1;
@@ -76,6 +77,7 @@ initial begin
     end
 
 initial begin
+    clk = 0;
     initialize_mem();
     reset();
     start_layer1();

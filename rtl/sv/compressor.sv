@@ -18,7 +18,7 @@ COMPRESS_UNIT [5:1]          nxt_compress_group;
 always_ff @(posedge clk) begin
     if(!rst_n) begin
        mem_req          <= 'b0; 
-       compressed_data  <= 'b0;
+       compressed_data  <= {4'b1001,60'b0};
        compress_group   <= 'b0;
     end else begin 
        mem_req          <= nxt_mem_req; 
@@ -52,9 +52,9 @@ assign mem_req_accepted = (mem_req && mem_ack);
 
 genvar i,j;
 generate
-    assign zero[0] = ~(|outmap_data[0]);
+    assign zero[0] = (0<outmap_data_valid_num) ? ~(|outmap_data[0]) : 1'b0;
     for(i=1;i<16;i++) begin
-       assign zero[i] = ~(|outmap_data[i]);
+       assign zero[i] = (i<outmap_data_valid_num) ? ~(|outmap_data[i]) : 1'b0;
     end
 
     /*
@@ -72,7 +72,7 @@ generate
     2. if outmap_data[i]!=0, zero_num[i]=0
     3. else keep incrementing on zero_num[i-1]
     */
-    assign zero_num[0] = (start || mem_req_accepted || compressed_data[63]) ? zero[0] : ((compress_group[compressed_data[62:60]]==15) || (!zero[0]) ? 'b0 : compress_group[compressed_data[62:60]].zero + 1);
+    assign zero_num[0] = (start || mem_req_accepted || compressed_data[63]) ? zero[0] : ((compress_group[compressed_data[62:60]].zero==15) || (!zero[0]) ? 'b0 : compress_group[compressed_data[62:60]].zero + 1);
     for(i=1;i<16;i++) begin
        assign zero_num[i] = ((zero_num[i-1]==15)||(!zero[i])) ? 'b0: zero_num[i-1] + zero[i];
     end
@@ -168,9 +168,9 @@ endgenerate
 
     // Determine if we end compression with zero# or val
     assign nxt_compressed_data[63] =(mem_req & (!mem_ack)) ? compressed_data[63] : 
-                                                            (|valid_taken_num ? ~(|zero_num[valid_taken_num-1]) : 1'b0);
+                                                            (|valid_taken_num ? ~(|zero_num[valid_taken_num-1]) : 1'b1);
     // Determine the group that we end compression with
-    assign nxt_compressed_data[62:60] = (mem_req & (!mem_ack)) ? compressed_data[62:60] : ((outmap_data_valid_num==0) ? 'b0 : (&AND_result[5] ? 3'b111 : update_group_num[15]));
+    assign nxt_compressed_data[62:60] = (mem_req & (!mem_ack)) ? compressed_data[62:60] : ((outmap_data_valid_num==0) ? 3'b001 : (&AND_result[5] ? 3'b111 : update_group_num[15]));
     
     // Determine if we want to send mem req: 1. no space in compress_group 2. some space in compress_group but outmap_valid_data<16 (no more outmap_data input for this compression)
     assign nxt_mem_req = (mem_req & (!mem_ack)) ? mem_req : ((|group_value_update[5]) || ((|OR_result) && (outmap_data_valid_num<16)));

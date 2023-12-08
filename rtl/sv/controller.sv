@@ -246,7 +246,7 @@ module controller(
         if(!rst_n) begin
             weight_buffer_addr <= weight_buffer_start_addr;
         end
-        else if(mem_req_gnt[0]) begin
+        else if(mem_req_gnt[1]) begin
             weight_buffer_addr <= weight_buffer_addr + 1'b1;
         end
     end
@@ -255,7 +255,7 @@ module controller(
         if(!rst_n) begin
             compressor_addr <= compressor_start_addr;
         end
-        else if(mem_req_gnt[0]) begin
+        else if(mem_req_gnt[2]) begin
             compressor_addr <= compressor_addr + 1'b1;
         end
     end
@@ -314,7 +314,7 @@ module controller(
     ASSERT_ONEHOT #(
             .MSG("mem_req_gnt can most be one hot"),
             .ALLOW_ZERO(1'b1),
-            .WIDTH(4)
+            .WIDTH(3)
         ) psum_wen_chk(
             .clk(clk),
             .rst_n(rst_n),

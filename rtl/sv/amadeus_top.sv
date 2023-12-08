@@ -177,7 +177,8 @@ module amadeus_top(
         .mode_in(mode),
         .change_mode(change_mode),
         .control_state(control_state),
-        .send_done(send_done)
+        .send_done(send_done),
+        .complete_count(complete_count)
     );
 
 

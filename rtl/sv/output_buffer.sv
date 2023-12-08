@@ -16,7 +16,8 @@ module output_buffer(
     input OP_MODE                   mode_in,
     input                           change_mode,
     input CONTROL_STATE             control_state,
-    output                          send_done
+    output                          send_done,
+    input [4:0]                     complete_count
 );
 
 
@@ -54,7 +55,7 @@ assign psum_size =  (cur_mode == MODE1)? `L1_OFMAP_SIZE:
 // Row start ptr increment when WAIT_TO_RESTART_CONV
 always_ff @(posedge clk) begin
     if(!rst_n) row_start_ptr <= '0;
-    else if(control_state == WAIT_TO_RESTART_CONV) row_start_ptr <= row_start_ptr + 7;
+    else if(control_state == WAIT_TO_RESTART_CONV && !complete_count[0]) row_start_ptr <= row_start_ptr + 7;
     else if(control_state == COMPLETE) row_start_ptr <= '0;
 end
 
