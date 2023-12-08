@@ -90,7 +90,7 @@ module compressor_tb;
         outmap_data_valid_num = 5'd16;
         mem_ack = 1'b0;
 
-        // Test group 2: 16*5 zeros, mem req accepted 1 cycle after it sent
+        // Test group 2: 16*5 zeros, mem req accepted 2 cycle after it sent
         @(negedge clk)
         start = 1'b1;
         for(int i=0;i<16;i++) begin
@@ -141,22 +141,54 @@ module compressor_tb;
         // Test group 4: Mixed zero and valid value
         @(negedge clk)
         start = 1'b1;
-        for(int i=0;i<8;i++) begin
+        for(int i=0;i<8;i++) begin //filling up grp_1_zero
            outmap_data[i] = 8'd0;
         end
-        for(int i=8;i<12;i++) begin
+        for(int i=8;i<12;i++) begin //filling up grp_1234_value
            outmap_data[i] = 8'd1;
         end
-        for(int i=12;i<16;i++) begin
+        for(int i=12;i<16;i++) begin //filling up grp_5_zero
            outmap_data[i] = 8'd0;
         end
         outmap_data_valid_num = 5'd16;
+        mem_ack = 1'b1;
+
+        @(negedge clk)
+        start = 1'b0;
+        for(int i=0;i<16;i++) begin //filling up grp_5_zero and grp_5_value = 11 + 1 input taken
+           outmap_data[i] = 8'd0;
+        end
+        outmap_data_valid_num = 5'd16;
+        mem_ack = 1'b0;
+
+        @(negedge clk)
+        start = 1'b0;
+        mem_ack = 1'b1;
+        repeat(3) begin
+           @(negedge clk)
+           start = 1'b0;
+           outmap_data_valid_num = 5'd0;
+        end
+
+        // Test group 5: outmap_data_valid_num < 16
+        @(negedge clk)
+        start = 1'b1;
+        for(int i=0;i<16;i++) begin
+           outmap_data[i] = 8'd1;
+        end
+        outmap_data_valid_num = 5'd9;
+        mem_ack = 1'b0;
+
+        @(negedge clk)
+        start = 1'b0;
+        outmap_data_valid_num = 5'd4;
         mem_ack = 1'b1;
 
         repeat(5) begin
            @(negedge clk)
            start = 1'b0;
            outmap_data_valid_num = 5'd0;
+           mem_ack = 1'b1;
         end
 
         //#1000;

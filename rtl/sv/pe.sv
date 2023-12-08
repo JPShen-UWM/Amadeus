@@ -74,7 +74,8 @@ logic [5:0] psum_idx_max; // Maximum psum_idx
 logic [3:0] psum_ready, psum_post_free_comb, psum_ready_comb; // status of psum output buffer
 logic [11:0] accum_adder_out;
 logic conv_done_soon; // All data has been feed in pipeline, conv will done soon
-
+logic [2:0] next_section_to_write;
+logic conv_done_ff;
 
 always_ff @(posedge clk) begin
     if(!rst_n) cur_mode <= MODE1;
@@ -176,6 +177,19 @@ end
 
 assign full = &section_valid;
 
+// Next section to write
+always_ff @(posedge clk) begin
+    if(!rst_n) next_section_to_write <= 3'b001;
+    else if(packet_in_valid) begin
+        unique case(next_section_to_write)
+            3'b001: next_section_to_write <= 3'b010;
+            3'b010: next_section_to_write <= 3'b100;
+            3'b100: next_section_to_write <= 3'b001;
+            default: next_section_to_write <= 3'bxxx;
+        endcase
+    end
+end
+
 // Combination logic to determine which section to allocate when new packet in
 always_comb begin
     section_valid_comb = section_valid;
@@ -186,32 +200,32 @@ always_comb begin
     if(packet_in_valid) begin
         unique case(section_valid_comb)
             3'b000: begin
-                section_write = 3'b001;
-                section_valid_comb = 3'b001;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b001: begin
-                section_write = 3'b010;
-                section_valid_comb = 3'b011;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b010: begin
-                section_write = 3'b100;
-                section_valid_comb = 3'b110;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b011: begin
-                section_write = 3'b100;
-                section_valid_comb = 3'b111;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b100: begin
-                section_write = 3'b001;
-                section_valid_comb = 3'b101;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b101: begin
-                section_write = 3'b010;
-                section_valid_comb = 3'b111;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b110: begin
-                section_write = 3'b001;
-                section_valid_comb = 3'b111;
+                section_write = next_section_to_write;
+                section_valid_comb = section_valid_comb ^ next_section_to_write;
             end
             3'b111: begin
                 error = 1; // Assert error when trying to write when section full
@@ -449,9 +463,10 @@ end
 
 // convolution state: done/running
 always_ff @(posedge clk) begin
-    if(!rst_n) conv_done <= 1'b1;
-    else if(conv_continue) conv_done <= '0;
-    else if(psum_idx_wb == '0 && filter_ptr_wb == 2'b00 && conv_cnt_wb == '0 && psum_ready == 4'b0 && conv_done_soon) conv_done <= 1;
+    if(!rst_n) conv_done_ff <= 1'b0;
+    else if(conv_continue) conv_done_ff <= '0;
+    else if(psum_idx_wb == '0 && filter_ptr_wb == 2'b00 && conv_cnt_wb == '0 && psum_ready == 4'b0 && conv_done_soon) conv_done_ff <= 1;
 end
 
+assign conv_done = conv_done_ff & !conv_continue;
 endmodule

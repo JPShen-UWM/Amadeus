@@ -1,6 +1,6 @@
 module fifo_position_detect #(parameter WIDTH = 6)(
     input  [WIDTH-1:0] valid_entry,
-    output [WIDTH-1:0] write_in_entry.
+    output [WIDTH-1:0] write_in_entry,
     output valid
 );
 

@@ -1,7 +1,8 @@
 module fifo
 #(parameter DEPTH = 8,
   parameter WIDTH = 8,
-  parameter type DTYPE = logic[WIDTH-1:0]
+  parameter type DTYPE = logic[WIDTH-1:0],
+  parameter INITIAL = '0
  )(
     input clk,
     input rst_n,

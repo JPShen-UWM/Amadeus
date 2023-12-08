@@ -26,7 +26,7 @@ module weight_buffer(
     logic  cycle_count;    
 //input counter calculation,
     always_ff@(posedge clk) begin
-        if(rst_n||free_weight_buffer)begin
+        if(!rst_n||free_weight_buffer)begin
         row_idx<=0;
         cycle_count<=0;
         end
@@ -47,7 +47,7 @@ module weight_buffer(
     end
 ////mem_req set and ready to output set
     always_comb begin
-        if(!start_load)begin
+        if(!start_load & !output_filter)begin
         mem_req=0;
         ready_to_output=0;
         end
@@ -55,7 +55,7 @@ module weight_buffer(
 
         case (cur_mode)
                 MODE1,MODE2: begin                 
-                    if (row_idx==43) begin
+                    if (row_idx==44) begin
                         mem_req=0;
                         ready_to_output=1;
                     end
@@ -94,7 +94,7 @@ module weight_buffer(
     logic [43:0][87:0] filter_ram;//4*11*11*8 multlayer*row*colunme*8bits data
 // load data from memeory 
     always_ff@(posedge clk) begin
-        if(rst_n||free_weight_buffer)begin
+        if(!rst_n||free_weight_buffer)begin
             filter_ram<='0;
         end
         else if(mem_data_valid&&mem_req&&start_load) begin
@@ -124,7 +124,7 @@ logic [3:0] offset3 [3:0]={15,10,5,0};
 logic [3:0] offset4 [3:0]={9,6,3,0};
 logic [2:0] idx4 [5:0]={2,1,0,2,1,0};
     always_ff@(posedge clk) begin
-        if(rst_n||!ready_to_output||!output_filter)begin
+        if(!rst_n||!ready_to_output||!output_filter)begin
             output_layer_idx<=0;
             output_cycle_counter<=0;
         end
@@ -146,7 +146,7 @@ assign output_finish_comb=(output_layer_idx<3)? 0:(output_cycle_counter==2)? 1:0
         end
 
  always_ff@(posedge clk) begin
-        if(rst_n||(!ready_to_output)||(!output_filter)||(output_finish))begin
+        if(!rst_n||(!ready_to_output)||(!output_filter)||(output_finish))begin
             for (int i = 0; i < 6; i++) begin
                 packet_out[i]<='{default:0};
             end

@@ -12,8 +12,8 @@ logic neg_overflow; // Negative overflow
 
 assign sum_temp = inA + inB;
 // Check overflow
-assign pos_overflow = sum_temp[`PSUM_DATA_SIZE-1] & ~sum_temp[`PSUM_DATA_SIZE];
-assign neg_overflow = ~sum_temp[`PSUM_DATA_SIZE-1] & sum_temp[`PSUM_DATA_SIZE];
+assign pos_overflow = ~sum_temp[`PSUM_DATA_SIZE-1] & sum_temp[`PSUM_DATA_SIZE];
+assign neg_overflow = sum_temp[`PSUM_DATA_SIZE-1] & ~sum_temp[`PSUM_DATA_SIZE];
 
 // Perform saturation
 assign out = pos_overflow? 12'h7FF:

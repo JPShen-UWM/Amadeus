@@ -2,12 +2,12 @@
 `timescale 1ns/100ps
 module pe_array(
     input                           clk,
-    input                           rst,
+    input                           rst_n,
     // input feature noc
     output logic [5:0][6:0]         pe_full,
     input DIAGONAL_BUS_PACKET       diagonal_bus_packet,
     // weight buffer
-    input PE_IN_PACKET              weight_in_array[0:5],
+    input PE_IN_PACKET              weight_in_array [5:0],
     // to psum buffer
     input PSUM_PACKET   [6:0]       psum_to_pe,
     output logic        [6:0]       pe_psum_ack,
@@ -39,7 +39,7 @@ logic psum_ack_out[6][7];
 
 OP_MODE cur_mode;
 always_ff @(posedge clk) begin
-    if(rst) cur_mode <= MODE1;
+    if(!rst_n) cur_mode <= MODE1;
     else if(change_mode) cur_mode <= mode_in;
 end
 
@@ -50,7 +50,7 @@ generate
         for(j = 0; j < 7; j++) begin
             pe #(.ROW_IDX(i), .COL_IDX(j)) PE_ARRAY (
                 .clk(clk),
-                .rst(rst),
+                .rst_n(rst_n),
                 .mode_in(mode_in),           // mode selection
                 .change_mode(change_mode),
                 .ifmap_packet(ifmap_packet[i][j]),      // PE packet broadcasted from buffer
@@ -71,7 +71,7 @@ generate
     for(i = 0; i < 7; i++) begin
         zero_psum_gen TOP_ROW_PSUM_GEN(
             .clk(clk),
-            .rst(rst),
+            .rst_n(rst_n),
             .psum_ack(psum_ack_out[0][i]),
             .mode_in(mode_in),
             .change_mode(change_mode),
@@ -84,7 +84,7 @@ generate
     for(j = 0; j < 7; j++) begin
         zero_psum_gen MID_ROW_PSUM_GEN(
             .clk(clk),
-            .rst(rst),
+            .rst_n(rst_n),
             .psum_ack(psum_ack_out[3][j]),
             .mode_in(mode_in),
             .change_mode(change_mode),

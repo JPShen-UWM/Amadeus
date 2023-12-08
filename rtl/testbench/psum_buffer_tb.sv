@@ -124,6 +124,7 @@ module psum_buffer_tb;
 
     // Test sequence
     initial begin
+        $srandom(999999);
         load();
         read();
         $finish; // Terminate the simulation

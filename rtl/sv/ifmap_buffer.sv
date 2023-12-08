@@ -2,6 +2,7 @@ module ifmap_buffer(
     input clk,
     input rst_n,
     input start,
+    input start_layer,
     input LAYER_TYPE layer_type_in,
     input DECOMRPESS_FIFO_PACKET decompressed_fifo_packet,
     input decompressor_ack,
@@ -62,7 +63,7 @@ module ifmap_buffer(
         if(!rst_n) begin
             layer_type <= NULL;
         end
-        else if(start) begin
+        else if(start_layer) begin
             layer_type <= layer_type_in;
         end
     end
