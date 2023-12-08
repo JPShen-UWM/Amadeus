@@ -52,7 +52,8 @@ module controller(
     output mem_read_valid,
     output mem_write_valid,
     output layer_complete,
-    CONTROL_STATE control_state
+    CONTROL_STATE control_state,
+    output conv_complete // pulse of conv_done
 );
     // logic for layer type
     LAYER_TYPE layer_type;
@@ -75,7 +76,6 @@ module controller(
     // complete count from PEs
     logic [5:0][6:0] pe_conv_status; // 1 represent complete, 0 represent not complete
     logic conv_done; // level
-    logic conv_complete; // pulse of conv_done
     logic is_last_iteration;
 
     assign is_last_iteration = (layer_type == LAYER1 & complete_count > 13) | (layer_type == LAYER2 & complete_count > 2);
@@ -135,6 +135,7 @@ module controller(
                              mode == MODE2 ? PE_CONV_MODE2 :
                              mode == MODE3 ? PE_CONV_MODE3 : PE_CONV_MODE4;
     assign running_conv = (state == PE_CONV_MODE1) | (state == PE_CONV_MODE2) | (state == PE_CONV_MODE3) | (state == PE_CONV_MODE4);
+    assign control_state = state;
 
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
@@ -150,7 +151,7 @@ module controller(
 
     always_comb begin
         case(state)
-            IDLE_C                      : next_state = start                    ? WEIGHT_LOAD : IDLE_C;
+            IDLE_C                      : next_state = start                    ? WEIGHT_LOAD   : IDLE_C;
             WEIGHT_LOAD                 : next_state = weight_load_finish       ? WEIGHT_OUTPUT : WEIGHT_LOAD;
             WEIGHT_OUTPUT               : next_state = weight_output_finish     ? (complete_count == 0  ? IFMAP_LOAD : WAIT_TO_RESTART_CONV_P4) : WEIGHT_OUTPUT;
             IFMAP_LOAD                  : next_state = ifmap_data_valid         ? conv_mode_state : IFMAP_LOAD;
@@ -176,13 +177,21 @@ module controller(
     /// | conv_done | WEIGHT_LOAD | WEIGHT_LOAD
     ///             | change_mode | mode_changed
     ///             | wake up wb  | wb send first_data
-    pulse change_mode_pulse(
+    pulse start_decompressor_pulse(
         .clk(clk),
         .rst_n(rst_n),
         .level(state == IFMAP_LOAD),
         .pulse(start_decompressor)
     );
     assign start_ifmap_buffer_load = start_decompressor;
+
+
+    pulse change_mode_pulse(
+        .clk(clk),
+        .rst_n(rst_n),
+        .level(state == WEIGHT_OUTPUT),
+        .pulse(change_mode)
+    );
 
     /// PE_CONV_MODEX
     // send start_conv to NOC , psum and PEs
@@ -260,42 +269,46 @@ module controller(
                         mem_req_gnt[2] ? compressor_addr    : NONE;
 
     
-    assign decompressor_mem_ack     = mem_req_gnt[0] & ~mem_fifo_empty;
-    assign weight_buffer_mem_ack    = mem_req_gnt[1] & ~mem_fifo_empty;
+    // assign decompressor_mem_ack     = mem_req_gnt[0] & ~mem_fifo_empty;
+    // assign weight_buffer_mem_ack    = mem_req_gnt[1] & ~mem_fifo_empty;
+    assign decompressor_mem_ack     = mem_req_gnt[0];
+    assign weight_buffer_mem_ack    = mem_req_gnt[1];
     assign compressor_mem_ack       = mem_req_gnt[2];
 
     assign decompressor_mem_data = mem_data;
     assign weight_buffer_mem_data = mem_data;
 
-    assign decompressor_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == IFMAP_BUFFER);
-    assign weight_buffer_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == WEIGHT_BUFFER);
+    // assign decompressor_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == IFMAP_BUFFER);
+    // assign weight_buffer_mem_data_valid = mem_valid & mem_fifo_data_valid & (mem_gnt_src == WEIGHT_BUFFER);
+    assign decompressor_mem_data_valid = mem_valid & (mem_req_src == IFMAP_BUFFER);
+    assign weight_buffer_mem_data_valid = mem_valid & (mem_req_src  == WEIGHT_BUFFER);
 
     assign mem_write_data = compressed_data;
     assign mem_write_valid = mem_req_gnt[2];
     assign mem_read_valid = |mem_req_gnt[1:0];
 
-    fifo #(.DEPTH(16), .WIDTH($size(MEMORY_SOURCE)), .DTYPE(MEMORY_SOURCE), .INITIAL(NONE)) mem_req_fifo(
-        .clk(clk),
-        .rst_n(rst_n & ~start),
-        .wen(|mem_req_gnt[1:0]),
-        .ren(mem_valid),
-        .data_in(mem_req_src),
-        .data_out(mem_gnt_src),
-        .data_valid(mem_fifo_data_valid),
-        .full(mem_fifo_full),
-        .empty(mem_fifo_empty)
-    );
+    // fifo #(.DEPTH(16), .WIDTH($size(MEMORY_SOURCE)), .DTYPE(MEMORY_SOURCE), .INITIAL(NONE)) mem_req_fifo(
+    //     .clk(clk),
+    //     .rst_n(rst_n & ~start),
+    //     .wen(|mem_req_gnt[1:0]),
+    //     .ren(mem_valid),
+    //     .data_in(mem_req_src),
+    //     .data_out(mem_gnt_src),
+    //     .data_valid(mem_fifo_data_valid),
+    //     .full(mem_fifo_full),
+    //     .empty(mem_fifo_empty)
+    // );
 
 
     ////////////////////////////////////// DV SECTION //////////////////////////////////////
     `ifdef DV
     // Assertion 1
-    ASSERT_NEVER #(.MSG("mem_req_fifo can not enqueue NONE as mem_req_src")) mem_req_fifo_chk(
-        .clk(clk),
-        .rst_n(rst_n),
-        .en(|mem_req_mask[1:0]),
-        .expr(mem_req_src == NONE | mem_req_src == COMPRESSOR)
-    );
+    // ASSERT_NEVER #(.MSG("mem_req_fifo can not enqueue NONE as mem_req_src")) mem_req_fifo_chk(
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .en(|mem_req_mask[1:0]),
+    //     .expr(mem_req_src == NONE | mem_req_src == COMPRESSOR)
+    // );
 
     // Assertion 2
     ASSERT_ONEHOT #(
@@ -309,5 +322,6 @@ module controller(
             .expr(mem_req_gnt)
         );
     `endif
+
 
 endmodule

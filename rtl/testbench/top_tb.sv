@@ -3,7 +3,8 @@ module top_tb();
 logic clk, rst_n;
 logic [`MEM_ADDR_SIZE-1:0] mem_addr;
 logic [`MEM_BANDWIDTH*8-1:0] mem_write_data;
-logic mem_write_valid;
+logic mem_read_valid;
+
 logic  [`MEM_BANDWIDTH*8-1:0] mem_data;
 logic  mem_valid;
 logic layer_complete;
@@ -12,31 +13,38 @@ LAYER_TYPE layer_type_in;
 logic [`MEM_ADDR_SIZE-1:0] ifmap_buffer_start_addr;
 logic [`MEM_ADDR_SIZE-1:0] weight_buffer_start_addr;
 logic [`MEM_ADDR_SIZE-1:0] compressor_start_addr;
+logic mem_write_valid;
+// Mimic MEM
+memory MEM(clk, mem_addr, mem_write_data, mem_write_valid, mem_data, mem_valid, mem_read_valid);
 
-// Mimic memory
-memory MEM(clk, mem_addr, mem_write_data, mem_write_valid, mem_data, mem_valid);
 
 // DUT
 amadeus_top DUT(
     .clk(clk),
     .rst_n(rst_n),
-    .start(start),
-    .layer_type_in(layer_type_in),
+    .start_layer(start),
+    .mem_read_data(mem_data),
+    .mem_valid(mem_read_valid),
     .ifmap_buffer_start_addr(ifmap_buffer_start_addr),
     .weight_buffer_start_addr(weight_buffer_start_addr),
     .compressor_start_addr(compressor_start_addr),
+    .layer_type_in(layer_type_in),
+
     .mem_addr(mem_addr),
     .mem_write_data(mem_write_data),
-    .mem_write_valid(mem_write_valid),
+    .mem_read(mem_read_valid),
+    .mem_write(mem_write_valid),
     .layer_complete(layer_complete)
 );
 
+always #10 clk = ~clk;
+
 task initialize_mem();
-$readmemh("program.mem", memory.unified_memory);
-ifmap_buffer_start_addr = memory.unified_memory[0];
-weight_buffer_start_addr = memory.unified_memory[1];
-compressor_start_addr = memory.unified_memory[2];
-$display("Loading memory done");
+$readmemh("program.mem", MEM.ram);
+ifmap_buffer_start_addr = MEM.ram[0];
+weight_buffer_start_addr = MEM.ram[1];
+compressor_start_addr = MEM.ram[2];
+$display("Loading MEM done");
 endtask
 
 task reset();
@@ -62,8 +70,18 @@ start <= 0;
 endtask
 
 initial begin
+        $fsdbDumpfile("dump.fsdb");
+        $fsdbDumpvars(0,top_tb,"+all");
+        $fsdbDumpon;
+    end
+
+initial begin
     initialize_mem();
     reset();
-
+    start_layer1();
+    for(int i = 0; i < 60000; i=i+1) begin
+        @(negedge clk);
+    end
+    $finish;
 end
 endmodule

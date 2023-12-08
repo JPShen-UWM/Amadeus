@@ -189,7 +189,7 @@ module NOC(
     assign line_read_ptr_start = layer_type == LAYER1 ? layer1_line_read_ptr_start :
                                  layer_type == LAYER2 ? layer2_line_read_ptr_start : 0;
 
-    assign ifmap_data_line_packet_idx = ifmap_data_line_read_ptr - line_read_ptr_start;
+    assign ifmap_data_line_packet_idx = ifmap_data_line_read_ptr - line_read_ptr_start > 0 ? ifmap_data_line_read_ptr - line_read_ptr_start : 0;
 
     assign line_read_valid = (  (layer_type == LAYER1 & ~(|layer1_pe_full[ifmap_data_line_packet_idx])) |
                                 (layer_type == LAYER2 & ~(|layer2_pe_full[ifmap_data_line_packet_idx])) |
@@ -411,7 +411,7 @@ module NOC(
 
     // send ifmap_packet to specific diagonal bus
     for(genvar i = 0; i < 12; i=i+1) begin: diagbus_gen
-        assign diagonal_bus_packet[i] = diagbus_pattern[ifmap_data_line_packet_idx][i] & ifmap_packet.valid & enable ? ifmap_packet : '0;
+        assign diagonal_bus_packet.diagonal_bus[i] = diagbus_pattern[ifmap_data_line_packet_idx][i] & ifmap_packet.valid & enable ? ifmap_packet : '0;
     end
 
 

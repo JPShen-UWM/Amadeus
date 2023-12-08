@@ -1,6 +1,7 @@
-module amadeus(
+module amadeus_top(
     input clk,
     input rst_n,
+    input start_layer,
     input [`MEM_BANDWIDTH*8-1:0] mem_read_data,
     input mem_valid,
     input [`MEM_ADDR_SIZE-1:0] ifmap_buffer_start_addr,
@@ -31,12 +32,12 @@ module amadeus(
 
     logic start_ifmap_buffer_load;
     logic start_conv;
-    logic mode;
+    OP_MODE mode;
     logic conv_complete;
     logic [5:0][6:0] pe_full;
     logic [4:0] complete_count;
     DIAGONAL_BUS_PACKET diagonal_bus_packet;
-    PE_IN_PACKET [5:0] weight_in_array;
+    PE_IN_PACKET  weight_in_array [5:0];
     PSUM_PACKET [6:0] psum_to_pe;
     logic [6:0] pe_psum_ack;
     PSUM_PACKET [6:0] psum_to_buffer;
@@ -74,6 +75,8 @@ module amadeus(
 
     CONTROL_STATE control_state;
 
+    logic conv_complete;
+
     decompressor Decompressor(
         .clk(clk),
         .rst_n(rst_n),
@@ -93,6 +96,7 @@ module amadeus(
         .clk(clk),
         .rst_n(rst_n),
         .start(start_ifmap_buffer_load),
+        .start_layer(start_layer),
         .layer_type_in(layer_type_in),
         .decompressed_fifo_packet(decompressed_fifo_packet),
         .decompressor_ack(decompressor_ack),
@@ -208,7 +212,8 @@ module amadeus(
 
     controller Controller(
         .clk(clk),
-        .rst_n(rat_n),
+        .rst_n(rst_n),
+        .start(start_layer),
         .layer_type_in(layer_type_in),
         .ifmap_buffer_start_addr(ifmap_buffer_start_addr),
         .weight_buffer_start_addr(weight_buffer_start_addr),
@@ -245,7 +250,8 @@ module amadeus(
         .mem_read_valid(mem_read),
         .mem_write_valid(mem_write),
         .layer_complete(layer_complete),
-        .control_state(control_state)
+        .control_state(control_state),
+        .conv_complete(conv_complete)
     );
 
 endmodule

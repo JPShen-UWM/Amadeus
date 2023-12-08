@@ -1,6 +1,6 @@
 module zero_psum_gen (
     input                   clk,
-    input                   rst,
+    input                   rst_n,
     input                   psum_ack,
     input OP_MODE           mode_in,
     input                   change_mode,
@@ -21,12 +21,12 @@ assign psum_idx_max = (cur_mode == MODE1)? `L1_OFMAP_SIZE - 1:
                                            `L3_OFMAP_SIZE - 1;
 
 always_ff @(posedge clk) begin
-    if(rst) cur_mode <= MODE1;
+    if(!rst_n) cur_mode <= MODE1;
     else if(change_mode) cur_mode <= mode_in;
 end
 
 always_ff @(posedge clk) begin
-    if(rst) begin
+    if(!rst_n) begin
         filter_idx <= 'b0;
         psum_idx <= 'b0;
         send_done <= 'b0;

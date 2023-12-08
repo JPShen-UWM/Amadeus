@@ -150,7 +150,7 @@ always_ff @(posedge clk) begin
 end
 
 
-    for(genvar j = 0; j < 6; j++) begin
+    for(genvar j = 0; j < 7; j++) begin
         assign outbuff_row2_ack_in[j] = (cur_mode == MODE4) & psum_row2_out[j].valid;
         assign outbuff_row4_ack_in[j] = (cur_mode == MODE2 | cur_mode == MODE3) & psum_row4_out[j].valid;
         assign outbuff_row5_ack_in[j] = (cur_mode == MODE4) & psum_to_buffer[j].valid;

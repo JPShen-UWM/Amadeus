@@ -55,7 +55,7 @@ module fifo
     // update fifo data
     always_ff@(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            fifo_data <= INITIAL;
+            fifo_data <= '0;
         end
         else if(!full & wen) begin
             fifo_data[wptr] <= data_in;

@@ -12,7 +12,7 @@
 # similar to the information in those scripts but that seems hard to avoid.
 #
 
-VCS = SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define+
+VCS = SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define+DV
 LIB = /afs/umich.edu/class/eecs470/lib/verilog/lec25dscc25.v
 
 all:	simv
@@ -25,8 +25,9 @@ HEADERS = sv/sys_defs.svh
 
 
 PRIMITIVES = $(wildcard primitive/*.sv)
-TESTBENCH = testbench/output_buffer_tb.sv
-SIMFILES = sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv sv/NOC.sv sv/psum_buffer.sv sv/fifo.sv sv/controller.sv sv/pulse_generator.sv sv/round_robin_arbitor.sv sv/output_buffer.sv
+TESTBENCH = testbench/top_tb.sv
+SIMFILES := $(wildcard sv/*.sv)
+SIMFILES := $(filter-out sv/compressor_revise.sv, $(SIMFILES))
 
 
 

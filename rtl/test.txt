@@ -1,6 +1,6 @@
-SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define+ sv/sys_defs.svh testbench/output_buffer_tb.sv sv/decompressor.sv sv/countones.sv sv/priority_encoder.sv sv/ifmap_buffer.sv sv/NOC.sv sv/psum_buffer.sv sv/fifo.sv sv/controller.sv sv/pulse_generator.sv sv/round_robin_arbitor.sv sv/output_buffer.sv primitive/assert_never_imm.sv primitive/assert_always.sv primitive/assert_cond.sv primitive/assert_never.sv primitive/assert_onehot.sv -o simv | tee simv.log
+SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define+ sv/sys_defs.svh testbench/top_tb.sv sv/round_robin_arbitor.sv sv/ifmap_buffer.sv sv/output_buffer.sv sv/fifo.sv sv/decompressor.sv sv/weight_buffer.sv sv/countones.sv sv/psum_buffer.sv sv/pulse_generator.sv sv/controller.sv sv/amadeus_top.sv sv/pe.sv sv/fifo_position_detect.sv sv/NOC.sv sv/adder_fixed.sv sv/zero_psum_gen.sv sv/mult_fixed.sv sv/pe_array.sv sv/compressor.sv sv/priority_encoder.sv sv/memory.sv primitive/assert_never_imm.sv primitive/assert_always.sv primitive/assert_cond.sv primitive/assert_never.sv primitive/assert_onehot.sv -o simv | tee simv.log
                          Chronologic VCS (TM)
-      Version R-2020.12-SP2-1_Full64 -- Thu Dec  7 17:19:23 2023
+      Version R-2020.12-SP2-1_Full64 -- Thu Dec  7 19:31:11 2023
 
                     Copyright (c) 1991 - 2021 Synopsys, Inc.
    This software and the associated documentation are proprietary to Synopsys,
@@ -9,93 +9,76 @@ SW_VCS=2020.12-SP2-1 vcs -sverilog +vc -Mupdate -line -full64 +define+ sv/sys_de
             or distribution of this software is strictly prohibited.
 
 Parsing design file 'sv/sys_defs.svh'
-Parsing design file 'testbench/output_buffer_tb.sv'
-Parsing design file 'sv/decompressor.sv'
-Parsing design file 'sv/countones.sv'
-Parsing design file 'sv/priority_encoder.sv'
-Parsing design file 'sv/ifmap_buffer.sv'
-Parsing design file 'sv/NOC.sv'
-Parsing design file 'sv/psum_buffer.sv'
-Parsing design file 'sv/fifo.sv'
-Parsing design file 'sv/controller.sv'
-Parsing design file 'sv/pulse_generator.sv'
+Parsing design file 'testbench/top_tb.sv'
 Parsing design file 'sv/round_robin_arbitor.sv'
+Parsing design file 'sv/ifmap_buffer.sv'
 Parsing design file 'sv/output_buffer.sv'
+Parsing design file 'sv/fifo.sv'
+Parsing design file 'sv/decompressor.sv'
+Parsing design file 'sv/weight_buffer.sv'
+Parsing design file 'sv/countones.sv'
+Parsing design file 'sv/psum_buffer.sv'
+Parsing design file 'sv/pulse_generator.sv'
+Parsing design file 'sv/controller.sv'
+Parsing design file 'sv/amadeus_top.sv'
+
+Warning-[IPDASP] Identifier in ANSI port declaration
+sv/amadeus_top.sv, 20
+  Redeclaration of ANSI ports not allowed for 'start_layer', this will be an 
+  error in a future release
+
+Parsing design file 'sv/pe.sv'
+Parsing design file 'sv/fifo_position_detect.sv'
+Parsing design file 'sv/NOC.sv'
+Parsing design file 'sv/adder_fixed.sv'
+Parsing design file 'sv/zero_psum_gen.sv'
+Parsing design file 'sv/mult_fixed.sv'
+Parsing design file 'sv/pe_array.sv'
+Parsing design file 'sv/compressor.sv'
+Parsing design file 'sv/priority_encoder.sv'
+Parsing design file 'sv/memory.sv'
 Parsing design file 'primitive/assert_never_imm.sv'
 Parsing design file 'primitive/assert_always.sv'
 Parsing design file 'primitive/assert_cond.sv'
 Parsing design file 'primitive/assert_never.sv'
 Parsing design file 'primitive/assert_onehot.sv'
 Top Level Modules:
-       tb_output_buffer
-       decompressor
-       ifmap_buffer
-       NOC
-       psum_buffer
-       controller
+       top_tb
+       fifo_position_detect
        ASSERT_NEVER_IMM
        ASSERT_ALWAYS
        ASSERT_COND
        ASSERT_NEVER
        ASSERT_ONEHOT
-TimeScale is 1 ns / 1 ps
-
-Warning-[ENUMASSIGN] Illegal assignment to enum variable
-testbench/output_buffer_tb.sv, 60
-tb_output_buffer, "mode_in = 0;"
-  Only expressions of the enum type can be assigned to an enum variable. 
-  The type int is incompatible with the enum 'OP_MODE'
-  Expression: 0
-  Use the static cast operator to convert the expression to enum type.
-
-
-Warning-[ENUMASSIGN] Illegal assignment to enum variable
-testbench/output_buffer_tb.sv, 62
-tb_output_buffer, "control_state = 0;"
-  Only expressions of the enum type can be assigned to an enum variable. 
-  The type int is incompatible with the enum 'CONTROL_STATE'
-  Expression: 0
-  Use the static cast operator to convert the expression to enum type.
-
-
-Warning-[ENUMASSIGN] Illegal assignment to enum variable
-sv/fifo.sv, 58
-fifo, "fifo_data <= INITIAL;"
-  Only expressions of the enum type can be assigned to an enum variable. 
-  The type bit [1:0] is incompatible with the enum 'MEMORY_SOURCE'
-  Expression: INITIAL
-  Use the static cast operator to convert the expression to enum type.
-
+TimeScale is 1 ns / 100 ps
 Starting vcs inline pass...
 
-12 modules and 0 UDP read.
-recompiling module tb_output_buffer
-recompiling module decompressor
-recompiling module ifmap_buffer
-recompiling module NOC
-recompiling module psum_buffer
-recompiling module fifo
-recompiling module controller
-recompiling module ASSERT_NEVER_IMM
-recompiling module ASSERT_ALWAYS
-recompiling module ASSERT_COND
-recompiling module ASSERT_NEVER
-recompiling module ASSERT_ONEHOT
-All of 12 modules done
+15 modules and 0 UDP read.
+recompiling module top_tb
+	However, due to incremental compilation, only 1 module needs to be compiled. 
 make[1]: Entering directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
 make[1]: Leaving directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
 make[1]: Entering directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
 rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+ld -shared  -Bsymbolic --no-relax  -o .//../simv.daidir//_cuarc0.so objs/amcQw_d.o 
+rm -f _cuarc0.so
 if [ -x ../simv ]; then chmod a-x ../simv; fi
-g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/usr/caen/vcs-2020.12-SP2-1/linux64/lib -L/usr/caen/vcs-2020.12-SP2-1/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1   objs/amcQw_d.o   _2926790_archive_1.so  SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o           -lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive          /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_save_restore_new.o -ldl  -lc -lm -lpthread -ldl 
+g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/usr/caen/vcs-2020.12-SP2-1/linux64/lib -L/usr/caen/vcs-2020.12-SP2-1/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1     _59109_archive_1.so _prev_archive_1.so _cuarc0.so  SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o           -lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive          /usr/caen/vcs-2020.12-SP2-1/linux64/lib/vcs_save_restore_new.o -ldl  -lc -lm -lpthread -ldl 
 ../simv up to date
 make[1]: Leaving directory '/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/csrc'
-CPU time: 1.144 seconds to compile + .504 seconds to elab + .377 seconds to link
+CPU time: .648 seconds to compile + .217 seconds to elab + .155 seconds to link
 ./simv | tee program.out
 Chronologic VCS simulator copyright 1991-2020
 Contains Synopsys proprietary information.
-Compiler version R-2020.12-SP2-1_Full64; Runtime version R-2020.12-SP2-1_Full64;  Dec  7 17:19 2023
-"sv/output_buffer.sv", 160: tb_output_buffer.uut.unnamed$$_24: started at 10000ps failed at 10000ps
-	Offending '((next_rd_col_ptr + valid_taken_num) <= psum_size)'
-"sv/output_buffer.sv", 161: tb_output_buffer.uut.unnamed$$_25: started at 10000ps failed at 10000ps
-	Offending '(valid_taken_num <= outmap_data_valid_num)'
+Compiler version R-2020.12-SP2-1_Full64; Runtime version R-2020.12-SP2-1_Full64;  Dec  7 19:31 2023
+
+Warning-[STASKW_RMIEAFL] Illegal entry
+testbench/top_tb.sv, 41
+  Illegal entry found at file program.mem line 4 while executing $readmem.
+  Please ensure that the file has proper entries.
+
+Loading MEM done
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 000 ps
+CPU Time:      0.220 seconds;       Data structure size:   1.7Mb
+Thu Dec  7 19:31:31 2023
