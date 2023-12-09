@@ -1,0 +1,121 @@
+Error: The selector genblk1_0__genblk1_1__PE_ARRAY_C3033 is shorted to the selector genblk1_0__genblk1_0__PE_ARRAY_C3029.
+	Resource sharing does not support operations that are
+	shorted together. (SR-8)
+ 
+****************************************
+Report : net fanout
+        -high_fanout
+Design : pe_array
+Version: T-2022.03-SP3
+Date   : Thu Dec  7 14:14:31 2023
+****************************************
+
+
+Operating Conditions: tt1p05v25c   Library: saed32rvt_tt1p05v25c
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+pe_array               ForQA             saed32rvt_tt1p05v25c
+
+
+Attributes:
+   dr - drc disabled
+    c - annotated capacitance
+    d - dont_touch
+    i - ideal_net
+    I - ideal_network
+    p - includes pin load
+    r - annotated resistance
+    h - high fanout
+
+Net                 Fanout   Attributes   Capacitance   Driver
+--------------------------------------------------------------------------------
+clk                  27960   dr, h        1001802.88    clk
+rst                    855                  685.59      rst
+conv_continue          602                  480.83      conv_continue
+genblk1_0__genblk1_0__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_0__PE_ARRAY_U2/**logic_0**
+genblk1_0__genblk1_1__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_1__PE_ARRAY_U2/**logic_0**
+genblk1_0__genblk1_2__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_2__PE_ARRAY_U2/**logic_0**
+genblk1_0__genblk1_3__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_3__PE_ARRAY_U2/**logic_0**
+genblk1_0__genblk1_4__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_4__PE_ARRAY_U2/**logic_0**
+genblk1_0__genblk1_5__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_5__PE_ARRAY_U2/**logic_0**
+genblk1_0__genblk1_6__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_0__genblk1_6__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_0__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_0__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_1__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_1__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_2__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_2__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_3__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_3__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_4__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_4__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_5__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_5__PE_ARRAY_U2/**logic_0**
+genblk1_1__genblk1_6__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_1__genblk1_6__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_0__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_0__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_1__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_1__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_2__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_2__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_3__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_3__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_4__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_4__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_5__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_5__PE_ARRAY_U2/**logic_0**
+genblk1_2__genblk1_6__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_2__genblk1_6__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_0__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_0__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_1__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_1__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_2__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_2__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_3__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_3__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_4__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_4__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_5__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_5__PE_ARRAY_U2/**logic_0**
+genblk1_3__genblk1_6__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_3__genblk1_6__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_0__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_0__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_1__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_1__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_2__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_2__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_3__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_3__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_4__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_4__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_5__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_5__PE_ARRAY_U2/**logic_0**
+genblk1_4__genblk1_6__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_4__genblk1_6__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_0__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_0__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_1__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_1__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_2__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_2__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_3__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_3__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_4__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_4__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_5__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_5__PE_ARRAY_U2/**logic_0**
+genblk1_5__genblk1_6__PE_ARRAY__Logic0_
+                      5337   dr, h        1001802.88    genblk1_5__genblk1_6__PE_ARRAY_U2/**logic_0**
+1

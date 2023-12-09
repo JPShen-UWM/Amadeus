@@ -1,0 +1,39 @@
+ 
+****************************************
+Report : clock timing
+        -type summary
+Design : pe
+Version: T-2022.03-SP3
+Date   : Thu Dec  7 14:22:45 2023
+****************************************
+
+  Clock: core_clk
+----------------------------------------------------------------------------
+  Maximum setup launch latency:
+      cur_mode_reg_1_/clocked_on                             0.20      wr-+
+
+  Minimum setup capture latency:
+      cur_mode_reg_1_/clocked_on                             0.20      wr-+
+
+  Minimum hold launch latency:
+      cur_mode_reg_1_/clocked_on                             0.20      br-+
+
+  Maximum hold capture latency:
+      cur_mode_reg_1_/clocked_on                             0.20      br-+
+
+  Maximum active transition:
+      cur_mode_reg_1_/clocked_on                             0.08      wr-+
+
+  Minimum active transition:
+      cur_mode_reg_1_/clocked_on                             0.08      wr-+
+
+  Maximum setup skew:
+      adder_out_ff_reg_0_/clocked_on                                   wr-+
+      psum_output_buffer_reg_0__0_/clocked_on                0.00      wr-+
+
+  Maximum hold skew:
+      adder_out_ff_reg_0_/clocked_on                                   br-+
+      psum_output_buffer_reg_0__0_/clocked_on                0.00      br-+
+----------------------------------------------------------------------------
+
+1

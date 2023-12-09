@@ -1,6 +1,6 @@
 from amadeus import amadeus
 import random
-# This test perform second layer convolution
+# This test perform third layer convolution
 # ifmap is 13x13 with pad 1 so use 15x15 for test
 ifmap = [[random.randint(0, 30) for j in range(15)] for i in range(15)]
 # filter is 3x3

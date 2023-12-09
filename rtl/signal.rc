@@ -1,0 +1,150 @@
+Magic 271485
+Revision Verdi_R-2020.12-SP2-1
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+<<<<<<< HEAD
+viewPort 0 25 3440 1192 517 131
+=======
+viewPort 0 25 1701 616 517 131
+>>>>>>> xinchaoz
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/inter.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 643.059068 1937.586802
+cursor 1500.000000
+marker 0.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+<<<<<<< HEAD
+top 16
+; marker line index
+markerPos 60
+=======
+top 39
+; marker line index
+markerPos 63
+>>>>>>> xinchaoz
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/xinchaoz/Documents/verilog_workspace/Amadeus/rtl/inter.fsdb"
+addSignal -h 15 /decompressor_tb/clk
+addSignal -h 15 /decompressor_tb/uut/clk
+addSignal -h 15 /decompressor_tb/uut/rst_n
+addSignal -h 15 /decompressor_tb/uut/start
+addSignal -h 15 /decompressor_tb/uut/ifmap_buffer_req
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/mem_data[63:0]
+addSignal -h 15 /decompressor_tb/uut/mem_data_valid
+addSignal -h 15 /decompressor_tb/uut/mem_ack
+addSignal -h 15 -UNSIGNED /decompressor_tb/uut/layer_type_in[1:0]
+addGroup "G2"
+addSignal -h 15 /decompressor_tb/uut/decompressor_ack
+addSignal -h 15 /decompressor_tb/uut/mem_req
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/decompress_fifo_packet
+addSignal -h 15 /decompressor_tb/uut/decompress_fifo_packet.packet_valid
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/decompress_fifo_packet.valid_mask[7:0]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/decompress_fifo_packet.data[7:0]
+addSignal -h 15 /decompressor_tb/uut/decompress_fifo_packet.packet_valid
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/decompress_fifo_packet.valid_mask[7:0]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/decompress_fifo_packet.data[7:0]
+addGroup "G3"
+addSignal -h 15 /decompressor_tb/uut/enable
+addSignal -h 15 /decompressor_tb/uut/stop_fetch
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/data_fifo[15:0]
+addSignal -h 15 /decompressor_tb/uut/fetch
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/data_fifo_write_ptr[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/data_fifo_fetch_ptr[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/data_fifo_write_index[3:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/data_fifo_read_ptr[4:0]
+addSignal -h 15 /decompressor_tb/uut/data_fifo_fetch_full
+addSignal -h 15 -UNSIGNED /decompressor_tb/uut/layer_type[1:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_data_counter_read[6:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_data_counter_read_upper[6:0]
+addGroup "G4"
+addSignal -h 15 /decompressor_tb/uut/layer23_fifo_packet
+addSignal -h 15 /decompressor_tb/uut/layer23_fifo_packet_comb
+addSignal -h 15 /decompressor_tb/uut/layer23_fifo_packet_next
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_data_fifo_read_ptr[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_data_fifo_read_ptr_next[4:0]
+addSignal -h 15 /decompressor_tb/uut/fetch_layer23
+addSignal -h 15 /decompressor_tb/uut/fetch_full_layer23
+addSignal -h 15 /decompressor_tb/uut/data_fifo_layer23_empty
+addSignal -h 15 /decompressor_tb/uut/data_fifo_layer23_full
+addSignal -h 15 /decompressor_tb/uut/layer23_stall
+addSignal -h 15 /decompressor_tb/uut/layer23_handshake
+addSignal -expanded -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[9:0]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[9]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[8]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[7]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[6]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[5]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[4]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[3]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[2]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[1]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data[0]
+addSignal -h 15 /decompressor_tb/uut/layer23_aligned_data_minus[9:0]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data_next[9:0]
+addSignal -h 15 -UNSIGNED -UDEC /decompressor_tb/uut/layer23_aligned_data_comb[9:0]
+addSignal -h 15 /decompressor_tb/uut/layer23_aligned_data_comb_next[9:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/aligned_data_valid[1:0]
+<<<<<<< HEAD
+=======
+addSignal -h 15 /decompressor_tb/uut/end_with_first_unit
+addSignal -h 15 /decompressor_tb/uut/layer23_sending_last_packet
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_send_all[1:0]
+>>>>>>> xinchaoz
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_valid_group[1:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_valid_group_next[1:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/is_end[1:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_read_ptr[3:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_read_ptr_next[3:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_tail_ptr[3:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_compress_unit_num[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_accumulate_num[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/aligned_data_flag[1:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/aligned_data_accumulate_num_mask[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/aligned_data_read_ptr_move[2:0]
+addSignal -h 15 /decompressor_tb/uut/aligned_data_read_ptr_move_not_full
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/aligned_data_read_ptr_move_max[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_aligned_data_valid_handle_group[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_fifo_packet_remain_num[6:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_fifo_packet_remain_num_next[6:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_fifo_packet_enqueue_num[6:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/layer23_fifo_packet_ptr[3:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/compress_unit_val_valid[4:0]
+addSignal -h 15 -UNSIGNED -HEX /decompressor_tb/uut/compress_unit_val_position[4:0]
+addGroup "G5"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+

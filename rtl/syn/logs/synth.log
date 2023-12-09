@@ -1,0 +1,373 @@
+
+                           Design Compiler Graphical 
+                                 DC Ultra (TM)
+                                  DFTMAX (TM)
+                              Power Compiler (TM)
+                                 DesignWare (R)
+                                 DC Expert (TM)
+                               Design Vision (TM)
+                               HDL Compiler (TM)
+                               VHDL Compiler (TM)
+                                  DFT Compiler
+                               Design Compiler(R)
+
+               Version T-2022.03-SP3 for linux64 - Jul 12, 2022 
+
+                    Copyright (c) 1988 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+Initializing...
+###############################
+#                             #
+# Create By Yufan Yue 2023.10 #
+#                             #
+###############################
+set COURSE_NAME $::env(MK_COURSE_NAME)
+EECS598-002
+puts "\[$COURSE_NAME\] Running script [info script]\n"
+[EECS598-002] Running script /home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/script/amadeus_synth.tcl
+
+set PDK_PATH $::env(SAED32_PATH)
+/afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK
+puts "PDK path at $PDK_PATH"
+PDK path at /afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK
+set DESIGN_NAME $::env(MK_DESIGN_NAME)
+amadeus_top
+set RTL_SOURCE_FILES [glob -nocomplain ../sv/sys_defs.svh ../sv/*.sv]
+../sv/sys_defs.svh ../sv/mult_fixed.sv ../sv/round_robin_arbitor.sv ../sv/amadeus_top.sv ../sv/countones.sv ../sv/decompressor.sv ../sv/ifmap_buffer.sv ../sv/compressor_revise.sv ../sv/fifo_position_detect.sv ../sv/output_buffer.sv ../sv/weight_buffer.sv ../sv/zero_psum_gen.sv ../sv/psum_buffer.sv ../sv/adder_fixed.sv ../sv/memory.sv ../sv/NOC.sv ../sv/priority_encoder.sv ../sv/pe.sv ../sv/compressor.sv ../sv/controller.sv ../sv/fifo.sv ../sv/pulse_generator.sv ../sv/pe_array.sv
+set RTL_SOURCE_FILES [lsearch -all -inline -not $RTL_SOURCE_FILES ../sv/compressor_revise.sv]
+../sv/sys_defs.svh ../sv/mult_fixed.sv ../sv/round_robin_arbitor.sv ../sv/amadeus_top.sv ../sv/countones.sv ../sv/decompressor.sv ../sv/ifmap_buffer.sv ../sv/fifo_position_detect.sv ../sv/output_buffer.sv ../sv/weight_buffer.sv ../sv/zero_psum_gen.sv ../sv/psum_buffer.sv ../sv/adder_fixed.sv ../sv/memory.sv ../sv/NOC.sv ../sv/priority_encoder.sv ../sv/pe.sv ../sv/compressor.sv ../sv/controller.sv ../sv/fifo.sv ../sv/pulse_generator.sv ../sv/pe_array.sv
+set NETLIST_FILES ""
+set DESIGN_DEFINES ""
+set DESIGN_PATH          "[pwd]"
+/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn
+set REPORTS_DIR "${DESIGN_PATH}/reports"
+/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/reports
+set RESULTS_DIR "${DESIGN_PATH}/results"
+/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/results
+set CONSTRAINTS_FILE "${DESIGN_PATH}/script/constraints.tcl"
+/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/script/constraints.tcl
+set USE_NUM_CORES $::env(MK_USE_NUM_CORES)
+4
+set ADDITIONAL_SEARCH_PATH ""
+set MEM_SUFFIX $::env(MK_MEM_SUFFIX)
+typ_1d05_25
+##########################################################################################
+# Library Setup Variables
+##########################################################################################
+#  Target technology logical libraries
+# set MAX_LIBRARY_SET               [glob -nocomplain "${PDK_PATH}/lib/stdcell_rvt/db_ccs/saed32rvt_ss0p95v125c.db"]
+set TYP_LIBRARY_SET               [glob -nocomplain "${PDK_PATH}/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db"]
+/afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db
+# set MIN_LIBRARY_SET               [glob -nocomplain "${PDK_PATH}/lib/stdcell_rvt/db_ccs/saed32rvt_ff1p16vn40c.db"]
+set corner_case "typ"
+typ
+set TARGET_LIBRARY_FILES        ${TYP_LIBRARY_SET}
+/afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db
+set ADDITIONAL_LINK_LIB_FILES   "[glob -nocomplain ${DESIGN_PATH}/memory/db/*_${MEM_SUFFIX}_ccs.db]
+                                   [glob -nocomplain ${DESIGN_PATH}/blocks/*/export/*.db]"
+
+                                   
+set_app_var sh_new_variable_message false
+false
+#################################################################################
+# Design Compiler Setup Variables
+#################################################################################
+set_host_options -max_cores [expr min(6, ${USE_NUM_CORES})]
+1
+if { ! [file exists $REPORTS_DIR] } { file mkdir ${REPORTS_DIR} }
+if { ! [file exists $RESULTS_DIR] } { file mkdir ${RESULTS_DIR} }
+#################################################################################
+# Search Path Setup
+#
+# Set up the search path to find the libraries and design files.
+#################################################################################
+set_app_var search_path ". ${ADDITIONAL_SEARCH_PATH} $search_path"
+.  . /usr/caen/synopsys-synth-2022.03-SP3/libraries/syn /usr/caen/synopsys-synth-2022.03-SP3/dw/syn_ver /usr/caen/synopsys-synth-2022.03-SP3/dw/sim_ver
+#################################################################################
+# Library Setup
+#
+# This section is designed to work with the settings from common_setup.tcl
+# without any additional modification.
+#################################################################################
+set_app_var target_library ${TARGET_LIBRARY_FILES}
+/afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db
+set_app_var synthetic_library dw_foundation.sldb
+dw_foundation.sldb
+set_app_var link_library "* $target_library $ADDITIONAL_LINK_LIB_FILES $synthetic_library"
+* /afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db 
+                                    dw_foundation.sldb
+check_library > ${REPORTS_DIR}/${DESIGN_NAME}.check_library.rpt
+#################################################################################
+# Read in the RTL Design
+#
+# Read in the RTL source files or read in the elaborated design (.ddc).
+#################################################################################
+if { ! [file exists ${DESIGN_NAME}_dclib] } { file mkdir ${DESIGN_NAME}_dclib }
+define_design_lib WORK -path ${DESIGN_PATH}/${DESIGN_NAME}_dclib
+1
+if { [llength $NETLIST_FILES] > 0} { read_verilog -netlist $NETLIST_FILES }
+if { ![analyze -define ${DESIGN_DEFINES} -f sverilog $RTL_SOURCE_FILES] } { exit 1 }
+Running PRESTO HDLC
+Compiling source file ../sv/sys_defs.svh
+Compiling source file ../sv/mult_fixed.sv
+Compiling source file ../sv/round_robin_arbitor.sv
+Compiling source file ../sv/amadeus_top.sv
+Warning:  ../sv/amadeus_top.sv:88: the undeclared symbol 'mem_req' assumed to have the default net type, which is 'wire'. (VER-936)
+Compiling source file ../sv/countones.sv
+Compiling source file ../sv/decompressor.sv
+Warning:  ../sv/decompressor.sv:189: the undeclared symbol 'layer1_handshake' assumed to have the default net type, which is 'wire'. (VER-936)
+Compiling source file ../sv/ifmap_buffer.sv
+Compiling source file ../sv/fifo_position_detect.sv
+Compiling source file ../sv/output_buffer.sv
+Warning:  ../sv/output_buffer.sv:161: The construct 'assert property' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/output_buffer.sv:162: The construct 'assert property' is not supported in synthesis; it is ignored. (VER-708)
+Compiling source file ../sv/weight_buffer.sv
+Warning:  ../sv/weight_buffer.sv:122: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/weight_buffer.sv:123: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/weight_buffer.sv:124: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/weight_buffer.sv:125: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Compiling source file ../sv/zero_psum_gen.sv
+Compiling source file ../sv/psum_buffer.sv
+Compiling source file ../sv/adder_fixed.sv
+Compiling source file ../sv/memory.sv
+Compiling source file ../sv/NOC.sv
+Compiling source file ../sv/priority_encoder.sv
+Compiling source file ../sv/pe.sv
+Compiling source file ../sv/compressor.sv
+Compiling source file ../sv/controller.sv
+Compiling source file ../sv/fifo.sv
+Compiling source file ../sv/pulse_generator.sv
+Compiling source file ../sv/pe_array.sv
+Presto compilation completed successfully.
+Loading db file '/afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db'
+Information: Using CCS timing libraries. (TIM-024)
+Loading db file '/usr/caen/synopsys-synth-2022.03-SP3/libraries/syn/dw_foundation.sldb'
+elaborate ${DESIGN_NAME}
+Loading db file '/usr/caen/synopsys-synth-2022.03-SP3/libraries/syn/gtech.db'
+Loading db file '/usr/caen/synopsys-synth-2022.03-SP3/libraries/syn/standard.sldb'
+  Loading link library 'saed32rvt_tt1p05v25c'
+  Loading link library 'gtech'
+Running PRESTO HDLC
+Presto compilation completed successfully. (amadeus_top)
+Elaborated 1 design.
+Current design is now 'amadeus_top'.
+Information: Building the design 'decompressor'. (HDL-193)
+Warning:  ../sv/decompressor.sv:458: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/decompressor.sv:490: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/decompressor.sv:491: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/decompressor.sv:504: signed to unsigned assignment occurs. (VER-318)
+
+Statistics for case statements in always block at line 341 in file
+	'../sv/decompressor.sv'
+===============================================
+|           Line           |  full/ parallel  |
+===============================================
+|           343            |    auto/auto     |
+===============================================
+
+Inferred memory devices in process
+	in routine decompressor line 109 in file
+		'../sv/decompressor.sv'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|     enable_reg      | Flip-flop |   1   |  N  | N  | Y  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 119 in file
+		'../sv/decompressor.sv'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|   layer_type_reg    | Flip-flop |   2   |  Y  | N  | N  | Y  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 128 in file
+		'../sv/decompressor.sv'.
+===========================================================================
+|    Register Name    | Type  | Width | Bus | MB | AR | AS | SR | SS | ST |
+===========================================================================
+|  layer1_latch_reg   | Latch |   1   |  N  | N  | N  | N  | -  | -  | -  |
+===========================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 135 in file
+		'../sv/decompressor.sv'.
+===========================================================================
+|    Register Name    | Type  | Width | Bus | MB | AR | AS | SR | SS | ST |
+===========================================================================
+|  layer23_latch_reg  | Latch |   1   |  N  | N  | N  | N  | -  | -  | -  |
+===========================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 157 in file
+		'../sv/decompressor.sv'.
+===================================================================================
+|      Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===================================================================================
+| data_fifo_fetch_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+| data_fifo_write_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+===================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 172 in file
+		'../sv/decompressor.sv'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|    data_fifo_reg    | Flip-flop | 1024  |  Y  | N  | Y  | N  | N  | N  | N  |
+===============================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 195 in file
+		'../sv/decompressor.sv'.
+=========================================================================================
+|         Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+=========================================================================================
+| layer1_data_fifo_read_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+=========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 210 in file
+		'../sv/decompressor.sv'.
+========================================================================================
+|        Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+========================================================================================
+| data_counter_write_outer_reg | Flip-flop |   8   |  Y  | N  | Y  | N  | N  | N  | N  |
+| data_counter_write_inner_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 226 in file
+		'../sv/decompressor.sv'.
+========================================================================================
+|        Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+========================================================================================
+| layer1_data_counter_read_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 289 in file
+		'../sv/decompressor.sv'.
+==================================================================================
+|     Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==================================================================================
+| layer23_stop_fetch_reg | Flip-flop |   1   |  N  | N  | Y  | N  | N  | N  | N  |
+==================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 301 in file
+		'../sv/decompressor.sv'.
+==================================================================================
+|     Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==================================================================================
+| aligned_data_valid_reg | Flip-flop |   2   |  Y  | N  | Y  | N  | N  | N  | N  |
+==================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 353 in file
+		'../sv/decompressor.sv'.
+====================================================================================
+|      Register Name       |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+====================================================================================
+| layer23_aligned_data_reg | Flip-flop |  120  |  Y  | N  | Y  | N  | N  | N  | N  |
+====================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 408 in file
+		'../sv/decompressor.sv'.
+==========================================================================================
+|         Register Name          |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==========================================================================================
+| layer23_data_fifo_read_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+==========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 422 in file
+		'../sv/decompressor.sv'.
+=============================================================================================
+|           Register Name           |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+=============================================================================================
+| layer23_aligned_data_read_ptr_reg | Flip-flop |   4   |  Y  | N  | Y  | N  | N  | N  | N  |
+=============================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 436 in file
+		'../sv/decompressor.sv'.
+==============================================================================================
+|           Register Name            |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==============================================================================================
+| layer23_fifo_packet_remain_num_reg | Flip-flop |   6   |  Y  | N  | Y  | N  | N  | N  | N  |
+| layer23_fifo_packet_remain_num_reg | Flip-flop |   1   |  N  | N  | N  | Y  | N  | N  | N  |
+==============================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 469 in file
+		'../sv/decompressor.sv'.
+================================================================================
+|    Register Name     |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+================================================================================
+| layer23_send_all_reg | Flip-flop |   2   |  Y  | N  | Y  | N  | N  | N  | N  |
+================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 506 in file
+		'../sv/decompressor.sv'.
+=========================================================================================
+|         Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+=========================================================================================
+| layer23_data_counter_read_reg | Flip-flop |   7   |  Y  | N  | Y  | N  | N  | N  | N  |
+=========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 518 in file
+		'../sv/decompressor.sv'.
+===================================================================================
+|      Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===================================================================================
+| layer23_fifo_packet_reg | Flip-flop |  73   |  Y  | N  | Y  | N  | N  | N  | N  |
+===================================================================================
+Statistics for MUX_OPs
+======================================================
+| block name/line  | Inputs | Outputs | # sel inputs |
+======================================================
+| decompressor/242 |   16   |   64    |      4       |
+| decompressor/274 |   16   |    3    |      4       |
+| decompressor/275 |   16   |    3    |      4       |
+| decompressor/276 |   16   |    1    |      4       |
+| decompressor/277 |   16   |    1    |      4       |
+| decompressor/320 |   16   |   20    |      4       |
+| decompressor/321 |   16   |   40    |      4       |
+| decompressor/322 |   16   |   20    |      4       |
+| decompressor/323 |   16   |   40    |      4       |
+| decompressor/326 |   16   |   20    |      4       |
+| decompressor/327 |   16   |   40    |      4       |
+======================================================
+Warning:  ../sv/decompressor.sv:128: Netlist for always_comb block contains a latch. (ELAB-974)
+Warning:  ../sv/decompressor.sv:135: Netlist for always_comb block contains a latch. (ELAB-974)
+Presto compilation completed successfully. (decompressor)
+Information: Building the design 'ifmap_buffer'. (HDL-193)
+Warning:  ../sv/ifmap_buffer.sv:137: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:163: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:179: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:203: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:228: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:251: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:254: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:274: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:277: signed to unsigned conversion occurs. (VER-318)

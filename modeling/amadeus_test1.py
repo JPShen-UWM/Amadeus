@@ -1,8 +1,8 @@
 from amadeus import amadeus
 import random
 # This test perform first layer convolution
-ifmap = [[random.randint(0, 30) for j in range(227)] for i in range(227)]
-filter = [[random.randint(0, 30) for j in range(11)] for i in range(11)]
+ifmap = [[random.randint(0, 10) for j in range(227)] for i in range(227)]
+filter = [[random.randint(0, 10) for j in range(11)] for i in range(11)]
 dut = amadeus()
 dut.load_filter_from_mem(filter, 11)
 dut.load_ifmap_from_mem(ifmap, 227)
