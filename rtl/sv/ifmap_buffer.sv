@@ -78,7 +78,10 @@ module ifmap_buffer(
     ///       full         ready       en/dequeue
     /// enqueue and dequeue ///
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | &ready) begin
+        if(!rst_n) begin
+            chosen_enqueue <= '0;
+        end
+        else if(&ready) begin
             chosen_enqueue <= '0;
         end
         else if(start | ready == 0) begin
@@ -90,7 +93,10 @@ module ifmap_buffer(
     end
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            chosen_dequeue <= '0;
+        end
+        else if(start) begin
             chosen_dequeue <= '0;
         end
         else if(!(|ready)) begin
@@ -106,7 +112,10 @@ module ifmap_buffer(
 
     /// free ///
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            free <= 2'b0;
+        end
+        else if(start) begin
             free <= 2'b0;
         end
         else if(free_ifmap_buffer) begin
@@ -129,7 +138,10 @@ module ifmap_buffer(
                                     (layer_type == LAYER2 || layer_type == LAYER3)  ? LAYER23_READY_COUNT   : 0;
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            ready_counter <= 0;
+        end
+        else if(start) begin
             ready_counter <= 0;
         end
         else if(ready_pulse)begin
@@ -153,7 +165,10 @@ module ifmap_buffer(
                                                 (layer_type == LAYER3) ? LAYER3_ELEMENT_COUNT : 0;
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer1_last_iteration <= 1'b0;
+        end
+        else if(start) begin
             layer1_last_iteration <= 1'b0;
         end
         else if( (ready_counter > 6 & chosen_enqueue[1]) & (layer_type == LAYER1) ) begin
@@ -175,7 +190,11 @@ module ifmap_buffer(
 
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            memory_batch1_element_write_ptr <= '0;
+            memory_batch1_line_write_ptr    <= '0;
+        end
+        else if(start) begin
             memory_batch1_element_write_ptr <= '0;
             memory_batch1_line_write_ptr    <= '0;
         end
@@ -196,7 +215,11 @@ module ifmap_buffer(
                                                ( (memory_batch2_line_write_ptr == memory_batch_line_write_counter) )                            ? memory_batch_line_write_counter   : memory_batch2_line_write_ptr  + 1;
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start | free[1]) begin
+        if(!rst_n) begin
+            memory_batch2_element_write_ptr <= '0;
+            memory_batch2_line_write_ptr    <=  7;
+        end
+        else if(start) begin
             memory_batch2_element_write_ptr <= '0;
             memory_batch2_line_write_ptr    <=  7;
         end
@@ -213,7 +236,10 @@ module ifmap_buffer(
     /// memory batch data ///
     assign mem_batch1_wen = chosen_enqueue[0] & ifmap_buffer_decompressor_handshake & !ready[0];
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start | free[0]) begin
+        if(!rst_n) begin
+            memory_batch1 <= '0;
+        end
+        else if(start | free[0]) begin
             memory_batch1 <= '0;
         end
         else if(free[1]) begin
@@ -233,7 +259,10 @@ module ifmap_buffer(
 
     assign mem_batch2_wen = chosen_enqueue[1] & ifmap_buffer_decompressor_handshake & !ready[1];
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start | free[1]) begin
+        if(!rst_n) begin
+             memory_batch2 <= '0;
+        end
+        else if(start | free[1]) begin
              memory_batch2 <= '0;
         end
         else if(free[0]) begin

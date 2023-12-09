@@ -17,7 +17,6 @@ module amadeus_top(
 );
 
 
-    logic start_layer;
     logic ifmap_buffer_req;
     logic [`MEM_BANDWIDTH*8-1:0] decompressor_mem_data;
     logic decompressor_mem_data_valid;
@@ -74,8 +73,6 @@ module amadeus_top(
     logic weight_buffer_mem_ack;
 
     CONTROL_STATE control_state;
-
-    logic conv_complete;
 
     decompressor Decompressor(
         .clk(clk),

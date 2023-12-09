@@ -107,9 +107,10 @@ module decompressor(
     
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | stop_fetch) begin
+        if(!rst_n) begin
             enable <= 0;
         end
+        else if(stop_fetch) enable <= 0;
         else if(start) begin
             enable <= 1'b1;
         end
@@ -154,7 +155,11 @@ module decompressor(
     
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            data_fifo_write_ptr      <= '0;
+            data_fifo_fetch_ptr      <= '0;
+        end
+        else if(start) begin
             data_fifo_write_ptr      <= '0;
             data_fifo_fetch_ptr      <= '0;
         end
@@ -165,7 +170,10 @@ module decompressor(
     end
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            data_fifo <= '0;
+        end
+        else if(start) begin
             data_fifo <= '0;
         end
         else if(mem_data_valid & !stop_fetch & enable) begin
@@ -185,7 +193,10 @@ module decompressor(
 
     // control logic for layer1
     always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer1_data_fifo_read_ptr       <= '0;
+        end
+        else if(start) begin
             layer1_data_fifo_read_ptr       <= '0;
         end
         else begin
@@ -197,7 +208,11 @@ module decompressor(
 
     // for layer1 the enbale signal for decompressor is disable after it has already loaded one full input feature map channel from memory
     always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            data_counter_write_inner <= '0;
+            data_counter_write_outer <= '0;
+        end
+        else if(start) begin
             data_counter_write_inner <= '0;
             data_counter_write_outer <= '0;
         end
@@ -209,7 +224,10 @@ module decompressor(
 
     // data read counter for layer1
     always_ff@(posedge layer1_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer1_data_counter_read <= '0;
+        end
+        else if(start) begin
             layer1_data_counter_read <= '0;
         end
         else if(layer1_handshake) begin
@@ -269,7 +287,10 @@ module decompressor(
     assign layer23_data_fifo_read_index_next_p1 = layer23_data_fifo_read_ptr_next_p1[$clog2(DATA_FIFO_DEPTH)-1:0];
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_stop_fetch <= 1'b0;
+        end
+        else if(start) begin
             layer23_stop_fetch <= 1'b0;
         end
         else if((layer_type == LAYER2 | layer_type == LAYER3) && mem_data_valid && ~(&mem_data[62:60])) begin
@@ -278,7 +299,10 @@ module decompressor(
     end
 
     always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            aligned_data_valid <= '0;
+        end
+        else if(start) begin
             aligned_data_valid <= '0;
         end
         else if (!layer23_stall) begin
@@ -327,7 +351,10 @@ module decompressor(
     end
 
     always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_aligned_data <= '0;
+        end
+        else if(start) begin
             layer23_aligned_data <= '0;
         end
         else if (!layer23_stall) begin
@@ -379,7 +406,10 @@ module decompressor(
     // update the layer23_data_fifo_read_ptr, move the layer23_data_fifo_read_ptr only when "layer23_aligned_data_read_ptr > 4"
     assign layer23_data_fifo_read_ptr_next = (layer23_aligned_data_read_ptr_next > 4) ? layer23_data_fifo_read_ptr + 1'b1 : layer23_data_fifo_read_ptr;
     always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_data_fifo_read_ptr  <= '0;
+        end
+        else if(start) begin
             layer23_data_fifo_read_ptr  <= '0;
         end
         else if(!data_fifo_layer23_empty & !layer23_stall) begin
@@ -390,7 +420,10 @@ module decompressor(
     // update the layer23_aligned_data_read_ptr
     assign layer23_aligned_data_read_ptr_next = !aligned_data_read_ptr_move_not_full ? layer23_aligned_data_read_ptr + 5 : layer23_aligned_data_read_ptr + aligned_data_read_ptr_move;
     always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_aligned_data_read_ptr  <= '0;
+        end
+        else if(start) begin
             layer23_aligned_data_read_ptr  <= '0;
         end
         else if (!layer23_stall) begin
@@ -434,7 +467,10 @@ module decompressor(
     assign layer23_sending_last_packet = (layer23_data_counter_read == layer23_data_counter_read_upper-2) & layer23_handshake & (layer23_aligned_data_accumulate_num[4] > 0 | end_with_first_unit) |
                                          (layer23_data_counter_read == layer23_data_counter_read_upper-1) & (layer23_aligned_data_accumulate_num[4] > 0 | end_with_first_unit);
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_send_all <= 2'b0;
+        end
+        else if(start) begin
             layer23_send_all <= 2'b0;
         end
         else if(layer23_send_all == 2'b1 & layer23_handshake) begin
@@ -468,7 +504,10 @@ module decompressor(
     assign layer23_data_counter_read_upper = layer_type == LAYER2 ? 92 :
                                              layer_type == LAYER3 ? 22 : 0;
     always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_data_counter_read <= '0;
+        end
+        else if(start) begin
             layer23_data_counter_read <= '0;
         end
         else if(layer23_handshake) begin
@@ -477,7 +516,10 @@ module decompressor(
     end
 
     always_ff@(posedge layer23_gated_clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            layer23_fifo_packet <= '0;
+        end
+        else if(start) begin
             layer23_fifo_packet <= '0;
         end
         else if(!layer23_stall) begin

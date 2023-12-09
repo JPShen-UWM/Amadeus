@@ -37,16 +37,18 @@ Initializing...
 set COURSE_NAME $::env(MK_COURSE_NAME)
 EECS598-002
 puts "\[$COURSE_NAME\] Running script [info script]\n"
-[EECS598-002] Running script /home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/script/pe_synth.tcl
+[EECS598-002] Running script /home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/script/amadeus_synth.tcl
 
 set PDK_PATH $::env(SAED32_PATH)
 /afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK
 puts "PDK path at $PDK_PATH"
 PDK path at /afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK
 set DESIGN_NAME $::env(MK_DESIGN_NAME)
-pe
-set RTL_SOURCE_FILES   [glob -nocomplain ../sv/sys_defs.svh ../sv/zero_psum_gen.sv ../sv/pe_array.sv ../sv/pe.sv ../sv/adder_fixed.sv ../sv/mult_fixed.sv src/*.v	src/*.sv src/*.vh src/*.svh]
-../sv/sys_defs.svh ../sv/zero_psum_gen.sv ../sv/pe_array.sv ../sv/pe.sv ../sv/adder_fixed.sv ../sv/mult_fixed.sv
+amadeus_top
+set RTL_SOURCE_FILES [glob -nocomplain ../sv/sys_defs.svh ../sv/*.sv]
+../sv/sys_defs.svh ../sv/mult_fixed.sv ../sv/round_robin_arbitor.sv ../sv/amadeus_top.sv ../sv/countones.sv ../sv/decompressor.sv ../sv/ifmap_buffer.sv ../sv/compressor_revise.sv ../sv/fifo_position_detect.sv ../sv/output_buffer.sv ../sv/weight_buffer.sv ../sv/zero_psum_gen.sv ../sv/psum_buffer.sv ../sv/adder_fixed.sv ../sv/memory.sv ../sv/NOC.sv ../sv/priority_encoder.sv ../sv/pe.sv ../sv/compressor.sv ../sv/controller.sv ../sv/fifo.sv ../sv/pulse_generator.sv ../sv/pe_array.sv
+set RTL_SOURCE_FILES [lsearch -all -inline -not $RTL_SOURCE_FILES ../sv/compressor_revise.sv]
+../sv/sys_defs.svh ../sv/mult_fixed.sv ../sv/round_robin_arbitor.sv ../sv/amadeus_top.sv ../sv/countones.sv ../sv/decompressor.sv ../sv/ifmap_buffer.sv ../sv/fifo_position_detect.sv ../sv/output_buffer.sv ../sv/weight_buffer.sv ../sv/zero_psum_gen.sv ../sv/psum_buffer.sv ../sv/adder_fixed.sv ../sv/memory.sv ../sv/NOC.sv ../sv/priority_encoder.sv ../sv/pe.sv ../sv/compressor.sv ../sv/controller.sv ../sv/fifo.sv ../sv/pulse_generator.sv ../sv/pe_array.sv
 set NETLIST_FILES ""
 set DESIGN_DEFINES ""
 set DESIGN_PATH          "[pwd]"
@@ -120,11 +122,35 @@ if { [llength $NETLIST_FILES] > 0} { read_verilog -netlist $NETLIST_FILES }
 if { ![analyze -define ${DESIGN_DEFINES} -f sverilog $RTL_SOURCE_FILES] } { exit 1 }
 Running PRESTO HDLC
 Compiling source file ../sv/sys_defs.svh
-Compiling source file ../sv/zero_psum_gen.sv
-Compiling source file ../sv/pe_array.sv
-Compiling source file ../sv/pe.sv
-Compiling source file ../sv/adder_fixed.sv
 Compiling source file ../sv/mult_fixed.sv
+Compiling source file ../sv/round_robin_arbitor.sv
+Compiling source file ../sv/amadeus_top.sv
+Warning:  ../sv/amadeus_top.sv:88: the undeclared symbol 'mem_req' assumed to have the default net type, which is 'wire'. (VER-936)
+Compiling source file ../sv/countones.sv
+Compiling source file ../sv/decompressor.sv
+Warning:  ../sv/decompressor.sv:189: the undeclared symbol 'layer1_handshake' assumed to have the default net type, which is 'wire'. (VER-936)
+Compiling source file ../sv/ifmap_buffer.sv
+Compiling source file ../sv/fifo_position_detect.sv
+Compiling source file ../sv/output_buffer.sv
+Warning:  ../sv/output_buffer.sv:161: The construct 'assert property' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/output_buffer.sv:162: The construct 'assert property' is not supported in synthesis; it is ignored. (VER-708)
+Compiling source file ../sv/weight_buffer.sv
+Warning:  ../sv/weight_buffer.sv:122: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/weight_buffer.sv:123: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/weight_buffer.sv:124: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Warning:  ../sv/weight_buffer.sv:125: The construct 'declaration initial assignment' is not supported in synthesis; it is ignored. (VER-708)
+Compiling source file ../sv/zero_psum_gen.sv
+Compiling source file ../sv/psum_buffer.sv
+Compiling source file ../sv/adder_fixed.sv
+Compiling source file ../sv/memory.sv
+Compiling source file ../sv/NOC.sv
+Compiling source file ../sv/priority_encoder.sv
+Compiling source file ../sv/pe.sv
+Compiling source file ../sv/compressor.sv
+Compiling source file ../sv/controller.sv
+Compiling source file ../sv/fifo.sv
+Compiling source file ../sv/pulse_generator.sv
+Compiling source file ../sv/pe_array.sv
 Presto compilation completed successfully.
 Loading db file '/afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db'
 Information: Using CCS timing libraries. (TIM-024)
@@ -135,1026 +161,213 @@ Loading db file '/usr/caen/synopsys-synth-2022.03-SP3/libraries/syn/standard.sld
   Loading link library 'saed32rvt_tt1p05v25c'
   Loading link library 'gtech'
 Running PRESTO HDLC
-Warning:  ../sv/pe.sv:101: signed to unsigned assignment occurs. (VER-318)
-Warning:  ../sv/pe.sv:337: signed to unsigned assignment occurs. (VER-318)
-Warning:  ../sv/pe.sv:443: unsigned to signed assignment occurs. (VER-318)
+Presto compilation completed successfully. (amadeus_top)
+Elaborated 1 design.
+Current design is now 'amadeus_top'.
+Information: Building the design 'decompressor'. (HDL-193)
+Warning:  ../sv/decompressor.sv:458: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/decompressor.sv:490: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/decompressor.sv:491: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/decompressor.sv:504: signed to unsigned assignment occurs. (VER-318)
 
-Statistics for case statements in always block at line 180 in file
-	'../sv/pe.sv'
+Statistics for case statements in always block at line 341 in file
+	'../sv/decompressor.sv'
 ===============================================
 |           Line           |  full/ parallel  |
 ===============================================
-|           187            |    user/user     |
+|           343            |    auto/auto     |
 ===============================================
 
 Inferred memory devices in process
-	in routine pe line 79 in file
-		'../sv/pe.sv'.
+	in routine decompressor line 109 in file
+		'../sv/decompressor.sv'.
 ===============================================================================
 |    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
 ===============================================================================
-|    cur_mode_reg     | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
+|     enable_reg      | Flip-flop |   1   |  N  | N  | Y  | N  | N  | N  | N  |
 ===============================================================================
 
 Inferred memory devices in process
-	in routine pe line 85 in file
-		'../sv/pe.sv'.
+	in routine decompressor line 119 in file
+		'../sv/decompressor.sv'.
 ===============================================================================
 |    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
 ===============================================================================
-|   filter_ram_reg    | Flip-flop |  352  |  Y  | N  | N  | N  | N  | N  | N  |
+|   layer_type_reg    | Flip-flop |   2   |  Y  | N  | N  | Y  | N  | N  | N  |
 ===============================================================================
 
 Inferred memory devices in process
-	in routine pe line 109 in file
-		'../sv/pe.sv'.
+	in routine decompressor line 128 in file
+		'../sv/decompressor.sv'.
+===========================================================================
+|    Register Name    | Type  | Width | Bus | MB | AR | AS | SR | SS | ST |
+===========================================================================
+|  layer1_latch_reg   | Latch |   1   |  N  | N  | N  | N  | -  | -  | -  |
+===========================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 135 in file
+		'../sv/decompressor.sv'.
+===========================================================================
+|    Register Name    | Type  | Width | Bus | MB | AR | AS | SR | SS | ST |
+===========================================================================
+|  layer23_latch_reg  | Latch |   1   |  N  | N  | N  | N  | -  | -  | -  |
+===========================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 157 in file
+		'../sv/decompressor.sv'.
+===================================================================================
+|      Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===================================================================================
+| data_fifo_fetch_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+| data_fifo_write_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+===================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 172 in file
+		'../sv/decompressor.sv'.
 ===============================================================================
 |    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
 ===============================================================================
-|    conv_cnt_reg     | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
+|    data_fifo_reg    | Flip-flop | 1024  |  Y  | N  | Y  | N  | N  | N  | N  |
 ===============================================================================
 
 Inferred memory devices in process
-	in routine pe line 120 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|   filter_ptr_reg    | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
+	in routine decompressor line 195 in file
+		'../sv/decompressor.sv'.
+=========================================================================================
+|         Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+=========================================================================================
+| layer1_data_fifo_read_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+=========================================================================================
 
 Inferred memory devices in process
-	in routine pe line 130 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-| conv_done_soon_reg  | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
-===============================================================================
+	in routine decompressor line 210 in file
+		'../sv/decompressor.sv'.
+========================================================================================
+|        Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+========================================================================================
+| data_counter_write_outer_reg | Flip-flop |   8   |  Y  | N  | Y  | N  | N  | N  | N  |
+| data_counter_write_inner_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+========================================================================================
 
 Inferred memory devices in process
-	in routine pe line 171 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|  section_valid_reg  | Flip-flop |   3   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
+	in routine decompressor line 226 in file
+		'../sv/decompressor.sv'.
+========================================================================================
+|        Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+========================================================================================
+| layer1_data_counter_read_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+========================================================================================
 
 Inferred memory devices in process
-	in routine pe line 224 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|    ifmap_ram_reg    | Flip-flop |  96   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
-
-Inferred memory devices in process
-	in routine pe line 246 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|    start_ptr_reg    | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
-
-Inferred memory devices in process
-	in routine pe line 279 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|   mult_out_ff_reg   | Flip-flop |   8   |  Y  | N  | N  | N  | N  | N  | N  |
-|    mult_inA_reg     | Flip-flop |   8   |  Y  | N  | N  | N  | N  | N  | N  |
-|    mult_inB_reg     | Flip-flop |   8   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
-
-Inferred memory devices in process
-	in routine pe line 330 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|  adder_out_ff_reg   | Flip-flop |  12   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
-
-Inferred memory devices in process
-	in routine pe line 341 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|    psum_idx_reg     | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
-
-Inferred memory devices in process
-	in routine pe line 351 in file
-		'../sv/pe.sv'.
-================================================================================
-|    Register Name     |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-================================================================================
-|  data_valid_wb_reg   | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
-|  psum_idx_mult_reg   | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
-|  psum_idx_accum_reg  | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
-|   psum_idx_wb_reg    | Flip-flop |   6   |  Y  | N  | N  | N  | N  | N  | N  |
-| filter_ptr_mult_reg  | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
-| filter_ptr_accum_reg | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
-|  filter_ptr_wb_reg   | Flip-flop |   2   |  Y  | N  | N  | N  | N  | N  | N  |
-|  conv_cnt_mult_reg   | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
-|  conv_cnt_accum_reg  | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
-|   conv_cnt_wb_reg    | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
-| data_valid_mult_reg  | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
-| data_valid_accum_reg | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
-================================================================================
-
-Inferred memory devices in process
-	in routine pe line 392 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|    psum_ram_reg     | Flip-flop |  48   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
-
-Inferred memory devices in process
-	in routine pe line 400 in file
-		'../sv/pe.sv'.
+	in routine decompressor line 289 in file
+		'../sv/decompressor.sv'.
 ==================================================================================
 |     Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
 ==================================================================================
-| psum_output_buffer_reg | Flip-flop |  48   |  Y  | N  | N  | N  | N  | N  | N  |
+| layer23_stop_fetch_reg | Flip-flop |   1   |  N  | N  | Y  | N  | N  | N  | N  |
 ==================================================================================
 
 Inferred memory devices in process
-	in routine pe line 425 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|   psum_ready_reg    | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
+	in routine decompressor line 301 in file
+		'../sv/decompressor.sv'.
+==================================================================================
+|     Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==================================================================================
+| aligned_data_valid_reg | Flip-flop |   2   |  Y  | N  | Y  | N  | N  | N  | N  |
+==================================================================================
 
 Inferred memory devices in process
-	in routine pe line 434 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|    psum_out_reg     | Flip-flop |  15   |  Y  | N  | N  | N  | N  | N  | N  |
-===============================================================================
+	in routine decompressor line 353 in file
+		'../sv/decompressor.sv'.
+====================================================================================
+|      Register Name       |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+====================================================================================
+| layer23_aligned_data_reg | Flip-flop |  120  |  Y  | N  | Y  | N  | N  | N  | N  |
+====================================================================================
 
 Inferred memory devices in process
-	in routine pe line 451 in file
-		'../sv/pe.sv'.
-===============================================================================
-|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
-===============================================================================
-|    conv_done_reg    | Flip-flop |   1   |  N  | N  | N  | N  | N  | N  | N  |
-===============================================================================
+	in routine decompressor line 408 in file
+		'../sv/decompressor.sv'.
+==========================================================================================
+|         Register Name          |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==========================================================================================
+| layer23_data_fifo_read_ptr_reg | Flip-flop |   5   |  Y  | N  | Y  | N  | N  | N  | N  |
+==========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 422 in file
+		'../sv/decompressor.sv'.
+=============================================================================================
+|           Register Name           |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+=============================================================================================
+| layer23_aligned_data_read_ptr_reg | Flip-flop |   4   |  Y  | N  | Y  | N  | N  | N  | N  |
+=============================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 436 in file
+		'../sv/decompressor.sv'.
+==============================================================================================
+|           Register Name            |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+==============================================================================================
+| layer23_fifo_packet_remain_num_reg | Flip-flop |   6   |  Y  | N  | Y  | N  | N  | N  | N  |
+| layer23_fifo_packet_remain_num_reg | Flip-flop |   1   |  N  | N  | N  | Y  | N  | N  | N  |
+==============================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 469 in file
+		'../sv/decompressor.sv'.
+================================================================================
+|    Register Name     |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+================================================================================
+| layer23_send_all_reg | Flip-flop |   2   |  Y  | N  | Y  | N  | N  | N  | N  |
+================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 506 in file
+		'../sv/decompressor.sv'.
+=========================================================================================
+|         Register Name         |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+=========================================================================================
+| layer23_data_counter_read_reg | Flip-flop |   7   |  Y  | N  | Y  | N  | N  | N  | N  |
+=========================================================================================
+
+Inferred memory devices in process
+	in routine decompressor line 518 in file
+		'../sv/decompressor.sv'.
+===================================================================================
+|      Register Name      |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===================================================================================
+| layer23_fifo_packet_reg | Flip-flop |  73   |  Y  | N  | Y  | N  | N  | N  | N  |
+===================================================================================
 Statistics for MUX_OPs
 ======================================================
 | block name/line  | Inputs | Outputs | # sel inputs |
 ======================================================
-|      pe/94       |   4    |   56    |      2       |
-|      pe/128      |   4    |   88    |      2       |
-|      pe/397      |   4    |   12    |      2       |
-|      pe/413      |   4    |    1    |      2       |
-|      pe/420      |   4    |    1    |      2       |
-|      pe/431      |   4    |   12    |      2       |
+| decompressor/242 |   16   |   64    |      4       |
+| decompressor/274 |   16   |    3    |      4       |
+| decompressor/275 |   16   |    3    |      4       |
+| decompressor/276 |   16   |    1    |      4       |
+| decompressor/277 |   16   |    1    |      4       |
+| decompressor/320 |   16   |   20    |      4       |
+| decompressor/321 |   16   |   40    |      4       |
+| decompressor/322 |   16   |   20    |      4       |
+| decompressor/323 |   16   |   40    |      4       |
+| decompressor/326 |   16   |   20    |      4       |
+| decompressor/327 |   16   |   40    |      4       |
 ======================================================
-Presto compilation completed successfully. (pe)
-Elaborated 1 design.
-Current design is now 'pe'.
-Information: Building the design 'mult_fixed'. (HDL-193)
-Warning:  ../sv/mult_fixed.sv:9: unsigned to signed assignment occurs. (VER-318)
-Warning:  ../sv/mult_fixed.sv:12: signed to unsigned part selection occurs. (VER-318)
-Presto compilation completed successfully. (mult_fixed)
-Information: Building the design 'adder_fixed'. (HDL-193)
-Warning:  ../sv/adder_fixed.sv:13: signed to unsigned assignment occurs. (VER-318)
-Warning:  ../sv/adder_fixed.sv:19: unsigned to signed assignment occurs. (VER-318)
-Presto compilation completed successfully. (adder_fixed)
-1
-check_design -multiple_designs
- 
-****************************************
-check_design summary:
-Version:     T-2022.03-SP3
-Date:        Thu Dec  7 14:22:41 2023
-****************************************
-
-                   Name                                            Total
---------------------------------------------------------------------------------
-Cells                                                              12
-    Cells do not drive (LINT-1)                                    11
-    Nets connected to multiple pins on same cell (LINT-33)          1
-
-Designs                                                             1
-    Multiply instantiated designs (LINT-45)                         1
---------------------------------------------------------------------------------
-
-Warning: In design 'pe', cell 'C3069' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3072' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3082' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3176' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3177' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'B_82' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3182' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'B_83' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'B_84' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3247' does not drive any nets. (LINT-1)
-Warning: In design 'pe', cell 'C3252' does not drive any nets. (LINT-1)
-Warning: In design 'pe', the same net is connected to more than one pin on submodule 'MAC_ADDER'. (LINT-33)
-   Net 'mult_out_ff[7]' is connected to pins 'inA[11]', 'inA[10]'', 'inA[9]', 'inA[8]', 'inA[7]'.
-Information: Design 'adder_fixed' is instantiated 2 times. (LINT-45)
-         Cell 'MAC_ADDER' in design 'pe' 
-         Cell 'ACCUM_ADDER' in design 'pe' 
-1
-current_design ${DESIGN_NAME}
-Current design is 'pe'.
-{pe}
-link
-
-  Linking design 'pe'
-  Using the following designs and libraries:
-  --------------------------------------------------------------------------
-  * (3 designs)               /home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/pe.db, etc
-  saed32rvt_tt1p05v25c (library)
-                              /afs/umich.edu/class/eecs598-002/SAED32/SAED32_EDK/lib/stdcell_rvt/db_ccs/saed32rvt_tt1p05v25c.db
-  dw_foundation.sldb (library)
-                              /usr/caen/synopsys-synth-2022.03-SP3/libraries/syn/dw_foundation.sldb
-
-1
-puts "\[$COURSE_NAME\] Sourcing script file [which ${CONSTRAINTS_FILE}]\n"
-[EECS598-002] Sourcing script file /home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/script/constraints.tcl
-
-source -echo -verbose ${CONSTRAINTS_FILE}
-set_max_transition 0.150 ${DESIGN_NAME}
-1
-set_input_transition 0.080 [all_inputs]
-1
-set_max_transition 0.080 [all_outputs]
-1
-set clock_period 5
-5
-set clock_uncertainty [expr $clock_period * 0.10]
-0.5
-set clock_transition 0.080
-0.080
-set clock_latency 0.2
-0.2
-create_clock -name core_clk -period $clock_period [get_ports clk]
-1
-set_clock_uncertainty $clock_uncertainty [get_clocks core_clk]
-1
-set_clock_transition $clock_transition [get_clocks core_clk]
-1
-set_clock_latency $clock_latency [get_clocks core_clk]
-1
-set_load 0.3 [all_outputs]
-1
-set_driving_cell -no_design_rule -lib_cell NBUFFX4_RVT [all_inputs]
-1
-remove_input_delay -clock core_clk [get_ports clk]
-1
-# Fix hold time violation
-set_fix_hold core_clk
-1
-set_false_path -from [get_ports -filter "direction == in" rst]
-1
-1
-redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.check_timing.rpt {check_timing}
-Information: Checking out the license 'DesignWare'. (SEC-104)
-Information: Changed wire load model for 'adder_fixed' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'adder_fixed' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'mult_fixed' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'alt1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'apparch' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_6_1_6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width2' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_2_1_2' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_3_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_3_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_3_5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_4_5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_TC_OP_12_12_13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_6_6_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_TC_OP_12_12_13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW02_mult' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*MULT_TC_OP_9_8_16' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*GEQ_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*GT_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*GT_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_6_6_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Updating design information... (UID-85)
-Warning: Design 'pe' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
-
-Information: Checking generated_clocks...
-
-Information: Checking loops...
-
-Information: Checking no_input_delay...
-Warning: The following input ports have no clock_relative delay specified, the command set_input_delay without -clock option will be ignored. (TIM-216)
---------------------
-rst
-mode_in[1]
-mode_in[0]
-change_mode
-ifmap_packet[valid]
-ifmap_packet[packet_idx][4]
-ifmap_packet[packet_idx][3]
-ifmap_packet[packet_idx][2]
-ifmap_packet[packet_idx][1]
-ifmap_packet[packet_idx][0]
-ifmap_packet[data][3][7]
-ifmap_packet[data][3][6]
-ifmap_packet[data][3][5]
-ifmap_packet[data][3][4]
-ifmap_packet[data][3][3]
-ifmap_packet[data][3][2]
-ifmap_packet[data][3][1]
-ifmap_packet[data][3][0]
-ifmap_packet[data][2][7]
-ifmap_packet[data][2][6]
-ifmap_packet[data][2][5]
-ifmap_packet[data][2][4]
-ifmap_packet[data][2][3]
-ifmap_packet[data][2][2]
-ifmap_packet[data][2][1]
-ifmap_packet[data][2][0]
-ifmap_packet[data][1][7]
-ifmap_packet[data][1][6]
-ifmap_packet[data][1][5]
-ifmap_packet[data][1][4]
-ifmap_packet[data][1][3]
-ifmap_packet[data][1][2]
-ifmap_packet[data][1][1]
-ifmap_packet[data][1][0]
-ifmap_packet[data][0][7]
-ifmap_packet[data][0][6]
-ifmap_packet[data][0][5]
-ifmap_packet[data][0][4]
-ifmap_packet[data][0][3]
-ifmap_packet[data][0][2]
-ifmap_packet[data][0][1]
-ifmap_packet[data][0][0]
-filter_packet[valid]
-filter_packet[packet_idx][4]
-filter_packet[packet_idx][3]
-filter_packet[packet_idx][2]
-filter_packet[packet_idx][1]
-filter_packet[packet_idx][0]
-filter_packet[data][3][7]
-filter_packet[data][3][6]
-filter_packet[data][3][5]
-filter_packet[data][3][4]
-filter_packet[data][3][3]
-filter_packet[data][3][2]
-filter_packet[data][3][1]
-filter_packet[data][3][0]
-filter_packet[data][2][7]
-filter_packet[data][2][6]
-filter_packet[data][2][5]
-filter_packet[data][2][4]
-filter_packet[data][2][3]
-filter_packet[data][2][2]
-filter_packet[data][2][1]
-filter_packet[data][2][0]
-filter_packet[data][1][7]
-filter_packet[data][1][6]
-filter_packet[data][1][5]
-filter_packet[data][1][4]
-filter_packet[data][1][3]
-filter_packet[data][1][2]
-filter_packet[data][1][1]
-filter_packet[data][1][0]
-filter_packet[data][0][7]
-filter_packet[data][0][6]
-filter_packet[data][0][5]
-filter_packet[data][0][4]
-filter_packet[data][0][3]
-filter_packet[data][0][2]
-filter_packet[data][0][1]
-filter_packet[data][0][0]
-op_stage_in[1]
-op_stage_in[0]
-psum_in[valid]
-psum_in[filter_idx][1]
-psum_in[filter_idx][0]
-psum_in[psum][11]
-psum_in[psum][10]
-psum_in[psum][9]
-psum_in[psum][8]
-psum_in[psum][7]
-psum_in[psum][6]
-psum_in[psum][5]
-psum_in[psum][4]
-psum_in[psum][3]
-psum_in[psum][2]
-psum_in[psum][1]
-psum_in[psum][0]
-psum_ack_in
-conv_continue
-
-Information: Checking unconstrained_endpoints...
-
-Warning: The following end-points are not constrained for maximum delay.
-
-End point
----------------
-conv_done
-cur_mode_reg[0]/next_state
-cur_mode_reg[0]/synch_enable
-cur_mode_reg[1]/next_state
-cur_mode_reg[1]/synch_enable
-error
-filter_ram_reg[0][0][0]/next_state
-filter_ram_reg[0][0][1]/next_state
-filter_ram_reg[0][0][2]/next_state
-filter_ram_reg[0][0][3]/next_state
-filter_ram_reg[0][0][4]/next_state
-filter_ram_reg[0][0][5]/next_state
-filter_ram_reg[0][0][6]/next_state
-filter_ram_reg[0][0][7]/next_state
-filter_ram_reg[0][1][0]/next_state
-filter_ram_reg[0][1][1]/next_state
-filter_ram_reg[0][1][2]/next_state
-filter_ram_reg[0][1][3]/next_state
-filter_ram_reg[0][1][4]/next_state
-filter_ram_reg[0][1][5]/next_state
-filter_ram_reg[0][1][6]/next_state
-filter_ram_reg[0][1][7]/next_state
-filter_ram_reg[0][2][0]/next_state
-filter_ram_reg[0][2][1]/next_state
-filter_ram_reg[0][2][2]/next_state
-filter_ram_reg[0][2][3]/next_state
-filter_ram_reg[0][2][4]/next_state
-filter_ram_reg[0][2][5]/next_state
-filter_ram_reg[0][2][6]/next_state
-filter_ram_reg[0][2][7]/next_state
-filter_ram_reg[0][3][0]/next_state
-filter_ram_reg[0][3][1]/next_state
-filter_ram_reg[0][3][2]/next_state
-filter_ram_reg[0][3][3]/next_state
-filter_ram_reg[0][3][4]/next_state
-filter_ram_reg[0][3][5]/next_state
-filter_ram_reg[0][3][6]/next_state
-filter_ram_reg[0][3][7]/next_state
-filter_ram_reg[1][0][0]/next_state
-filter_ram_reg[1][0][1]/next_state
-filter_ram_reg[1][0][2]/next_state
-filter_ram_reg[1][0][3]/next_state
-filter_ram_reg[1][0][4]/next_state
-filter_ram_reg[1][0][5]/next_state
-filter_ram_reg[1][0][6]/next_state
-filter_ram_reg[1][0][7]/next_state
-filter_ram_reg[1][1][0]/next_state
-filter_ram_reg[1][1][1]/next_state
-filter_ram_reg[1][1][2]/next_state
-filter_ram_reg[1][1][3]/next_state
-filter_ram_reg[1][1][4]/next_state
-filter_ram_reg[1][1][5]/next_state
-filter_ram_reg[1][1][6]/next_state
-filter_ram_reg[1][1][7]/next_state
-filter_ram_reg[1][2][0]/next_state
-filter_ram_reg[1][2][1]/next_state
-filter_ram_reg[1][2][2]/next_state
-filter_ram_reg[1][2][3]/next_state
-filter_ram_reg[1][2][4]/next_state
-filter_ram_reg[1][2][5]/next_state
-filter_ram_reg[1][2][6]/next_state
-filter_ram_reg[1][2][7]/next_state
-filter_ram_reg[1][3][0]/next_state
-filter_ram_reg[1][3][1]/next_state
-filter_ram_reg[1][3][2]/next_state
-filter_ram_reg[1][3][3]/next_state
-filter_ram_reg[1][3][4]/next_state
-filter_ram_reg[1][3][5]/next_state
-filter_ram_reg[1][3][6]/next_state
-filter_ram_reg[1][3][7]/next_state
-filter_ram_reg[2][0][0]/next_state
-filter_ram_reg[2][0][1]/next_state
-filter_ram_reg[2][0][2]/next_state
-filter_ram_reg[2][0][3]/next_state
-filter_ram_reg[2][0][4]/next_state
-filter_ram_reg[2][0][5]/next_state
-filter_ram_reg[2][0][6]/next_state
-filter_ram_reg[2][0][7]/next_state
-filter_ram_reg[2][1][0]/next_state
-filter_ram_reg[2][1][1]/next_state
-filter_ram_reg[2][1][2]/next_state
-filter_ram_reg[2][1][3]/next_state
-filter_ram_reg[2][1][4]/next_state
-filter_ram_reg[2][1][5]/next_state
-filter_ram_reg[2][1][6]/next_state
-filter_ram_reg[2][1][7]/next_state
-filter_ram_reg[2][2][0]/next_state
-filter_ram_reg[2][2][1]/next_state
-filter_ram_reg[2][2][2]/next_state
-filter_ram_reg[2][2][3]/next_state
-filter_ram_reg[2][2][4]/next_state
-filter_ram_reg[2][2][5]/next_state
-filter_ram_reg[2][2][6]/next_state
-filter_ram_reg[2][2][7]/next_state
-filter_ram_reg[2][3][0]/next_state
-filter_ram_reg[2][3][1]/next_state
-filter_ram_reg[2][3][2]/next_state
-filter_ram_reg[2][3][3]/next_state
-filter_ram_reg[2][3][4]/next_state
-filter_ram_reg[2][3][5]/next_state
-filter_ram_reg[2][3][6]/next_state
-filter_ram_reg[2][3][7]/next_state
-filter_ram_reg[3][0][0]/next_state
-filter_ram_reg[3][0][1]/next_state
-filter_ram_reg[3][0][2]/next_state
-filter_ram_reg[3][0][3]/next_state
-filter_ram_reg[3][0][4]/next_state
-filter_ram_reg[3][0][5]/next_state
-filter_ram_reg[3][0][6]/next_state
-filter_ram_reg[3][0][7]/next_state
-filter_ram_reg[3][1][0]/next_state
-filter_ram_reg[3][1][1]/next_state
-filter_ram_reg[3][1][2]/next_state
-filter_ram_reg[3][1][3]/next_state
-filter_ram_reg[3][1][4]/next_state
-filter_ram_reg[3][1][5]/next_state
-filter_ram_reg[3][1][6]/next_state
-filter_ram_reg[3][1][7]/next_state
-filter_ram_reg[3][2][0]/next_state
-filter_ram_reg[3][2][1]/next_state
-filter_ram_reg[3][2][2]/next_state
-filter_ram_reg[3][2][3]/next_state
-filter_ram_reg[3][2][4]/next_state
-filter_ram_reg[3][2][5]/next_state
-filter_ram_reg[3][2][6]/next_state
-filter_ram_reg[3][2][7]/next_state
-filter_ram_reg[3][3][0]/next_state
-filter_ram_reg[3][3][1]/next_state
-filter_ram_reg[3][3][2]/next_state
-filter_ram_reg[3][3][3]/next_state
-filter_ram_reg[3][3][4]/next_state
-filter_ram_reg[3][3][5]/next_state
-filter_ram_reg[3][3][6]/next_state
-filter_ram_reg[3][3][7]/next_state
-full
-psum_ack_out
-psum_out[filter_idx][0]
-psum_out[filter_idx][1]
-psum_out[psum][0]
-psum_out[psum][1]
-psum_out[psum][2]
-psum_out[psum][3]
-psum_out[psum][4]
-psum_out[psum][5]
-psum_out[psum][6]
-psum_out[psum][7]
-psum_out[psum][8]
-psum_out[psum][9]
-psum_out[psum][10]
-psum_out[psum][11]
-psum_out[valid]
-
-Information: Checking pulse_clock_cell_type...
-
-Information: Checking no_driving_cell...
-
-Information: Checking partial_input_delay...
-1
-#################################################################################
-# Create Default Path Groups
-#
-# Separating these paths can help improve optimization.
-# Remove these path group settings if user path groups have already been defined.
-#################################################################################
-set ports_clock_root [filter_collection [get_attribute [get_clocks] sources] object_class==port]
-{clk}
-group_path -name REGOUT -to [all_outputs]
-1
-group_path -name REGIN -from [remove_from_collection [all_inputs] ${ports_clock_root}]
-1
-group_path -name FEEDTHROUGH -from [remove_from_collection [all_inputs] ${ports_clock_root}] -to [all_outputs]
-1
-#################################################################################
-# Apply Additional Optimization Constraints
-#################################################################################
-# Replace special characters with non-special ones before writing out the synthesized netlist.
-# For example \bus[5] -> bus_5_
-set_app_var verilogout_no_tri true
-true
-# Prevent assignment statements in the Verilog netlist.
-set_fix_multiple_port_nets -all -buffer_constants
-1
-#################################################################################
-# Check for Design Problems
-#################################################################################
-check_design -summary
- 
-****************************************
-check_design summary:
-Version:     T-2022.03-SP3
-Date:        Thu Dec  7 14:22:42 2023
-****************************************
-
-                   Name                                            Total
---------------------------------------------------------------------------------
-Cells                                                               4
-    Cells do not drive (LINT-1)                                     3
-    Nets connected to multiple pins on same cell (LINT-33)          1
-
-Nets                                                               16
-    Unloaded nets (LINT-2)                                         16
---------------------------------------------------------------------------------
-
-Information: Use the 'check_design' command for 
-	 more information about warnings. (LINT-98)
-
-1
-check_design > ${REPORTS_DIR}/${DESIGN_NAME}.check_design.rpt
-set_app_var compile_ultra_ungroup_dw true
-true
-ungroup -all -flatten
-1
-# append compile_ultra_options " -no_autoungroup"
-# puts "Information: Starting compile_ultra with the following flags: $compile_ultra_options"
-# compile_ultra $compile_ultra_options
-#compile_ultra
-optimize_netlist -area
-Information: Performing power optimization. (PWR-850)
-Alib files are up-to-date.
-Information: Running optimization using a maximum of 4 cores. (OPT-1500)
-Information: Evaluating DesignWare library utilization. (UISN-27)
-
-============================================================================
-| DesignWare Building Block Library  |         Version         | Available |
-============================================================================
-| Basic DW Building Blocks           | T-2022.03-DWBB_202203.3 |     *     |
-| Licensed DW Building Blocks        | T-2022.03-DWBB_202203.3 |     *     |
-============================================================================
-
-Error: Found an unmapped cell 'cur_mode_reg[1]' in the design. (OPT-920)
-1
-#################################################################################
-# Write Out Final Design and Reports
-#
-#        .ddc:   Recommended binary format used for subsequent Design Compiler sessions
-#        .v  :   Verilog netlist for ASCII flow (Formality, PrimeTime, VCS)
-#       .spef:   Topographical mode parasitics for PrimeTime
-#        .sdf:   SDF backannotated topographical mode timing for PrimeTime
-#        .sdc:   SDC constraints for ASCII flow
-#
-#################################################################################
-# If this will be a sub-block in a hierarchical design, uniquify the block
-# unique names to avoid name collisions when integrating the design at the
-# toplevel
-set uniquify_naming_style "${DESIGN_NAME}_%s_%d"
-pe_%s_%d
-uniquify -force
-1
-# Use naming rules to preserve structs
-define_name_rules verilog -preserve_struct_ports -case_insensitive
-1
-report_names -rules verilog > ${REPORTS_DIR}/${DESIGN_NAME}.name_change.rpt
-change_names -rules verilog -hierarchy
-1
-#################################################################################
-# Write out Design
-#################################################################################
-write -format verilog -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}.mapped.v
-Writing verilog file '/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/results/pe.mapped.v'.
-Warning: Module pe contains unmapped components.  The output netlist might not be read back into the system. (VO-12)
-1
-write -format svsim              -output ${RESULTS_DIR}/${DESIGN_NAME}.mapped.svsim
-Writing svsim file '/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/results/pe.mapped.svsim'.
-1
-write -format ddc     -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}.mapped.ddc
-Writing ddc file '/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/results/pe.mapped.ddc'.
-1
-#################################################################################
-# Write out Design Data
-#################################################################################
-# Write SDF backannotation data from Design Compiler Topographical placement for static timing analysis
-write_parasitics -output ${RESULTS_DIR}/${DESIGN_NAME}.mapped.spef
-Information: Writing parasitics to file '/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/results/pe.mapped.spef'. (WP-3)
-1
-write_sdf ${RESULTS_DIR}/${DESIGN_NAME}.mapped.sdf
-Information: Annotated 'cell' delays are assumed to include load delay. (UID-282)
-Information: Writing timing information to file '/home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/results/pe.mapped.sdf'. (WT-3)
-Information: Updating design information... (UID-85)
-Warning: Design 'pe' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
-Warning: Design contains black-box components.  These cells will have no timing information. (WT-7)
-1
-# Do not write out net RC info into SDC
-set_app_var write_sdc_output_lumped_net_capacitance false
-false
-set_app_var write_sdc_output_net_resistance false
-false
-write_sdc -nosplit ${RESULTS_DIR}/${DESIGN_NAME}.mapped.sdc
-1
-#################################################################################
-# Generate Final Reports
-#################################################################################
-redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.units.rpt {report_units}
-************************************
-Report : units
-Design : pe
-Version: T-2022.03-SP3
-Date   : Thu Dec  7 14:22:44 2023
-
-************************************
-Units
-------------------------------------
-Time_unit            : 1.0e-09 Second(ns)
-Capacitive_load_unit : 1.0e-15 Farad(fF)
-Resistance_unit      : 1.0e+6 Ohm(MOhm)
-Voltage_unit         : 1 Volt
-Power_unit           : N/A
-Current_unit         : 1.0e-06 Amp(uA)
-1
-redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.fanout.rpt {report_net_fanout -high_fanout}
-Information: Changed wire load model for 'alt1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'apparch' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_TC_OP_12_12_13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_TC_OP_12_12_13' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW02_mult' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*MULT_TC_OP_9_8_16' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_6_1_6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width2' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_2_1_2' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_3_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_3_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_3_5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_sub_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*SUB_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_4_4' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_inc_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_1_5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_add_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*ADD_UNS_OP_4_4_5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_6_6_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*GEQ_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*GT_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp2_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*GT_UNS_OP_5_4_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width6' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_6_6_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for 'DW01_cmp6_width5' from '(none)' to 'ForQA'. (OPT-170)
-Information: Changed wire load model for '*EQ_UNS_OP_4_5_1' from '(none)' to 'ForQA'. (OPT-170)
-Information: Updating graph... (UID-83)
-Warning: Design 'pe' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
- 
-****************************************
-Report : net fanout
-        -high_fanout
-Design : pe
-Version: T-2022.03-SP3
-Date   : Thu Dec  7 14:22:45 2023
-****************************************
-
-
-Operating Conditions: tt1p05v25c   Library: saed32rvt_tt1p05v25c
-Wire Load Model Mode: enclosed
-
-Design        Wire Load Model            Library
-------------------------------------------------
-pe                     ForQA             saed32rvt_tt1p05v25c
-*EQ_UNS_OP_4_5_1       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_4_1_4      ForQA             saed32rvt_tt1p05v25c
-DW01_inc_width4        ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_2_1_2      ForQA             saed32rvt_tt1p05v25c
-DW01_inc_width2        ForQA             saed32rvt_tt1p05v25c
-*EQ_UNS_OP_6_6_1       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width6       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_4_1_5      ForQA             saed32rvt_tt1p05v25c
-DW01_inc_width5        ForQA             saed32rvt_tt1p05v25c
-*GT_UNS_OP_5_4_1       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp2_width5       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_4_3_5      ForQA             saed32rvt_tt1p05v25c
-DW01_add_width5        ForQA             saed32rvt_tt1p05v25c
-DW01_cmp2_width5       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_4_3_4      ForQA             saed32rvt_tt1p05v25c
-DW01_add_width4        ForQA             saed32rvt_tt1p05v25c
-*SUB_UNS_OP_4_4_4      ForQA             saed32rvt_tt1p05v25c
-DW01_sub_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_add_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_inc_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_sub_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_inc_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_4_4_5      ForQA             saed32rvt_tt1p05v25c
-DW01_add_width5        ForQA             saed32rvt_tt1p05v25c
-*GEQ_UNS_OP_5_4_1      ForQA             saed32rvt_tt1p05v25c
-DW01_cmp2_width5       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_4_4_4      ForQA             saed32rvt_tt1p05v25c
-DW01_add_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_sub_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_add_width4        ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width6       ForQA             saed32rvt_tt1p05v25c
-*ADD_UNS_OP_6_1_6      ForQA             saed32rvt_tt1p05v25c
-DW01_inc_width6        ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-DW01_cmp6_width5       ForQA             saed32rvt_tt1p05v25c
-*MULT_TC_OP_9_8_16     ForQA             saed32rvt_tt1p05v25c
-DW02_mult              ForQA             saed32rvt_tt1p05v25c
-*ADD_TC_OP_12_12_13    ForQA             saed32rvt_tt1p05v25c
-DW01_add_width13       ForQA             saed32rvt_tt1p05v25c
-DW01_add_width13       ForQA             saed32rvt_tt1p05v25c
-
-
-Attributes:
-   dr - drc disabled
-    c - annotated capacitance
-    d - dont_touch
-    i - ideal_net
-    I - ideal_network
-    p - includes pin load
-    r - annotated resistance
-    h - high fanout
-
-Net                 Fanout   Attributes   Capacitance   Driver
---------------------------------------------------------------------------------
-n_Logic0_             5341   dr, h        1001802.88    U2/**logic_0**
-clk                    661   dr             528.58      clk
-1
-redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.qor.rpt {report_qor}
- 
-****************************************
-Report : qor
-Design : pe
-Version: T-2022.03-SP3
-Date   : Thu Dec  7 14:22:45 2023
-****************************************
-
-
-  Timing Path Group 'core_clk'
-  -----------------------------------
-  Levels of Logic:              35.00
-  Critical Path Length:          0.21
-  Critical Path Slack:           4.29
-  Critical Path Clk Period:      5.00
-  Total Negative Slack:          0.00
-  No. of Violating Paths:        0.00
-  Worst Hold Violation:         -0.49
-  Total Hold Violation:       -542.86
-  No. of Hold Violations:     1183.00
-  -----------------------------------
-
-
-  Cell Count
-  -----------------------------------
-  Hierarchical Cell Count:         60
-  Hierarchical Port Count:        893
-  Leaf Cell Count:               2001
-  Buf/Inv Cell Count:             340
-  Buf Cell Count:                  88
-  Inv Cell Count:                 252
-  CT Buf/Inv Cell Count:            0
-  Combinational Cell Count:      1340
-  Sequential Cell Count:          661
-  Macro Count:                      0
-  -----------------------------------
-
-
-  Area
-  -----------------------------------
-  Combinational Area:        0.000000
-  Noncombinational Area:     0.000000
-  Buf/Inv Area:              0.000000
-  Total Buffer Area:             0.00
-  Total Inverter Area:           0.00
-  Macro/Black Box Area:      0.000000
-  Net Area:               2486.418115
-  -----------------------------------
-  Cell Area:                 0.000000
-  Design Area:            2486.418115
-
-
-  Design Rules
-  -----------------------------------
-  Total Number of Nets:          2886
-  Nets With Violations:             1
-  Max Trans Violations:             1
-  Max Cap Violations:               0
-  -----------------------------------
-
-
-  Hostname: caen-vnc-mi18.engin.umich.edu
-
-  Compile CPU Statistics
-  -----------------------------------------
-  Resource Sharing:                    0.00
-  Logic Optimization:                  0.00
-  Mapping Optimization:                0.00
-  -----------------------------------------
-  Overall Compile Time:                0.00
-  Overall Compile Wall Clock Time:     0.00
-
-  --------------------------------------------------------------------
-
-  Design  WNS: 0.00  TNS: 0.00  Number of Violating Paths: 0
-
-
-  Design (Hold)  WNS: 0.49  TNS: 542.86  Number of Violating Paths: 1183
-
-  --------------------------------------------------------------------
-
-
-1
-report_timing -transition_time -nets -attributes -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}.timing.rpt
-report_clock_timing -type summary > ${REPORTS_DIR}/${DESIGN_NAME}.clock_timing.rpt
-report_timing -delay_type max -path_type full_clock -max_paths 30 -transition_time -nets -attributes -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}.max_timing.rpt
-report_timing -delay_type min -path_type full_clock -max_paths 30 -transition_time -nets -attributes -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}.min_timing.rpt
-report_area -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}.area.rpt
-report_power -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}.power.rpt
-puts "\[$COURSE_NAME\] Completed script [info script]\n"
-[EECS598-002] Completed script /home/jpshen/eecs598mlvlsi/proj/Amadeus/rtl/syn/script/pe_synth.tcl
-
-exit
-
-Memory usage for this session 244 Mbytes.
-Memory usage for this session including child processes 244 Mbytes.
-CPU usage for this session 5 seconds ( 0.00 hours ).
-Elapsed time for this session 13 seconds ( 0.00 hours ).
-
-Thank you...
+Warning:  ../sv/decompressor.sv:128: Netlist for always_comb block contains a latch. (ELAB-974)
+Warning:  ../sv/decompressor.sv:135: Netlist for always_comb block contains a latch. (ELAB-974)
+Presto compilation completed successfully. (decompressor)
+Information: Building the design 'ifmap_buffer'. (HDL-193)
+Warning:  ../sv/ifmap_buffer.sv:137: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:163: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:179: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:203: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:228: signed to unsigned assignment occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:251: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:254: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:274: signed to unsigned conversion occurs. (VER-318)
+Warning:  ../sv/ifmap_buffer.sv:277: signed to unsigned conversion occurs. (VER-318)

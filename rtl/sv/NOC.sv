@@ -96,7 +96,10 @@ module NOC(
     end
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            enable <= 1'b0;
+        end
+        else if(start) begin
             enable <= 1'b0;
         end
         else if(ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter && ifmap_data_element_read_ptr == ifmap_data_element_read_ptr_counter && line_read_valid) begin
@@ -120,7 +123,11 @@ module NOC(
 
     /// zero pad the ifmap data ///
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            ifmap_data <= '0;
+            ifmap_data_valid <= 0;
+        end
+        else if(start) begin
             ifmap_data <= '0;
             ifmap_data_valid <= 0;
         end
@@ -199,7 +206,10 @@ module NOC(
                                                              ifmap_data_line_read_ptr;
 
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            ifmap_data_line_read_ptr <= 0;
+        end
+        else if(start) begin
             ifmap_data_line_read_ptr <= 0;
         end
         else if(start_conv_p1) begin
@@ -213,7 +223,10 @@ module NOC(
     // update the ifmap_data_element_read_ptr
     assign ifmap_data_element_read_ptr_next = (ifmap_data_line_read_ptr == ifmap_data_line_read_ptr_counter) & line_read_valid ? ifmap_data_element_read_ptr + 1'b1 : ifmap_data_element_read_ptr;
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start | start_conv_p1) begin
+        if(!rst_n) begin
+            ifmap_data_element_read_ptr <= 0;
+        end
+        else if(start | start_conv_p1) begin
             ifmap_data_element_read_ptr <= 0;
         end
         else if(enable) begin
@@ -239,7 +252,10 @@ module NOC(
     // if in layer1, you need to receive 2 conv_complete signal
     assign free_change = ((layer_type == LAYER1 && complete_count[0] == 1) || (layer_type == LAYER2 && complete_count == LAYER2_COMPLETE_COUNT-1) || layer_type == LAYER3) && conv_complete;
     always_ff@(posedge clk or negedge rst_n) begin
-        if(!rst_n | start) begin
+        if(!rst_n) begin
+            free_ifmap_buffer <= 0;
+        end
+        else if(start) begin
             free_ifmap_buffer <= 0;
         end
         else if(free_change) begin

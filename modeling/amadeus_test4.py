@@ -14,9 +14,6 @@ for channel in range(192):
     dut.load_ifmap_from_mem(ifmap, 15)
     dut.third_layer_accum_conv()
     #print(len(dut.ofmap[0]))
-    print("...............................")
-    #print(dut.ofmap)
-    print("...............................")
     for i in range(13):
         for j in range(13):
             for k in range(3):
