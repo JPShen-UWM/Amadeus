@@ -31,7 +31,7 @@ export MK_COURSE_NAME = EECS598-002
 #############
 
 # your top-level module name
-export MK_DESIGN_NAME = amadeus_top
+export MK_DESIGN_NAME = pe_array
 
 # CPU core usage, capped at 6
 export MK_USE_NUM_CORES = 4

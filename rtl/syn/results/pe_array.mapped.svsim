@@ -9,10 +9,10 @@
 
 module pe_array_svsim(
     input                           clk,
-    input                           rst,
+    input                           rst_n,
         output logic [5:0][6:0]         pe_full,
     input DIAGONAL_BUS_PACKET       diagonal_bus_packet,
-        input PE_IN_PACKET              weight_in_array[0:5],
+        input PE_IN_PACKET              weight_in_array [5:0],
         input PSUM_PACKET   [6:0]       psum_to_pe,
     output logic        [6:0]       pe_psum_ack,
     output PSUM_PACKET  [6:0]       psum_to_buffer,
@@ -32,7 +32,7 @@ module pe_array_svsim(
 
 
 
-  pe_array pe_array( {>>{ clk }}, {>>{ rst }}, {>>{ pe_full }}, 
+  pe_array pe_array( {>>{ clk }}, {>>{ rst_n }}, {>>{ pe_full }}, 
         {>>{ diagonal_bus_packet }}, {>>{ weight_in_array }}, 
         {>>{ psum_to_pe }}, {>>{ pe_psum_ack }}, {>>{ psum_to_buffer }}, 
         {>>{ psum_buffer_ack }}, {>>{ mode_in }}, {>>{ change_mode }}, 

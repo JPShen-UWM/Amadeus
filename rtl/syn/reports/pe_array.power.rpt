@@ -8,7 +8,7 @@ Report : power
         -analysis_effort low
 Design : pe_array
 Version: T-2022.03-SP3
-Date   : Thu Dec  7 14:14:44 2023
+Date   : Mon Dec 11 21:48:22 2023
 ****************************************
 
 
@@ -40,9 +40,9 @@ i - Including register clock pin internal power
 
 
   Cell Internal Power  =   0.0000 uW    (0%)
-  Net Switching Power  = 373.2502 uW  (100%)
+  Net Switching Power  = 925.2488 uW  (100%)
                          ---------
-Total Dynamic Power    = 373.2502 uW  (100%)
+Total Dynamic Power    = 925.2488 uW  (100%)
 
 Cell Leakage Power     =   0.0000 pW
 
@@ -54,9 +54,9 @@ io_pad             0.0000            0.0000            0.0000            0.0000 
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
 clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)  i
-register           0.0000           23.5264            0.0000           23.5264  (   6.30%)
+register           0.0000           61.4920            0.0000           61.4920  (   6.65%)
 sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
-combinational      0.0000          349.7276            0.0000          349.7276  (  93.70%)
+combinational      0.0000          863.7520            0.0000          863.7520  (  93.35%)
 --------------------------------------------------------------------------------------------------
-Total              0.0000 uW       373.2540 uW         0.0000 pW       373.2540 uW
+Total              0.0000 uW       925.2441 uW         0.0000 pW       925.2441 uW
 1
